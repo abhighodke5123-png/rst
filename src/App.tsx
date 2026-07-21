@@ -24,7 +24,6 @@ import NotificationInbox from "./components/NotificationInbox";
 import { TRIPS } from "./data";
 import { SlidersHorizontal, Compass, HelpCircle, MessageSquareWarning, X, ShieldCheck } from "lucide-react";
 import WhyChooseUs from "./components/WhyChooseUs";
-import ReviewsCarousel from "./components/ReviewsCarousel";
 import SocialFeed from "./components/SocialFeed";
 import BlogHub from "./components/BlogHub";
 import { auth, db } from "./firebase";
@@ -402,10 +401,6 @@ export default function App() {
         initialFilterDestinationId={initialFilterDestinationId}
         onClearInitialFilter={handleClearInitialFilter}
       />
-
-      {/* Reviews Carousel */}
-      <div id="reviews"></div>
-      <ReviewsCarousel />
 
       {/* Social Feed */}
       <div id="gallery"></div>
