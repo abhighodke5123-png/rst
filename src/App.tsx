@@ -26,6 +26,7 @@ import { SlidersHorizontal, Compass, HelpCircle, MessageSquareWarning, X, Shield
 import WhyChooseUs from "./components/WhyChooseUs";
 import SocialFeed from "./components/SocialFeed";
 import BlogHub from "./components/BlogHub";
+import Reviews from "./components/Reviews";
 import { auth, db } from "./firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { collection, getDocs, query, where, doc, getDoc, setDoc, deleteDoc } from "firebase/firestore";
@@ -163,7 +164,12 @@ export default function App() {
         const bookingsData = bookingsSnap.docs.map(doc => doc.data() as Booking);
         setBookings(bookingsData);
       } else {
-        setBookings([]);
+        try {
+          const cached = localStorage.getItem("raasta_guest_bookings");
+          setBookings(cached ? JSON.parse(cached) : []);
+        } catch (e) {
+          setBookings([]);
+        }
       }
     } catch (err) {
       console.error("Failed to synchronize with Firebase:", err);
@@ -225,6 +231,9 @@ export default function App() {
       // Save booking in local cache temporarily so guest can view it in his slide-out panel
       const updatedGuestBookings = [newBooking, ...bookings];
       setBookings(updatedGuestBookings);
+      try {
+        localStorage.setItem("raasta_guest_bookings", JSON.stringify(updatedGuestBookings));
+      } catch (e) {}
       setBookingsOpen(true);
     }
   };
@@ -237,12 +246,21 @@ export default function App() {
 
     try {
       await deleteDoc(doc(db, "bookings", bookingId));
-      syncServerLogData();
-      setBookings((prev) => prev.filter((b) => b.id !== bookingId));
     } catch (err) {
-      console.error(err);
-      alert("Cancellation request rejected.");
+      console.warn("Could not delete from Firestore, fallback to local removal", err);
     }
+
+    // Always remove from local state and localStorage
+    setBookings((prev) => prev.filter((b) => b.id !== bookingId));
+    try {
+      const cached = localStorage.getItem("raasta_guest_bookings");
+      if (cached) {
+        const parsed = JSON.parse(cached).filter((b: any) => b.id !== bookingId);
+        localStorage.setItem("raasta_guest_bookings", JSON.stringify(parsed));
+      }
+    } catch (e) {}
+
+    syncServerLogData();
   };
 
   // Select destination for scheduled departures filters
@@ -409,6 +427,10 @@ export default function App() {
       {/* Blog Hub */}
       <div id="blog"></div>
       <BlogHub />
+
+      {/* Reviews Section */}
+      <div id="reviews"></div>
+      <Reviews />
 
       {/* About Us Section */}
       <div id="about"></div>

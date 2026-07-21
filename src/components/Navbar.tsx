@@ -72,6 +72,7 @@ export default function Navbar({
     : [
         { label: "Trips", href: "#trips" },
         { label: "Gallery", href: "#gallery" },
+        { label: "Reviews", href: "#reviews" },
         { label: "About", href: "#about" },
         { label: "FAQ", href: "#about" }
       ];
