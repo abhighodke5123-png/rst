@@ -7,10 +7,39 @@ export default function ReviewsCarousel() {
   const [reviews, setReviews] = useState<any[]>(() => {
     try {
       const saved = localStorage.getItem("raasta_custom_reviews");
-      return saved ? JSON.parse(saved) : [];
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed && parsed.length > 0) return parsed;
+      }
     } catch (e) {
-      return [];
+      // ignore
     }
+    return [
+      {
+        id: "tpl-1",
+        name: "Rohan Advani",
+        trip: "Spiti Valley Caravan",
+        text: "Spiti with RAASTA is unlike any other journey. The level of care, the expert captaincy, and the campfire jams at Kaza campsite created bonds for life. Recommending this to every serious overlander!",
+        rating: 5,
+        image: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=150"
+      },
+      {
+        id: "tpl-2",
+        name: "Malini Sen",
+        trip: "Gokarna Cliffside Trek",
+        text: "The half-moon beach cliff walk on Gokarna backpacker trail was gorgeous. But the highlight has to be witnessing bioluminescence in the pitch-dark ocean water. Literally felt like Magic!",
+        rating: 5,
+        image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150"
+      },
+      {
+        id: "tpl-3",
+        name: "Devendra Verma",
+        trip: "Goa Offbeat Backwaters",
+        text: "Thought I had seen Goa inside out, but RAASTA showed me the true heart. The Fontainhas Heritage Walk was filled with quirky history, and the secret beach barbeque was stellar.",
+        rating: 5,
+        image: "https://images.unsplash.com/photo-1522529599102-193c0d76b5b6?auto=format&fit=crop&q=80&w=150"
+      }
+    ];
   });
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isModalOpen, setIsModalOpen] = useState(false);
