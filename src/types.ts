@@ -37,7 +37,9 @@ export interface Trip {
   seatsTotal: number;
   seatsAvailable: number;
   description: string;
-  status: "Selling Fast" | "Filling Fast" | "Almost Full" | "Seats Open" | "Monsoon Special";
+  status: "Selling Fast" | "Filling Fast" | "Almost Full" | "Seats Open" | "Monsoon Special" | string;
+  captainName?: string;
+  isFlexibleDates?: boolean;
 }
 
 export interface PackageTier {

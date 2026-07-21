@@ -68,6 +68,8 @@ export default function Admin({ user, onLogout, onNavigateToHome, onOpenNotifica
   const [newTripSeats, setNewTripSeats] = useState("");
   const [newTripDesc, setNewTripDesc] = useState("");
   const [newTripStatus, setNewTripStatus] = useState("Seats Open");
+  const [newTripCaptainName, setNewTripCaptainName] = useState("");
+  const [newTripFlexibleDates, setNewTripFlexibleDates] = useState(false);
 
   // Form States for editing an existing trip
   const [editingTripId, setEditingTripId] = useState<string | null>(null);
@@ -77,6 +79,8 @@ export default function Admin({ user, onLogout, onNavigateToHome, onOpenNotifica
   const [editSeatsAvail, setEditSeatsAvail] = useState("");
   const [editStatus, setEditStatus] = useState("");
   const [editDesc, setEditDesc] = useState("");
+  const [editCaptainName, setEditCaptainName] = useState("");
+  const [editFlexibleDates, setEditFlexibleDates] = useState(false);
 
   const loadAdminControlData = async () => {
     setSyncing(true);
@@ -168,7 +172,9 @@ export default function Admin({ user, onLogout, onNavigateToHome, onOpenNotifica
           seatsTotal: Number(newTripSeats),
           seatsAvailable: Number(newTripSeats),
           description: newTripDesc || "Handcrafted Premium Escapes Route",
-          status: newTripStatus
+          status: newTripStatus,
+          captainName: newTripCaptainName || "RAASTA Captain",
+          isFlexibleDates: newTripFlexibleDates
       });
 
       // Reset fields
@@ -178,6 +184,8 @@ export default function Admin({ user, onLogout, onNavigateToHome, onOpenNotifica
       setNewTripSeats("");
       setNewTripDesc("");
       setNewTripStatus("Seats Open");
+      setNewTripCaptainName("");
+      setNewTripFlexibleDates(false);
 
       // Reload data
       loadAdminControlData();
@@ -212,6 +220,8 @@ export default function Admin({ user, onLogout, onNavigateToHome, onOpenNotifica
     setEditSeatsAvail(trip.seatsAvailable.toString());
     setEditStatus(trip.status);
     setEditDesc(trip.description);
+    setEditCaptainName(trip.captainName || "RAASTA Captain");
+    setEditFlexibleDates(trip.isFlexibleDates || false);
   };
 
   const handleSaveTripEdits = async (tripId: string) => {
@@ -222,7 +232,9 @@ export default function Admin({ user, onLogout, onNavigateToHome, onOpenNotifica
           seatsTotal: Number(editSeatsTotal),
           seatsAvailable: Number(editSeatsAvail),
           description: editDesc,
-          status: editStatus
+          status: editStatus,
+          captainName: editCaptainName,
+          isFlexibleDates: editFlexibleDates
       });
       setEditingTripId(null);
       loadAdminControlData();
@@ -506,6 +518,27 @@ export default function Admin({ user, onLogout, onNavigateToHome, onOpenNotifica
                                 className="w-full bg-white border border-zinc-200 rounded-lg p-2.5 text-black focus:outline-none"
                               />
                             </div>
+                            <div>
+                              <label className="block text-[10px] text-zinc-500 uppercase font-bold mb-1">Lead Captain / Person</label>
+                              <input
+                                type="text"
+                                value={editCaptainName}
+                                onChange={(e) => setEditCaptainName(e.target.value)}
+                                className="w-full bg-white border border-zinc-200 rounded-lg p-2.5 text-black focus:outline-none"
+                              />
+                            </div>
+                            <div className="flex items-center gap-2 select-none py-1.5 sm:col-span-2">
+                              <input
+                                type="checkbox"
+                                id={`editFlexibleDates-${t.id}`}
+                                checked={editFlexibleDates}
+                                onChange={(e) => setEditFlexibleDates(e.target.checked)}
+                                className="w-4 h-4 accent-yellow-500 rounded border-zinc-300 cursor-pointer"
+                              />
+                              <label htmlFor={`editFlexibleDates-${t.id}`} className="text-[11px] font-bold text-zinc-650 cursor-pointer">
+                                Planned for Flexible Dates (TBD/Unscheduled window)
+                              </label>
+                            </div>
                           </div>
 
                           <div className="flex justify-end gap-2 pt-2">
@@ -544,6 +577,18 @@ export default function Admin({ user, onLogout, onNavigateToHome, onOpenNotifica
                               {t.dates} • <span className="font-bold text-zinc-700">₹{t.price}</span>
                             </p>
                             <p className="text-[11px] text-zinc-500 mt-1.5 max-w-lg leading-relaxed">{t.description}</p>
+                            <div className="flex flex-wrap gap-2 mt-2 select-none">
+                              {t.captainName && (
+                                <span className="text-[10px] bg-zinc-100 border border-zinc-200 px-2 py-0.5 rounded text-zinc-650 font-medium">
+                                  👤 Lead Person: {t.captainName}
+                                </span>
+                              )}
+                              {t.isFlexibleDates && (
+                                <span className="text-[10px] bg-yellow-500/10 border border-yellow-500/20 px-2 py-0.5 rounded text-yellow-600 font-bold">
+                                  📅 Flexible Dates
+                                </span>
+                              )}
+                            </div>
                           </div>
 
                           {/* Dynamic visual seat balance scale & operations buttons */}
@@ -676,6 +721,32 @@ export default function Admin({ user, onLogout, onNavigateToHome, onOpenNotifica
                     className="w-full bg-white border border-zinc-200 rounded-xl p-3 text-black focus:outline-none focus:border-yellow-500/40 placeholder-zinc-750 font-sans"
                   />
                 </div>
+              </div>
+
+              <div>
+                <label className="block text-[10px] font-bold text-zinc-500 uppercase tracking-widest mb-2">
+                  Lead Captain / Person
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. Captain Vikram Singh"
+                  value={newTripCaptainName}
+                  onChange={(e) => setNewTripCaptainName(e.target.value)}
+                  className="w-full bg-white border border-zinc-200 rounded-xl p-3 text-black focus:outline-none focus:border-yellow-500/40 placeholder-zinc-750 font-sans"
+                />
+              </div>
+
+              <div className="flex items-center gap-2 select-none py-1">
+                <input
+                  type="checkbox"
+                  id="newTripFlexibleDates"
+                  checked={newTripFlexibleDates}
+                  onChange={(e) => setNewTripFlexibleDates(e.target.checked)}
+                  className="w-4 h-4 accent-yellow-500 rounded border-zinc-300 cursor-pointer"
+                />
+                <label htmlFor="newTripFlexibleDates" className="text-[11px] font-bold text-zinc-600 cursor-pointer">
+                  Planned for Flexible Dates (TBD/Unscheduled)
+                </label>
               </div>
 
               <div>

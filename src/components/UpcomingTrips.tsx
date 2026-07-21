@@ -198,7 +198,18 @@ export default function UpcomingTrips({
                     </div>
 
                     {/* Inventory control meters */}
-                    <div className="pt-6 border-t border-white/10">
+                    <div className="pt-6 border-t border-white/10 space-y-4">
+                      <div className="flex justify-between items-center text-xs">
+                        <span className="text-zinc-400">Seats Capacity:</span>
+                        <span className="font-mono text-white font-bold">{trip.seatsAvailable} of {trip.seatsTotal} Available</span>
+                      </div>
+                      <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-brand-orange transition-all duration-500"
+                          style={{ width: `${Math.min(100, Math.max(0, (trip.seatsAvailable / (trip.seatsTotal || 15)) * 100))}%` }}
+                        />
+                      </div>
+
                       {trip.seatsAvailable > 0 ? (
                         <button
                           onClick={() => onBookTrip(trip)}

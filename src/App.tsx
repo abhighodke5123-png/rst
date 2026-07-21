@@ -15,7 +15,6 @@ import AboutContact from "./components/AboutContact";
 import MyBookingsLedger from "./components/MyBookingsLedger";
 import PrivacyPolicyModal from "./components/PrivacyPolicyModal";
 import TermsRegulationsModal from "./components/TermsRegulationsModal";
-import AITripPlanner from "./components/AITripPlanner";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
 import Dashboard from "./components/Dashboard";
@@ -391,9 +390,6 @@ export default function App() {
       {/* Why Choose Us */}
       <WhyChooseUs />
 
-      {/* 4. AI Custom Trip Planner */}
-      <AITripPlanner />
-
       <div id="trips"></div>
 
       {/* 5. Live departures listing and booking portal */}
@@ -520,26 +516,6 @@ export default function App() {
           </div>
         </div>
       )}
-
-      {/* Sticky Book Now for Mobile */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-zinc-50 border-t border-zinc-200 p-4 pb-6 flex items-center justify-between shadow-[0_-10px_30px_rgba(0,0,0,0.8)]">
-        <div className="text-xs">
-          <span className="text-zinc-600 block mb-0.5">Goa Batch starts in 5 Days</span>
-          <span className="text-red-400 font-bold flex items-center gap-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse"></span>
-            Only 7 seats left
-          </span>
-        </div>
-        <button
-          onClick={() => {
-            const target = document.getElementById("trips");
-            if (target) target.scrollIntoView({ behavior: "smooth" });
-          }}
-          className="bg-black text-white px-6 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider shadow-lg"
-        >
-          Book Now
-        </button>
-      </div>
 
       {/* FLOATING DIALOGS & OVERLAYS INTERACTIVE CONTROLLERS */}
 
