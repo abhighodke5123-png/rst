@@ -1,19 +1,24 @@
 import React, { useState } from "react";
 import { REVIEWS } from "../data";
 import { Review } from "../types";
-import { Star, MessageSquare, Plus, Check } from "lucide-react";
+import { Star, MessageSquare, Plus, Check, Trash2 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 
 export default function Reviews() {
   const [reviewsList, setReviewsList] = useState<Review[]>(() => {
     try {
+      // Get deleted default review IDs
+      const deletedDefaults = JSON.parse(localStorage.getItem("raasta_deleted_default_reviews") || "[]");
+      const defaultReviewsFiltered = REVIEWS.filter(r => !deletedDefaults.includes(r.id));
+
       const saved = localStorage.getItem("raasta_custom_reviews");
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) {
-          return [...parsed, ...REVIEWS];
+          return [...parsed, ...defaultReviewsFiltered];
         }
       }
+      return defaultReviewsFiltered;
     } catch (e) {
       // ignore
     }
@@ -26,6 +31,27 @@ export default function Reviews() {
   const [newContent, setNewContent] = useState("");
   const [newRating, setNewRating] = useState(5);
   const [isSubmitted, setIsSubmitted] = useState(false);
+
+  const handleDeleteReview = (id: string) => {
+    const updated = reviewsList.filter((r) => r.id !== id);
+    setReviewsList(updated);
+    try {
+      // Save user created reviews only to custom storage (excluding deleted custom ones)
+      const userCreatedOnly = updated.filter(r => r.id.startsWith("custom-rev-"));
+      localStorage.setItem("raasta_custom_reviews", JSON.stringify(userCreatedOnly));
+
+      // Track deleted default reviews so they don't reappear
+      if (!id.startsWith("custom-rev-")) {
+        const deletedDefaultIds = JSON.parse(localStorage.getItem("raasta_deleted_default_reviews") || "[]");
+        if (!deletedDefaultIds.includes(id)) {
+          deletedDefaultIds.push(id);
+        }
+        localStorage.setItem("raasta_deleted_default_reviews", JSON.stringify(deletedDefaultIds));
+      }
+    } catch (e) {
+      // ignore
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -198,10 +224,19 @@ export default function Reviews() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1 }}
-              className="bg-white border border-zinc-200 rounded-2xl p-6 flex flex-col justify-between hover:shadow-lg transition-all duration-300"
+              className="group relative bg-white border border-zinc-200 rounded-2xl p-6 flex flex-col justify-between hover:shadow-lg transition-all duration-300"
             >
+              {/* Delete Button */}
+              <button
+                onClick={() => handleDeleteReview(review.id)}
+                title="Remove this review"
+                className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity p-1.5 text-zinc-400 hover:text-red-500 hover:bg-zinc-100 rounded-full cursor-pointer transition-colors"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+              </button>
+
               <div>
-                <div className="flex items-center gap-1 mb-4">
+                <div className="flex items-center gap-1 mb-4 pr-6">
                   {Array.from({ length: 5 }).map((_, idx) => (
                     <Star
                       key={idx}

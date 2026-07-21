@@ -145,31 +145,31 @@ export const PACKAGES: PackageTier[] = [
 
 export const REVIEWS: Review[] = [
   {
-    id: "rev-1",
-    author: "Rohan Advani",
-    avatar: "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&q=80&w=150",
+    id: "rev-new-1",
+    author: "Aditya Roy",
+    avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=150",
     rating: 5,
-    destination: "Spiti Valley",
-    content: "Spiti with RAASTA is unlike any other journey. The level of care, the expert captaincy, and the music nights at Kaza campsite created bonds for life. Recommending this to every serious overlander!",
-    date: "June 2025"
+    destination: "Spiti Caravan",
+    content: "The high-altitude overlanding with RAASTA was absolute bliss. Navigating the rugged mountain passes felt incredibly safe under the expert guidance of their road captains.",
+    date: "July 2026"
   },
   {
-    id: "rev-2",
-    author: "Malini Sen",
-    avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150",
+    id: "rev-new-2",
+    author: "Sneha Kapoor",
+    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150",
     rating: 5,
-    destination: "Gokarna",
-    content: "The half-moon beach cliff walk on Gokarna backpacker trail was gorgeous. But the highlight has to be witnessing bioluminescence in the pitch-dark ocean water. Literally felt like Magic!",
-    date: "May 2025"
+    destination: "Gokarna Trail",
+    content: "Waking up to the sound of waves at a secluded cliffside campsite was unforgettable. Simple, raw, and perfectly organized.",
+    date: "June 2026"
   },
   {
-    id: "rev-3",
-    author: "Devendra Verma",
-    avatar: "https://images.unsplash.com/photo-1522529599102-193c0d76b5b6?auto=format&fit=crop&q=80&w=150",
-    rating: 4,
-    destination: "Goa",
-    content: "Thought I had seen Goa inside out, but RAASTA showed me the true heart. The Fontainhas Heritage Walk was filled with quirky history, and the secret beach barbeque was stellar.",
-    date: "April 2025"
+    id: "rev-new-3",
+    author: "Kabir Mehta",
+    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=150",
+    rating: 5,
+    destination: "Offbeat Goa",
+    content: "RAASTA completely redefined Goa for me. We skipped the commercial hubs and kayaked through quiet mangrove backwaters at sunrise. Absolute magic!",
+    date: "June 2026"
   }
 ];
 
