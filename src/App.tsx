@@ -27,21 +27,16 @@ import Experiences from "./components/Experiences";
 import ReviewsCarousel from "./components/ReviewsCarousel";
 import SocialFeed from "./components/SocialFeed";
 import BlogHub from "./components/BlogHub";
+import { auth, db } from "./firebase";
+import { onAuthStateChanged } from "firebase/auth";
+import { collection, getDocs, query, where, doc, getDoc, setDoc, deleteDoc } from "firebase/firestore";
 
 export default function App() {
   // Master Active App View State
   const [view, setView] = useState<"home" | "login" | "signup" | "dashboard" | "admin">("home");
 
   // Authentication State
-  const [currentUser, setCurrentUser] = useState<{ id: string; name: string; email: string; role: string } | null>(() => {
-    try {
-      const saved = localStorage.getItem("raastacurrentuser");
-      return saved ? JSON.parse(saved) : null;
-    } catch (e) {
-      console.error("Local storage parsing failed for raastacurrentuser", e);
-      return null;
-    }
-  });
+  const [currentUser, setCurrentUser] = useState<{ id: string; name: string; email: string; role: string } | null>(null);
 
   // Master Scheduled departures list state - synced from server API
   const [tripsList, setTripsList] = useState<Trip[]>(TRIPS);
@@ -69,40 +64,65 @@ export default function App() {
     setCookieConsent(true);
   };
 
-  // 1. Synchronize user details to local cache
+  // 1. Synchronize user details from Firebase Auth
   useEffect(() => {
-    if (currentUser) {
-      localStorage.setItem("raastacurrentuser", JSON.stringify(currentUser));
-    } else {
-      localStorage.removeItem("raastacurrentuser");
-    }
-  }, [currentUser]);
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        // Fetch user doc from Firestore to get role
+        try {
+          const userDoc = await getDoc(doc(db, "users", user.uid));
+          let role = "user";
+          if (userDoc.exists()) {
+            role = userDoc.data().role;
+          } else {
+            // Check if admin email
+            role = (user.email?.includes("admin") || user.email?.includes("derek@raasta.com") || user.email?.includes("abhighodke5123@gmail.com")) ? "admin" : "user";
+            // Create user document if it doesn't exist
+            await setDoc(doc(db, "users", user.uid), {
+              id: user.uid,
+              name: user.displayName || "User",
+              email: user.email,
+              role
+            });
+          }
+          setCurrentUser({
+            id: user.uid,
+            name: user.displayName || "User",
+            email: user.email || "",
+            role
+          });
+        } catch (error) {
+          console.error("Error fetching user role", error);
+        }
+      } else {
+        setCurrentUser(null);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   // 2. Fetch live tours & user bookings (if authenticated) on load
   const syncServerLogData = async () => {
     try {
       // Fetch dynamic live departures list
-      const tripsResp = await fetch("/api/trips");
-      if (tripsResp.ok) {
-        const tripsData = await tripsResp.json();
+      const tripsSnap = await getDocs(collection(db, "trips"));
+      const tripsData = tripsSnap.docs.map(doc => doc.data() as Trip);
+      if (tripsData.length > 0) {
         setTripsList(tripsData);
       }
 
       // Fetch bookings list (depending on login status)
       if (currentUser) {
-        const emailParam = encodeURIComponent(currentUser.email);
-        const roleParam = encodeURIComponent(currentUser.role);
-        const url = `/api/bookings?email=${emailParam}&role=${roleParam}`;
-        const bookingsResp = await fetch(url);
-        if (bookingsResp.ok) {
-          const bookingsData = await bookingsResp.json();
-          setBookings(bookingsData);
-        }
+        const q = query(collection(db, "bookings"), where("email", "==", currentUser.email));
+        const bookingsSnap = await getDocs(q);
+        const bookingsData = bookingsSnap.docs.map(doc => doc.data() as Booking);
+        setBookings(bookingsData);
       } else {
         setBookings([]);
       }
     } catch (err) {
-      console.error("Failed to synchronize with RAASTA server API:", err);
+      console.error("Failed to synchronize with Firebase:", err);
     }
   };
 
@@ -113,14 +133,11 @@ export default function App() {
       return;
     }
     try {
-      const emailParam = encodeURIComponent(currentUser.email);
-      const roleParam = encodeURIComponent(currentUser.role);
-      const resp = await fetch(`/api/notifications?email=${emailParam}&role=${roleParam}`);
-      if (resp.ok) {
-        const data = await resp.json();
-        const unreadList = (data || []).filter((n: any) => !n.read);
-        setNotificationCount(unreadList.length);
-      }
+      const q = query(collection(db, "notifications"), where("recipientEmail", "==", currentUser.email));
+      const notifsSnap = await getDocs(q);
+      const data = notifsSnap.docs.map(doc => doc.data());
+      const unreadList = (data || []).filter((n: any) => !n.read);
+      setNotificationCount(unreadList.length);
     } catch (err) {
       console.error("Failed to fetch notification states count", err);
     }
@@ -175,18 +192,12 @@ export default function App() {
     }
 
     try {
-      const resp = await fetch(`/api/bookings/${bookingId}/cancel`, {
-        method: "POST"
-      });
-
-      if (resp.ok) {
-        syncServerLogData();
-        setBookings((prev) => prev.filter((b) => b.id !== bookingId));
-      } else {
-        alert("Cancellation request rejected.");
-      }
+      await deleteDoc(doc(db, "bookings", bookingId));
+      syncServerLogData();
+      setBookings((prev) => prev.filter((b) => b.id !== bookingId));
     } catch (err) {
       console.error(err);
+      alert("Cancellation request rejected.");
     }
   };
 

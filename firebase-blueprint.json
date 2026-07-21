@@ -1,0 +1,93 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "A registered user of the RAASTA platform",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "role": { "type": "string", "enum": ["admin", "user"] }
+      },
+      "required": ["id", "name", "email", "role"]
+    },
+    "Trip": {
+      "title": "Trip",
+      "description": "An expedition destination and details",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "destinationId": { "type": "string" },
+        "destinationName": { "type": "string" },
+        "dates": { "type": "string" },
+        "price": { "type": "number" },
+        "seatsTotal": { "type": "number" },
+        "seatsAvailable": { "type": "number" },
+        "description": { "type": "string" },
+        "status": { "type": "string" }
+      },
+      "required": ["id", "destinationId", "destinationName", "dates", "price", "seatsTotal", "seatsAvailable", "description", "status"]
+    },
+    "Booking": {
+      "title": "Booking",
+      "description": "A booking made by a user for a trip",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "tripId": { "type": "string" },
+        "tripName": { "type": "string" },
+        "travelerName": { "type": "string" },
+        "email": { "type": "string" },
+        "phone": { "type": "string" },
+        "numTravelers": { "type": "number" },
+        "tierSelected": { "type": "string" },
+        "addOns": {
+          "type": "object"
+        },
+        "totalCost": { "type": "number" },
+        "bookingDate": { "type": "string" },
+        "status": { "type": "string" },
+        "paymentId": { "type": "string" },
+        "paymentMethod": { "type": "string" },
+        "paymentStatus": { "type": "string" }
+      },
+      "required": ["id", "tripId", "tripName", "travelerName", "email", "numTravelers", "totalCost", "bookingDate", "status"]
+    },
+    "Notification": {
+      "title": "Notification",
+      "description": "System or email notification sent to a user",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "recipientEmail": { "type": "string" },
+        "recipientName": { "type": "string" },
+        "subject": { "type": "string" },
+        "bodyHtml": { "type": "string" },
+        "bodyText": { "type": "string" },
+        "timestamp": { "type": "string" },
+        "type": { "type": "string" },
+        "read": { "type": "boolean" }
+      },
+      "required": ["id", "recipientEmail", "recipientName", "subject", "bodyHtml", "bodyText", "timestamp", "type", "read"]
+    }
+  },
+  "firestore": {
+    "users/{userId}": {
+      "schema": { "$ref": "#/entities/User" },
+      "description": "Collection of users"
+    },
+    "trips/{tripId}": {
+      "schema": { "$ref": "#/entities/Trip" },
+      "description": "Collection of trips"
+    },
+    "bookings/{bookingId}": {
+      "schema": { "$ref": "#/entities/Booking" },
+      "description": "Collection of bookings"
+    },
+    "notifications/{notificationId}": {
+      "schema": { "$ref": "#/entities/Notification" },
+      "description": "Collection of notifications for users"
+    }
+  }
+}

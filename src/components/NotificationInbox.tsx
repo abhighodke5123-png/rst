@@ -25,6 +25,9 @@ interface NotificationInboxProps {
   currentUser: { id: string; name: string; email: string; role: string } | null;
 }
 
+import { collection, query, where, getDocs, writeBatch, doc } from "firebase/firestore";
+import { db } from "../firebase";
+
 export default function NotificationInbox({ isOpen, onClose, currentUser }: NotificationInboxProps) {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [selectedNotif, setSelectedNotif] = useState<Notification | null>(null);
@@ -34,13 +37,12 @@ export default function NotificationInbox({ isOpen, onClose, currentUser }: Noti
     if (!currentUser) return;
     setLoading(true);
     try {
-      const emailParam = encodeURIComponent(currentUser.email);
-      const roleParam = encodeURIComponent(currentUser.role);
-      const resp = await fetch(`/api/notifications?email=${emailParam}&role=${roleParam}`);
-      if (resp.ok) {
-        const data = await resp.json();
-        setNotifications(data);
-      }
+      const q = query(collection(db, "notifications"), where("recipientEmail", "==", currentUser.email));
+      const snap = await getDocs(q);
+      const data = snap.docs.map(doc => doc.data() as Notification);
+      // Sort by timestamp desc
+      data.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+      setNotifications(data);
     } catch (err) {
       console.error("Failed to load simulated outbox:", err);
     } finally {
@@ -57,14 +59,15 @@ export default function NotificationInbox({ isOpen, onClose, currentUser }: Noti
   const markAllRead = async () => {
     if (!currentUser) return;
     try {
-      const response = await fetch("/api/notifications/mark-all-read", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: currentUser.email })
+      const batch = writeBatch(db);
+      notifications.forEach((n) => {
+        if (!n.read) {
+          const ref = doc(db, "notifications", n.id);
+          batch.update(ref, { read: true });
+        }
       });
-      if (response.ok) {
-        setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
-      }
+      await batch.commit();
+      setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
     } catch (err) {
       console.error(err);
     }

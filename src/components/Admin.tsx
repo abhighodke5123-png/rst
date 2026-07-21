@@ -42,6 +42,10 @@ interface StatsMetrics {
   registeredUsersCount: number;
 }
 
+import { collection, query, where, getDocs, deleteDoc, doc, setDoc, updateDoc, writeBatch, getDoc } from "firebase/firestore";
+import { db } from "../firebase";
+import { TRIPS } from "../data";
+
 export default function Admin({ user, onLogout, onNavigateToHome, onOpenNotifications, notificationCount }: AdminProps) {
   const [stats, setStats] = useState<StatsMetrics>({
     bookingsCount: 0,
@@ -78,18 +82,35 @@ export default function Admin({ user, onLogout, onNavigateToHome, onOpenNotifica
     setSyncing(true);
     try {
       // 1. Fetch Metrics
-      const statsResp = await fetch("/api/stats");
-      const statsData = await statsResp.json();
+      let tripsSnap = await getDocs(collection(db, "trips"));
+
+      if (tripsSnap.empty) {
+        const batch = writeBatch(db);
+        TRIPS.forEach((t) => {
+          batch.set(doc(db, "trips", t.id), t);
+        });
+        await batch.commit();
+        tripsSnap = await getDocs(collection(db, "trips"));
+      }
+
+      const bookingsSnap = await getDocs(collection(db, "bookings"));
+      const usersSnap = await getDocs(collection(db, "users"));
+      
+      const statsData = {
+        bookingsCount: bookingsSnap.size,
+        totalRevenue: bookingsSnap.docs.reduce((acc, doc) => acc + (doc.data().totalCost || 0), 0),
+        totalSeatsReservations: bookingsSnap.docs.reduce((acc, doc) => acc + (doc.data().numTravelers || 0), 0),
+        currentTripsCount: tripsSnap.size,
+        registeredUsersCount: usersSnap.size
+      };
       setStats(statsData);
 
       // 2. Fetch Bookings (passing role: 'admin')
-      const bookingsResp = await fetch(`/api/bookings?role=admin`);
-      const bookingsData = await bookingsResp.json();
+      const bookingsData = bookingsSnap.docs.map(doc => doc.data() as Booking);
       setBookings(bookingsData);
 
       // 3. Fetch Master Trips list
-      const tripsResp = await fetch("/api/trips");
-      const tripsData = await tripsResp.json();
+      const tripsData = tripsSnap.docs.map(doc => doc.data() as Trip);
       setTrips(tripsData);
     } catch (err) {
       console.error("Error fetching admin control logs:", err);
@@ -109,18 +130,22 @@ export default function Admin({ user, onLogout, onNavigateToHome, onOpenNotifica
     }
 
     try {
-      const resp = await fetch(`/api/bookings/${bookingId}/cancel`, {
-        method: "POST"
-      });
-
-      if (resp.ok) {
-        // Reload statistics and states
-        loadAdminControlData();
-      } else {
-        alert("Fail cancelation request.");
+      const bookingDoc = await getDoc(doc(db, "bookings", bookingId));
+      if (bookingDoc.exists()) {
+         const bookingData = bookingDoc.data();
+         const tripRef = doc(db, "trips", bookingData.tripId);
+         const tripDoc = await getDoc(tripRef);
+         if (tripDoc.exists()) {
+             await updateDoc(tripRef, {
+                seatsAvailable: tripDoc.data().seatsAvailable + bookingData.numTravelers
+             });
+         }
       }
+      await deleteDoc(doc(db, "bookings", bookingId));
+      loadAdminControlData();
     } catch (err) {
       console.error(err);
+      alert("Fail cancelation request.");
     }
   };
 
@@ -133,36 +158,32 @@ export default function Admin({ user, onLogout, onNavigateToHome, onOpenNotifica
     }
 
     try {
-      const resp = await fetch("/api/trips", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
+      const tripRef = doc(collection(db, "trips"));
+      await setDoc(tripRef, {
+          id: tripRef.id,
           destinationId: newTripDestId,
           destinationName: newTripDestName,
           dates: newTripDates,
           price: Number(newTripPrice),
           seatsTotal: Number(newTripSeats),
+          seatsAvailable: Number(newTripSeats),
           description: newTripDesc || "Handcrafted Premium Escapes Route",
           status: newTripStatus
-        })
       });
 
-      if (resp.ok) {
-        // Reset fields
-        setNewTripDestName("");
-        setNewTripDates("");
-        setNewTripPrice("");
-        setNewTripSeats("");
-        setNewTripDesc("");
-        setNewTripStatus("Seats Open");
+      // Reset fields
+      setNewTripDestName("");
+      setNewTripDates("");
+      setNewTripPrice("");
+      setNewTripSeats("");
+      setNewTripDesc("");
+      setNewTripStatus("Seats Open");
 
-        // Reload data
-        loadAdminControlData();
-      } else {
-        alert("Failed to insert new trip to backend.");
-      }
+      // Reload data
+      loadAdminControlData();
     } catch (err) {
       console.error(err);
+      alert("Failed to insert new trip to backend.");
     }
   };
 
@@ -172,20 +193,14 @@ export default function Admin({ user, onLogout, onNavigateToHome, onOpenNotifica
     }
 
     try {
-      const resp = await fetch(`/api/trips/${tripId}`, {
-        method: "DELETE"
-      });
-
-      if (resp.ok) {
-        loadAdminControlData();
-        if (editingTripId === tripId) {
-          setEditingTripId(null);
-        }
-      } else {
-        alert("Could not remove trip.");
+      await deleteDoc(doc(db, "trips", tripId));
+      loadAdminControlData();
+      if (editingTripId === tripId) {
+        setEditingTripId(null);
       }
     } catch (err) {
       console.error(err);
+      alert("Could not remove trip.");
     }
   };
 
@@ -201,27 +216,19 @@ export default function Admin({ user, onLogout, onNavigateToHome, onOpenNotifica
 
   const handleSaveTripEdits = async (tripId: string) => {
     try {
-      const resp = await fetch(`/api/trips/${tripId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
+      await updateDoc(doc(db, "trips", tripId), {
           dates: editDates,
           price: Number(editPrice),
           seatsTotal: Number(editSeatsTotal),
           seatsAvailable: Number(editSeatsAvail),
           description: editDesc,
           status: editStatus
-        })
       });
-
-      if (resp.ok) {
-        setEditingTripId(null);
-        loadAdminControlData();
-      } else {
-        alert("Could not commit updates to backend server.");
-      }
+      setEditingTripId(null);
+      loadAdminControlData();
     } catch (err) {
       console.error(err);
+      alert("Could not commit updates to backend server.");
     }
   };
 

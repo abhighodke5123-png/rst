@@ -8,6 +8,8 @@ import { Trip, Booking } from "../types";
 import { PACKAGES } from "../data";
 import { X, Check, Calculator, Info, ShieldCheck, HelpCircle, ArrowLeft, CreditCard, Landmark, Smartphone, RefreshCw, Lock, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
+import { collection, doc, setDoc, updateDoc, getDoc } from "firebase/firestore";
+import { db } from "../firebase";
 
 interface BookingFormProps {
   trip: Trip;
@@ -117,40 +119,68 @@ export default function BookingForm({ trip, onClose, onBookingSuccess }: Booking
       await new Promise((resolve) => setTimeout(resolve, 800));
     }
 
-    // Prepare simulated keys metadata
-    const randomPayId = "pay_sandbox_" + Math.random().toString(36).substr(2, 9).toUpperCase();
-    const payMethodTitle = selectedMethod === "upi" ? `UPI (${upiId})` : selectedMethod === "card" ? "Credit Card ending in 8874" : `NetBanking (${selectedBank})`;
-
+    // Inside handleSimulatePaymentCompletion
     try {
-      const response = await fetch("/api/bookings", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          tripId: trip.id,
-          travelerName: formName,
-          email: formEmail,
-          phone: formPhone,
-          numTravelers: numTravelers,
-          tierSelected: getTierName(),
-          addOns: {
-            photographer: addPhoto,
-            premiumStay: addStay,
-            localGuide: addGuide,
-          },
-          totalCost: grandTotal,
-          paymentId: randomPayId,
-          paymentMethod: payMethodTitle,
-          signature: "sha256_rzp_sig_mock_validation_success_998317"
-        })
-      });
+      // Prepare simulated keys metadata
+      const randomPayId = "pay_sandbox_" + Math.random().toString(36).substr(2, 9).toUpperCase();
+      const payMethodTitle = selectedMethod === "upi" ? `UPI (${upiId})` : selectedMethod === "card" ? "Credit Card ending in 8874" : `NetBanking (${selectedBank})`;
 
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.error || "Reservation failed.");
+      const bookingRef = doc(collection(db, "bookings"));
+      const newBooking = {
+        id: bookingRef.id,
+        tripId: trip.id,
+        tripName: trip.destinationName,
+        travelerName: formName,
+        email: formEmail.toLowerCase(),
+        phone: formPhone,
+        numTravelers: numTravelers,
+        tierSelected: getTierName(),
+        addOns: {
+          photographer: addPhoto,
+          premiumStay: addStay,
+          localGuide: addGuide,
+        },
+        totalCost: grandTotal,
+        bookingDate: trip.dates,
+        status: "Confirmed",
+        paymentId: randomPayId,
+        paymentMethod: payMethodTitle,
+        paymentStatus: "Paid"
+      };
+
+      await setDoc(bookingRef, newBooking);
+
+      // Decrement remaining seats count on trip
+      const tripRef = doc(db, "trips", trip.id);
+      const tripDoc = await getDoc(tripRef);
+      if (tripDoc.exists()) {
+        const tripData = tripDoc.data();
+        await updateDoc(tripRef, {
+          seatsAvailable: Math.max(0, tripData.seatsAvailable - numTravelers)
+        });
       }
 
+      // Add Notification
+      const notifRef = doc(collection(db, "notifications"));
+      await setDoc(notifRef, {
+        id: notifRef.id,
+        recipientEmail: formEmail.toLowerCase(),
+        recipientName: formName,
+        subject: `🎟️ RAASTA Booking Invoice: Seat Confirmed [${newBooking.id}]`,
+        bodyHtml: `<h3>Booking Confirmed</h3><p>Your booking for ${trip.destinationName} is confirmed.</p>`,
+        bodyText: `Your booking for ${trip.destinationName} is confirmed.`,
+        timestamp: new Date().toLocaleString("en-IN", {
+          day: "numeric",
+          month: "short",
+          hour: "2-digit",
+          minute: "2-digit"
+        }),
+        type: "booking",
+        read: false
+      });
+
       // Succeeded!
-      onBookingSuccess(data);
+      onBookingSuccess(newBooking as any);
     } catch (err: any) {
       setErrorMess(err.message || "Failed to finalize seat booking on server.");
       setFormStep("details");

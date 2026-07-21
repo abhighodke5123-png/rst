@@ -34,6 +34,9 @@ interface DashboardProps {
   notificationCount: number;
 }
 
+import { collection, query, where, getDocs, deleteDoc, doc } from "firebase/firestore";
+import { db } from "../firebase";
+
 export default function Dashboard({ user, onLogout, onNavigateToHome, onReserveMore, onOpenNotifications, notificationCount }: DashboardProps) {
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
@@ -43,13 +46,10 @@ export default function Dashboard({ user, onLogout, onNavigateToHome, onReserveM
   const fetchUserBookings = async () => {
     setLoading(true);
     try {
-      const resp = await fetch(`/api/bookings?email=${encodeURIComponent(user.email)}`);
-      if (resp.ok) {
-        const data = await resp.json();
-        setBookings(data);
-      } else {
-        setError("Could not sync your travel booking history list.");
-      }
+      const q = query(collection(db, "bookings"), where("email", "==", user.email));
+      const snap = await getDocs(q);
+      const data = snap.docs.map(doc => doc.data() as Booking);
+      setBookings(data);
     } catch (err) {
       console.error(err);
       setError("Server connection offline.");
@@ -69,16 +69,9 @@ export default function Dashboard({ user, onLogout, onNavigateToHome, onReserveM
 
     setActionLoading(bookingId);
     try {
-      const resp = await fetch(`/api/bookings/${bookingId}/cancel`, {
-        method: "POST"
-      });
-
-      if (resp.ok) {
-        // Remove locally from dashboard view
-        setBookings((prev) => prev.filter((b) => b.id !== bookingId));
-      } else {
-        alert("Failed to cancel booking. Please try again later.");
-      }
+      await deleteDoc(doc(db, "bookings", bookingId));
+      // Remove locally from dashboard view
+      setBookings((prev) => prev.filter((b) => b.id !== bookingId));
     } catch (err) {
       console.error(err);
       alert("Error reaching the server backend.");

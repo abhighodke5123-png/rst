@@ -6,6 +6,8 @@
 import React, { useState } from "react";
 import { LogIn, Mail, Lock, ShieldAlert, ArrowLeft, Loader2, Sparkles } from "lucide-react";
 import { motion } from "motion/react";
+import { auth, googleProvider } from "../firebase";
+import { signInWithPopup, signInWithEmailAndPassword } from "firebase/auth";
 
 interface LoginProps {
   onBack: () => void;
@@ -30,20 +32,35 @@ export default function Login({ onBack, onSuccess, onNavigateToSignup }: LoginPr
 
     setLoading(true);
     try {
-      const response = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
+      const userCred = await signInWithEmailAndPassword(auth, email, password);
+      // Wait for Auth state listener in App to catch it
+      // or we can invoke onSuccess with a mocked role until App.tsx syncs it
+      onSuccess({
+        id: userCred.user.uid,
+        name: userCred.user.displayName || "User",
+        email: userCred.user.email || "",
+        role: "user", // Let App.tsx fetch role
       });
-
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.error || "Login attempt failed.");
-      }
-
-      onSuccess(data.user);
     } catch (err: any) {
-      setError(err.message || "Something went wrong.");
+      setError(err.message || "Invalid credentials.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    setError(null);
+    setLoading(true);
+    try {
+      const userCred = await signInWithPopup(auth, googleProvider);
+      onSuccess({
+        id: userCred.user.uid,
+        name: userCred.user.displayName || "User",
+        email: userCred.user.email || "",
+        role: "user", // Let App.tsx fetch role
+      });
+    } catch (err: any) {
+      setError(err.message || "Google sign in failed.");
     } finally {
       setLoading(false);
     }
@@ -167,6 +184,17 @@ export default function Login({ onBack, onSuccess, onNavigateToSignup }: LoginPr
             )}
           </button>
         </form>
+
+        <div className="mt-4">
+          <button
+            type="button"
+            onClick={handleGoogleSignIn}
+            disabled={loading}
+            className="w-full bg-zinc-100 hover:bg-zinc-200 text-black py-3.5 rounded-xl text-xs font-extrabold uppercase tracking-widest transition duration-300 flex items-center justify-center gap-2 cursor-pointer"
+          >
+            Sign in with Google
+          </button>
+        </div>
 
         {/* Demo Credentials Box */}
         <div className="mt-8 border-t border-zinc-200 pt-6">
