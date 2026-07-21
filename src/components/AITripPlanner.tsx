@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import {
   Sparkles,
@@ -16,8 +16,15 @@ import {
   Send,
   RefreshCw,
   Clock,
-  ExternalLink
+  ExternalLink,
+  X,
+  ShieldCheck,
+  Calculator,
+  CheckCircle,
+  Loader2
 } from "lucide-react";
+import { auth, db } from "../firebase";
+import { collection, doc, setDoc } from "firebase/firestore";
 
 interface ItineraryDay {
   dayNumber: number;
@@ -54,6 +61,42 @@ export default function AITripPlanner() {
   const [error, setError] = useState<string | null>(null);
   const [plan, setPlan] = useState<AIPlanResult | null>(null);
   const [expandedDay, setExpandedDay] = useState<number | null>(1);
+
+  // Custom AI Booking Modal States
+  const [bookingModalOpen, setBookingModalOpen] = useState(false);
+  const [formName, setFormName] = useState("");
+  const [formEmail, setFormEmail] = useState("");
+  const [formPhone, setFormPhone] = useState("");
+  const [numTravelers, setNumTravelers] = useState(1);
+  const [photographer, setPhotographer] = useState(false);
+  const [premiumStay, setPremiumStay] = useState(false);
+  const [localGuide, setLocalGuide] = useState(false);
+  const [bookingSubmitting, setBookingSubmitting] = useState(false);
+  const [bookingError, setBookingError] = useState("");
+  const [bookingSuccess, setBookingSuccess] = useState(false);
+
+  // Auto-prefill name and email when user is logged in
+  useEffect(() => {
+    if (bookingModalOpen) {
+      const currentUser = auth.currentUser;
+      if (currentUser) {
+        if (currentUser.displayName) setFormName(currentUser.displayName);
+        if (currentUser.email) setFormEmail(currentUser.email);
+      }
+    }
+  }, [bookingModalOpen]);
+
+  // Pricing calculations
+  const getBasePrice = () => {
+    if (budget === "budget") return 4499;
+    if (budget === "premium") return 15999;
+    return 8999; // moderate
+  };
+
+  const basePrice = getBasePrice();
+  const addOnsCost = (photographer ? 1500 : 0) + (premiumStay ? 3500 : 0) + (localGuide ? 1200 : 0);
+  const totalCostPerTraveler = basePrice + addOnsCost;
+  const grandTotal = totalCostPerTraveler * numTravelers;
 
   const interestOptions = [
     { id: "beaches", label: "Beaches & Lagoons", emoji: "🏖️" },
@@ -115,11 +158,123 @@ export default function AITripPlanner() {
   };
 
   const handleWhatsAppEnquiry = () => {
+    setBookingModalOpen(true);
+  };
+
+  const handleBookingSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     if (!plan) return;
-    const whatsappNumber = "919900990099"; // RAASTA Travels Captain Contact
-    const encodedText = encodeURIComponent(plan.whatsappText);
-    const url = `https://wa.me/${whatsappNumber}?text=${encodedText}`;
-    window.open(url, "_blank");
+    setBookingError("");
+    setBookingSubmitting(true);
+
+    if (!formName.trim()) {
+      setBookingError("Please enter traveler's full name.");
+      setBookingSubmitting(false);
+      return;
+    }
+    if (!formEmail.trim() || !formEmail.includes("@")) {
+      setBookingError("Please enter a valid email address.");
+      setBookingSubmitting(false);
+      return;
+    }
+    if (!formPhone.trim() || formPhone.length < 8) {
+      setBookingError("Please enter a valid phone or mobile number.");
+      setBookingSubmitting(false);
+      return;
+    }
+
+    try {
+      const bookingRef = doc(collection(db, "bookings"));
+      const bookingId = "AI_" + bookingRef.id.slice(0, 7).toUpperCase();
+
+      const newBooking = {
+        id: bookingId,
+        tripId: "ai_custom_" + plan.tripTitle.toLowerCase().replace(/[^a-z0-9]/g, "_"),
+        tripName: `🎒 AI Trip: ${plan.tripTitle}`,
+        travelerName: formName,
+        email: formEmail.toLowerCase(),
+        phone: formPhone,
+        numTravelers: numTravelers,
+        tierSelected: budget.toUpperCase() + " Package",
+        addOns: {
+          photographer,
+          premiumStay,
+          localGuide,
+        },
+        totalCost: grandTotal,
+        bookingDate: `${new Date().toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}`,
+        status: "Confirmed",
+        paymentId: "wa_ai_" + bookingRef.id.slice(0, 5).toUpperCase(),
+        paymentMethod: "WhatsApp Booking",
+        paymentStatus: "Pending Confirmation"
+      };
+
+      await setDoc(bookingRef, newBooking);
+
+      // Create a customized notification for user dashboard
+      const notifRef = doc(collection(db, "notifications"));
+      await setDoc(notifRef, {
+        id: notifRef.id,
+        recipientEmail: formEmail.toLowerCase(),
+        recipientName: formName,
+        subject: `✨ Your Custom AI Trip [${plan.tripTitle}] is Registered!`,
+        bodyHtml: `<h3>Custom Expedition Configured</h3><p>Your custom road trip package for <strong>${plan.tripTitle}</strong> has been initialized under reference: <strong>${bookingId}</strong>.</p><p>A RAASTA Captain has received your WhatsApp itinerary and is preparing your final group discount quote!</p>`,
+        bodyText: `Your custom AI trip reservation for ${plan.tripTitle} has been created (ID: ${bookingId}). We are waiting to chat on WhatsApp!`,
+        timestamp: new Date().toLocaleString("en-IN", {
+          day: "numeric",
+          month: "short",
+          hour: "2-digit",
+          minute: "2-digit"
+        }),
+        type: "booking",
+        read: false
+      });
+
+      // Construct detailed WhatsApp message combining the user details and itinerary
+      const selectedAddonsList: string[] = [];
+      if (photographer) selectedAddonsList.push("📷 Pro Photographer Setup");
+      if (premiumStay) selectedAddonsList.push("🏨 Premium Stay Upgrade");
+      if (localGuide) selectedAddonsList.push("🗺️ Naturalist Local Guide");
+
+      const msgText = `Hi RAASTA! 🎒 I just planned an amazing custom AI expedition and want to lock it in!
+
+🚙 *Custom Expedition*: *${plan.tripTitle}*
+• *Vibe*: ${plan.vibeSummary}
+• *Duration*: ${duration} Days
+
+👤 *Primary Traveler Profile*:
+• *Name*: ${formName}
+• *Email*: ${formEmail}
+• *Phone*: ${formPhone}
+• *Seats to Reserve*: ${numTravelers} member(s)
+• *Package Tier*: ${budget.toUpperCase()} Tier
+${selectedAddonsList.length > 0 ? `• *Add-on Upgrades*:\n${selectedAddonsList.map(a => `  - ${a}`).join("\n")}` : ""}
+
+💵 *Estimated Grand Total*: ₹${grandTotal.toLocaleString("en-IN")}
+🎟️ *Booking Ref Code*: ${bookingId}
+
+📍 *Day-By-Day Itinerary*:
+${plan.itinerary.map(day => `*Day ${day.dayNumber}: ${day.title}*
+- Activities: ${day.activities.join(", ")}
+- Secret Tip: ${day.localSecretTip}`).join("\n\n")}
+
+Please confirm availability and help me complete my registration! Thank you!`;
+
+      // Open WhatsApp in new tab (Raasta official line: 919322309802)
+      const encodedText = encodeURIComponent(msgText);
+      const whatsappUrl = `https://wa.me/919322309802?text=${encodedText}`;
+      window.open(whatsappUrl, "_blank");
+
+      setBookingSuccess(true);
+      setTimeout(() => {
+        setBookingModalOpen(false);
+        setBookingSuccess(false);
+      }, 3000);
+    } catch (err: any) {
+      setBookingError(err.message || "Failed to register custom AI booking.");
+    } finally {
+      setBookingSubmitting(false);
+    }
   };
 
   return (
@@ -535,6 +690,289 @@ export default function AITripPlanner() {
           </div>
         </div>
       </div>
+
+      {/* Configure Expedition Entry Modal */}
+      <AnimatePresence>
+        {bookingModalOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => !bookingSubmitting && setBookingModalOpen(false)}
+              className="absolute inset-0 bg-black/80 backdrop-blur-md"
+            ></motion.div>
+
+            {/* Modal Body */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              transition={{ type: "spring", duration: 0.5 }}
+              className="relative w-full max-w-xl bg-zinc-950 border border-zinc-800 rounded-[32px] overflow-hidden shadow-2xl relative z-10 max-h-[90vh] flex flex-col"
+            >
+              {/* Top gradient highlight */}
+              <div className="h-1.5 bg-gradient-to-r from-brand-orange to-amber-500 w-full"></div>
+
+              {/* Header */}
+              <div className="p-6 md:p-8 border-b border-zinc-900 flex justify-between items-start">
+                <div>
+                  <span className="px-2.5 py-0.5 bg-brand-orange/10 text-brand-orange text-[9px] font-mono uppercase tracking-widest rounded-md font-bold">
+                    Expedition Configuration
+                  </span>
+                  <h3 className="text-xl font-black text-white mt-1.5 tracking-tight">
+                    Configure Expedition Entry
+                  </h3>
+                  <p className="text-zinc-500 text-xs font-light mt-1">
+                    Complete your registration for your unscripted AI itinerary.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => !bookingSubmitting && setBookingModalOpen(false)}
+                  disabled={bookingSubmitting}
+                  className="p-2 text-zinc-500 hover:text-white hover:bg-zinc-900 rounded-full transition cursor-pointer"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              {/* Form & Pricing */}
+              <div className="p-6 md:p-8 overflow-y-auto space-y-6 flex-1">
+                {bookingSuccess ? (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className="py-12 flex flex-col items-center justify-center text-center space-y-4"
+                  >
+                    <div className="w-16 h-16 bg-brand-emerald/15 rounded-full flex items-center justify-center border border-brand-emerald/20 text-brand-emerald">
+                      <CheckCircle className="w-8 h-8" />
+                    </div>
+                    <div>
+                      <h4 className="text-white text-lg font-bold">Expedition Configured!</h4>
+                      <p className="text-zinc-400 text-xs mt-2 max-w-xs leading-relaxed">
+                        Your custom adventure has been registered and synced with your dashboard! Opening WhatsApp in a new window...
+                      </p>
+                    </div>
+                  </motion.div>
+                ) : (
+                  <form onSubmit={handleBookingSubmit} className="space-y-6">
+                    {/* Selected Trip Quick Info */}
+                    <div className="bg-zinc-900/30 border border-zinc-900 p-4 rounded-2xl flex items-start gap-3">
+                      <div className="w-10 h-10 bg-brand-orange/10 border border-brand-orange/20 text-brand-orange rounded-xl flex items-center justify-center font-mono font-bold text-xs shrink-0">
+                        AI
+                      </div>
+                      <div className="text-xs">
+                        <span className="text-zinc-500 block">Custom Itinerary Planned</span>
+                        <span className="font-extrabold text-white text-sm">{plan?.tripTitle}</span>
+                        <span className="text-zinc-400 block mt-0.5">{duration} Days • {budget.toUpperCase()} Package Tier</span>
+                      </div>
+                    </div>
+
+                    {bookingError && (
+                      <div className="bg-red-950/20 border border-red-900/30 text-red-400 p-3 rounded-xl text-xs flex gap-2 items-start">
+                        <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
+                        <span>{bookingError}</span>
+                      </div>
+                    )}
+
+                    {/* Inputs */}
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-1.5">
+                          Primary Member Name *
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          placeholder="Enter your full name"
+                          value={formName}
+                          onChange={(e) => setFormName(e.target.value)}
+                          disabled={bookingSubmitting}
+                          className="w-full bg-zinc-950/80 border border-zinc-800 focus:border-brand-orange focus:outline-none rounded-xl px-4 py-3 text-sm text-white transition-all placeholder:text-zinc-700 disabled:opacity-50"
+                        />
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-1.5">
+                            Mobile / WhatsApp *
+                          </label>
+                          <input
+                            type="tel"
+                            required
+                            placeholder="e.g. +91 98765 43210"
+                            value={formPhone}
+                            onChange={(e) => setFormPhone(e.target.value)}
+                            disabled={bookingSubmitting}
+                            className="w-full bg-zinc-950/80 border border-zinc-800 focus:border-brand-orange focus:outline-none rounded-xl px-4 py-3 text-sm text-white transition-all placeholder:text-zinc-700 disabled:opacity-50"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-1.5">
+                            Email Address *
+                          </label>
+                          <input
+                            type="email"
+                            required
+                            placeholder="e.g. name@domain.com"
+                            value={formEmail}
+                            onChange={(e) => setFormEmail(e.target.value)}
+                            disabled={bookingSubmitting}
+                            className="w-full bg-zinc-950/80 border border-zinc-800 focus:border-brand-orange focus:outline-none rounded-xl px-4 py-3 text-sm text-white transition-all placeholder:text-zinc-700 disabled:opacity-50"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Group count selector */}
+                    <div className="bg-zinc-900/10 border border-zinc-900 p-4 rounded-2xl flex justify-between items-center">
+                      <div>
+                        <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest block">
+                          Group Size
+                        </span>
+                        <span className="text-zinc-500 text-[11px] font-light mt-0.5 block">
+                          How many unscripted seats?
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-3">
+                        <button
+                          type="button"
+                          onClick={() => setNumTravelers(prev => Math.max(1, prev - 1))}
+                          disabled={numTravelers <= 1 || bookingSubmitting}
+                          className="w-10 h-10 rounded-xl bg-zinc-900 hover:bg-zinc-850 border border-zinc-800 text-white flex items-center justify-center font-bold text-lg disabled:opacity-30 transition cursor-pointer select-none"
+                        >
+                          -
+                        </button>
+                        <span className="font-mono text-base font-extrabold text-white min-w-8 text-center">
+                          {numTravelers}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => setNumTravelers(prev => Math.min(10, prev + 1))}
+                          disabled={numTravelers >= 10 || bookingSubmitting}
+                          className="w-10 h-10 rounded-xl bg-zinc-900 hover:bg-zinc-850 border border-zinc-800 text-white flex items-center justify-center font-bold text-lg disabled:opacity-30 transition cursor-pointer select-none"
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Package selection additions */}
+                    <div>
+                      <span className="block text-[10px] font-bold text-zinc-400 uppercase tracking-widest mb-2.5">
+                        Optional Service Upgrades
+                      </span>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                        {/* Photographer Toggle */}
+                        <button
+                          type="button"
+                          onClick={() => !bookingSubmitting && setPhotographer(prev => !prev)}
+                          disabled={bookingSubmitting}
+                          className={`p-3.5 border rounded-2xl text-left transition-all flex flex-col justify-between h-28 relative cursor-pointer ${
+                            photographer
+                              ? "bg-brand-orange/5 border-brand-orange/40 text-white"
+                              : "bg-zinc-950/40 border-zinc-900 text-zinc-400 hover:bg-zinc-900/30"
+                          }`}
+                        >
+                          <span className="text-lg">📷</span>
+                          <div>
+                            <span className="font-bold text-white text-xs block">Pro Camera</span>
+                            <span className="text-[10px] text-zinc-500 font-light block mt-0.5">+₹1,500 / seat</span>
+                          </div>
+                        </button>
+
+                        {/* Premium Stay Upgrade */}
+                        <button
+                          type="button"
+                          onClick={() => !bookingSubmitting && setPremiumStay(prev => !prev)}
+                          disabled={bookingSubmitting}
+                          className={`p-3.5 border rounded-2xl text-left transition-all flex flex-col justify-between h-28 relative cursor-pointer ${
+                            premiumStay
+                              ? "bg-brand-orange/5 border-brand-orange/40 text-white"
+                              : "bg-zinc-950/40 border-zinc-900 text-zinc-400 hover:bg-zinc-900/30"
+                          }`}
+                        >
+                          <span className="text-lg">🏨</span>
+                          <div>
+                            <span className="font-bold text-white text-xs block">Luxury Stay</span>
+                            <span className="text-[10px] text-zinc-500 font-light block mt-0.5">+₹3,500 / seat</span>
+                          </div>
+                        </button>
+
+                        {/* Local Guide Upgrade */}
+                        <button
+                          type="button"
+                          onClick={() => !bookingSubmitting && setLocalGuide(prev => !prev)}
+                          disabled={bookingSubmitting}
+                          className={`p-3.5 border rounded-2xl text-left transition-all flex flex-col justify-between h-28 relative cursor-pointer ${
+                            localGuide
+                              ? "bg-brand-orange/5 border-brand-orange/40 text-white"
+                              : "bg-zinc-950/40 border-zinc-900 text-zinc-400 hover:bg-zinc-900/30"
+                          }`}
+                        >
+                          <span className="text-lg">🗺️</span>
+                          <div>
+                            <span className="font-bold text-white text-xs block">Local Guide</span>
+                            <span className="text-[10px] text-zinc-500 font-light block mt-0.5">+₹1,200 / seat</span>
+                          </div>
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Calculated Price Block */}
+                    <div className="bg-zinc-900/50 border border-zinc-900 rounded-2xl p-5 space-y-3">
+                      <div className="flex justify-between items-center text-xs">
+                        <span className="text-zinc-500">Base Fare ({budget} tier):</span>
+                        <span className="font-bold text-white">₹{basePrice.toLocaleString("en-IN")} × {numTravelers}</span>
+                      </div>
+                      {addOnsCost > 0 && (
+                        <div className="flex justify-between items-center text-xs">
+                          <span className="text-zinc-500">Service Upgrades:</span>
+                          <span className="font-bold text-white">₹{addOnsCost.toLocaleString("en-IN")} × {numTravelers}</span>
+                        </div>
+                      )}
+                      <div className="h-px bg-zinc-900"></div>
+                      <div className="flex justify-between items-center">
+                        <div>
+                          <span className="text-[10px] font-bold text-zinc-400 uppercase tracking-widest block">
+                            Estimated Total
+                          </span>
+                          <span className="text-[9px] text-zinc-500 block">Inc. of all road transit & gear</span>
+                        </div>
+                        <span className="text-2xl font-black text-brand-orange font-mono">
+                          ₹{grandTotal.toLocaleString("en-IN")}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Action buttons */}
+                    <button
+                      type="submit"
+                      disabled={bookingSubmitting}
+                      className="w-full py-4 bg-white text-zinc-950 hover:bg-brand-orange hover:text-white font-extrabold text-xs uppercase tracking-widest rounded-xl transition-all flex items-center justify-center gap-2 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                    >
+                      {bookingSubmitting ? (
+                        <>
+                          <Loader2 className="w-4 h-4 animate-spin text-zinc-950" />
+                          Registering Custom Ticket...
+                        </>
+                      ) : (
+                        <>
+                          <Send className="w-4 h-4 text-brand-emerald fill-brand-emerald" />
+                          Confirm & Book on WhatsApp
+                        </>
+                      )}
+                    </button>
+                  </form>
+                )}
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
     </section>
   );
 }

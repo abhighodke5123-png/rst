@@ -81,7 +81,7 @@ export default function Hero({ onExploreClick, onPackagesClick }: HeroProps) {
           className="text-5xl sm:text-6xl md:text-8xl font-bold leading-[1.05] mb-6 tracking-tight text-white"
         >
           Travel Beyond <br className="hidden sm:block" />
-          <span className="text-gradient">Destinations.</span>
+          <span className="text-gradient">Imaginations.</span>
         </motion.h1>
 
         <motion.p

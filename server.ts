@@ -49,7 +49,7 @@ app.post("/api/ai/plan", async (req, res) => {
     `;
 
     const response = await ai.models.generateContent({
-      model: "gemini-3.5-flash",
+      model: "gemini-3.6-flash",
       contents: prompt,
       config: {
         systemInstruction: "You are a professional travel captain and luxury travel itinerary designer. Be adventurous, extremely precise, and design perfect schedules.",

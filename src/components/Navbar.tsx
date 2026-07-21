@@ -37,16 +37,33 @@ export default function Navbar({
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [isCategoryOpen, setIsCategoryOpen] = useState(false);
+  const [visible, setVisible] = useState(true);
+  const lastScrollY = React.useRef(0);
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 30) {
+      const currentScrollY = window.scrollY;
+
+      if (currentScrollY > 30) {
         setScrolled(true);
       } else {
         setScrolled(false);
       }
+
+      if (currentScrollY < 50) {
+        setVisible(true);
+      } else if (currentScrollY > lastScrollY.current) {
+        // Scrolling down - hide
+        setVisible(false);
+      } else {
+        // Scrolling up - show
+        setVisible(true);
+      }
+
+      lastScrollY.current = currentScrollY;
     };
-    window.addEventListener("scroll", handleScroll);
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -70,10 +87,12 @@ export default function Navbar({
   return (
     <header
       id="navbar-header"
-      className={`fixed w-full top-0 left-0 z-50 transition-all duration-300 ${
+      className={`fixed w-full top-0 left-0 z-50 transition-all duration-300 transform ${
         scrolled
           ? "glass-nav py-4"
           : "bg-transparent py-6"
+      } ${
+        visible || isOpen ? "translate-y-0" : "-translate-y-full"
       }`}
     >
       <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
