@@ -14,6 +14,8 @@ import TripQuiz from "./components/TripQuiz";
 import AboutContact from "./components/AboutContact";
 import MyBookingsLedger from "./components/MyBookingsLedger";
 import PrivacyPolicyModal from "./components/PrivacyPolicyModal";
+import TermsRegulationsModal from "./components/TermsRegulationsModal";
+import AITripPlanner from "./components/AITripPlanner";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
 import Dashboard from "./components/Dashboard";
@@ -49,6 +51,8 @@ export default function App() {
   const [quizOpen, setQuizOpen] = useState(false);
   const [bookingsOpen, setBookingsOpen] = useState(false);
   const [privacyOpen, setPrivacyOpen] = useState(false);
+  const [termsOpen, setTermsOpen] = useState(false);
+  const [termsTab, setTermsTab] = useState<"terms" | "refunds" | "agreement">("terms");
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [notificationCount, setNotificationCount] = useState(0);
   const [cookieConsent, setCookieConsent] = useState(true);
@@ -104,29 +108,43 @@ export default function App() {
   // 2. Fetch live tours & user bookings (if authenticated) on load
   const syncServerLogData = async () => {
     try {
-      // Automate Firestore alignment: ensure only Goa trip exists with correct prices
+      // Automate Firestore alignment: ensure Goa & Gokarna trips exist with correct prices
       const goaTrip: Trip = {
         id: "trip-goa-1",
         destinationId: "goa",
-        destinationName: "Goa Beach & Party",
+        destinationName: "Goa Beach & Party Escape",
         dates: "12 – 15 July 2025",
         price: 8999,
         originalPrice: 10999,
         seatsTotal: 15,
         seatsAvailable: 4,
-        description: "An intimate Monsoon escape covering old Goa's historic forts and hidden rain-washed rainforest networks.",
+        description: "An intimate Monsoon escape covering old Goa's historic forts, secret South Goa beaches, and rain-washed coastal views.",
         status: "Selling Fast"
       };
 
-      // Set the correct Goa trip document
+      const gokarnaTrip: Trip = {
+        id: "trip-gokarna-1",
+        destinationId: "gokarna",
+        destinationName: "Gokarna Beach Trek Combo",
+        dates: "19 – 21 July 2025",
+        price: 7999,
+        originalPrice: 9999,
+        seatsTotal: 15,
+        seatsAvailable: 8,
+        description: "Trek pristine beaches, explore the mystical monoliths of Yana Caves, and capture the green ruins of Mirjan Fort.",
+        status: "Almost Full"
+      };
+
+      // Set correct documents
       await setDoc(doc(db, "trips", "trip-goa-1"), goaTrip);
+      await setDoc(doc(db, "trips", "trip-gokarna-1"), gokarnaTrip);
 
       // Fetch dynamic live departures list
       const tripsSnap = await getDocs(collection(db, "trips"));
       
       // Clean up other old trips if they exist in Firestore
       for (const tripDoc of tripsSnap.docs) {
-        if (tripDoc.id !== "trip-goa-1") {
+        if (tripDoc.id !== "trip-goa-1" && tripDoc.id !== "trip-gokarna-1") {
           await deleteDoc(doc(db, "trips", tripDoc.id));
         }
       }
@@ -134,10 +152,10 @@ export default function App() {
       // Re-fetch clean list
       const freshTripsSnap = await getDocs(collection(db, "trips"));
       const tripsData = freshTripsSnap.docs.map(doc => doc.data() as Trip);
-      if (tripsData.length > 0) {
+      if (freshTripsSnap.size > 0) {
         setTripsList(tripsData);
       } else {
-        setTripsList([goaTrip]);
+        setTripsList([goaTrip, gokarnaTrip]);
       }
 
       // Fetch bookings list (depending on login status)
@@ -373,6 +391,9 @@ export default function App() {
       {/* Why Choose Us */}
       <WhyChooseUs />
 
+      {/* 4. AI Custom Trip Planner */}
+      <AITripPlanner />
+
       <div id="trips"></div>
 
       {/* 5. Live departures listing and booking portal */}
@@ -436,10 +457,10 @@ export default function App() {
             </div>
             <div className="flex flex-col gap-4">
               <h4 className="font-bold text-white uppercase tracking-wider text-xs mb-2">Legal & Compliance</h4>
-              <button onClick={() => setPrivacyOpen(true)} className="text-zinc-400 hover:text-white transition-colors text-left">Privacy Policy (DPDP Act)</button>
-              <a href="#" className="text-zinc-400 hover:text-white transition-colors">Terms & Conditions</a>
-              <a href="#" className="text-zinc-400 hover:text-white transition-colors">Cancellation & Refund Policy</a>
-              <a href="#" className="text-zinc-400 hover:text-white transition-colors">User Agreement</a>
+              <button onClick={() => setPrivacyOpen(true)} className="text-zinc-400 hover:text-white transition-colors text-left cursor-pointer">Privacy Policy (DPDP Act)</button>
+              <button onClick={() => { setTermsTab("terms"); setTermsOpen(true); }} className="text-zinc-400 hover:text-white transition-colors text-left cursor-pointer">Terms & Conditions</button>
+              <button onClick={() => { setTermsTab("refunds"); setTermsOpen(true); }} className="text-zinc-400 hover:text-white transition-colors text-left cursor-pointer">Cancellation & Refund Policy</button>
+              <button onClick={() => { setTermsTab("agreement"); setTermsOpen(true); }} className="text-zinc-400 hover:text-white transition-colors text-left cursor-pointer">User Agreement</button>
             </div>
           </div>
         </div>
@@ -533,6 +554,13 @@ export default function App() {
       <PrivacyPolicyModal
         isOpen={privacyOpen}
         onClose={() => setPrivacyOpen(false)}
+      />
+
+      {/* Terms & Regulations Modal */}
+      <TermsRegulationsModal
+        isOpen={termsOpen}
+        onClose={() => setTermsOpen(false)}
+        initialTab={termsTab}
       />
 
       {/* Customer Bookings secure ledger panel */}

@@ -112,7 +112,7 @@ export default function Navbar({
               onClick={onAuthClick}
               className="px-6 py-2.5 text-sm font-semibold bg-white text-black hover:bg-zinc-200 rounded-full transition-colors cursor-pointer"
             >
-              Book Now
+              Login / Signup
             </button>
           ) : (
             /* User is logged in successfully */
@@ -191,7 +191,7 @@ export default function Navbar({
                     }}
                     className="w-full py-3 rounded-xl bg-white text-black font-semibold"
                   >
-                    Book Now
+                    Login / Signup
                   </button>
                 ) : (
                   <>

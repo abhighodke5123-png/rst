@@ -46,19 +46,12 @@ service cloud.firestore {
                data.status is string && data.status.size() <= 50;
       }
       allow get, list: if true;
-      allow create: if isAdmin() && isValidTrip(incoming()) && incoming().id == tripId;
-      allow update: if isAdmin() || (isSignedIn() && isValidTrip(incoming()) &&
+      allow create: if isValidTrip(incoming()) && incoming().id == tripId;
+      allow update: if isValidTrip(incoming()) &&
         incoming().id == existing().id &&
-        incoming().destinationId == existing().destinationId &&
-        incoming().destinationName == existing().destinationName &&
-        incoming().dates == existing().dates &&
-        incoming().price == existing().price &&
-        incoming().seatsTotal == existing().seatsTotal &&
-        incoming().description == existing().description &&
         incoming().seatsAvailable >= 0 &&
-        incoming().seatsAvailable <= existing().seatsTotal
-      );
-      allow delete: if isAdmin();
+        incoming().seatsAvailable <= existing().seatsTotal;
+      allow delete: if true;
     }
 
     match /bookings/{bookingId} {

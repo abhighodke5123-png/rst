@@ -36,8 +36,11 @@ interface DashboardProps {
 
 import { collection, query, where, getDocs, deleteDoc, doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase";
+import TermsRegulationsModal from "./TermsRegulationsModal";
 
 export default function Dashboard({ user, onLogout, onNavigateToHome, onReserveMore, onOpenNotifications, notificationCount }: DashboardProps) {
+  const [termsOpen, setTermsOpen] = useState(false);
+  const [termsTab, setTermsTab] = useState<"terms" | "refunds" | "agreement">("terms");
   const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -431,11 +434,18 @@ export default function Dashboard({ user, onLogout, onNavigateToHome, onReserveM
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-zinc-500">
           <p>© 2025 RAASTA Travels. Dynamic secure client session portal.</p>
           <div className="flex gap-4">
-            <a href="#" className="hover:text-zinc-600 transition">Security Protocol</a>
-            <a href="#" className="hover:text-zinc-600 transition">User Terms</a>
+            <button onClick={() => { setTermsTab("agreement"); setTermsOpen(true); }} className="hover:text-zinc-600 transition cursor-pointer">Security Protocol</button>
+            <button onClick={() => { setTermsTab("terms"); setTermsOpen(true); }} className="hover:text-zinc-600 transition cursor-pointer">User Terms</button>
           </div>
         </div>
       </footer>
+
+      {/* Terms & Regulations Modal */}
+      <TermsRegulationsModal
+        isOpen={termsOpen}
+        onClose={() => setTermsOpen(false)}
+        initialTab={termsTab}
+      />
     </div>
   );
 }
