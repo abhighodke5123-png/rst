@@ -71,7 +71,7 @@ export default function AboutContact() {
               <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-bl-[100px] pointer-events-none"></div>
               
               <h4 className="text-xs uppercase font-bold tracking-wider text-zinc-500 mb-4">
-                Contact Caravan HQ
+                Raasta Trips
               </h4>
 
               <div className="space-y-4 text-sm text-zinc-300">
@@ -97,12 +97,6 @@ export default function AboutContact() {
                   </div>
                   <span>@raasta.trips</span>
                 </a>
-                <div className="flex items-center gap-4">
-                  <div className="p-2.5 rounded-full bg-white/5">
-                    <MapPin className="w-4 h-4 text-zinc-400" />
-                  </div>
-                  <span className="text-zinc-400">Caravan Hub, Jubilee Hills, Hyderabad, India</span>
-                </div>
               </div>
 
               <div className="pt-6 border-t border-white/10 mt-6">

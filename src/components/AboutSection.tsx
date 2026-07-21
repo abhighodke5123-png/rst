@@ -1,6 +1,8 @@
 import React from "react";
 import { motion } from "motion/react";
 import { CheckCircle2, Compass, Map, ShieldCheck, HeartHandshake, Eye } from "lucide-react";
+// @ts-expect-error - Vite handles asset imports dynamically
+import aboutImg from "../assets/images/regenerated_image_1784642536092.jpg";
 
 export default function AboutSection() {
   return (
@@ -39,7 +41,7 @@ export default function AboutSection() {
             className="relative h-[500px] rounded-[40px] overflow-hidden border border-white/10 group"
           >
             <img 
-              src="https://images.unsplash.com/photo-1504712548863-1f758290f57d?auto=format&fit=crop&q=80&w=1400" 
+              src={aboutImg} 
               alt="Travelers exploring together" 
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-[1.5s]"
               referrerPolicy="no-referrer"

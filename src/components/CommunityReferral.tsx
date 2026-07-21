@@ -7,12 +7,12 @@ export default function CommunityReferral() {
     <section className="py-32 px-6 bg-[#040404] relative overflow-hidden border-t border-white/5">
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-3/4 bg-brand-emerald/5 rounded-full blur-[120px] pointer-events-none"></div>
 
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 relative z-10">
+      <div className="max-w-3xl mx-auto relative z-10">
         
         {/* Community Banner */}
         <motion.div
-          initial={{ opacity: 0, x: -30 }}
-          whileInView={{ opacity: 1, x: 0 }}
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           className="glass border border-white/10 rounded-[32px] p-8 lg:p-12 flex flex-col justify-between overflow-hidden relative group"
         >
@@ -41,39 +41,6 @@ export default function CommunityReferral() {
             Join WhatsApp Community
           </a>
         </motion.div>
-
-        {/* Referral Program */}
-        <motion.div
-          initial={{ opacity: 0, x: 30 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          className="glass border border-white/10 rounded-[32px] p-8 lg:p-12 flex flex-col justify-between overflow-hidden relative group"
-        >
-          <div className="absolute top-0 right-0 w-40 h-40 bg-brand-orange/5 rounded-bl-[100px] pointer-events-none transition-transform duration-500 group-hover:scale-110"></div>
-          <div>
-            <div className="inline-flex items-center justify-center p-4 rounded-2xl bg-brand-orange/10 text-brand-orange mb-8 border border-brand-orange/20">
-              <Gift className="w-8 h-8" />
-            </div>
-            <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6 leading-tight tracking-tight">
-              Bring a friend.<br />
-              <span className="text-brand-orange">Get ₹500 Off.</span>
-            </h2>
-            <p className="text-zinc-400 text-base md:text-lg leading-relaxed mb-10 font-light">
-              Good journeys are meant to be shared. Refer a fellow traveler to any of our upcoming batches, and both of you get an instant ₹500 credit towards your next RAASTA adventure.
-            </p>
-          </div>
-          <div className="flex flex-col sm:flex-row items-center gap-4">
-            <input 
-              type="text" 
-              placeholder="Enter friend's email..." 
-              className="w-full bg-white/5 border border-white/10 px-6 py-4 rounded-2xl text-sm text-white focus:outline-none focus:border-brand-orange/50 transition-colors placeholder:text-zinc-600"
-            />
-            <button className="w-full sm:w-auto shrink-0 flex items-center justify-center gap-2 px-8 py-4 rounded-2xl bg-white text-black font-bold text-sm tracking-wide hover:bg-zinc-200 transition-colors">
-              Send Invite
-            </button>
-          </div>
-        </motion.div>
-
       </div>
     </section>
   );

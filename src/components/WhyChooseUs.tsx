@@ -74,10 +74,7 @@ export default function WhyChooseUs() {
                 <div className="text-4xl font-bold text-white mb-1">150+</div>
                 <div className="text-xs text-brand-blue font-semibold uppercase tracking-wider">Trips</div>
               </div>
-              <div>
-                <div className="text-4xl font-bold text-white mb-1">4.9★</div>
-                <div className="text-xs text-brand-orange font-semibold uppercase tracking-wider">Rating</div>
-              </div>
+
               <div>
                 <div className="text-4xl font-bold text-white mb-1">98%</div>
                 <div className="text-xs text-zinc-400 font-semibold uppercase tracking-wider">Repeat</div>

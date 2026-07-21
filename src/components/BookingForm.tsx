@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Trip, Booking } from "../types";
-import { X, Check, Calculator, Info, ShieldCheck, Sparkles } from "lucide-react";
+import { X, Calculator, ShieldCheck } from "lucide-react";
 import { motion } from "motion/react";
 import { collection, doc, setDoc, updateDoc, getDoc } from "firebase/firestore";
 import { auth, db } from "../firebase";
@@ -22,12 +22,6 @@ export default function BookingForm({ trip, onClose, onBookingSuccess }: Booking
   const [formEmail, setFormEmail] = useState("");
   const [formPhone, setFormPhone] = useState("");
   const [numTravelers, setNumTravelers] = useState(1);
-  const [selectedTier, setSelectedTier] = useState("adventure"); // default to interactive Tier
-
-  // Addons flags
-  const [addPhoto, setAddPhoto] = useState(false);
-  const [addStay, setAddStay] = useState(false);
-  const [addGuide, setAddGuide] = useState(false);
 
   // Errors & Loading state
   const [errorMess, setErrorMess] = useState("");
@@ -45,26 +39,8 @@ export default function BookingForm({ trip, onClose, onBookingSuccess }: Booking
     }
   }, []);
 
-  // Tier pricing lookup
-  const getTierPrice = () => {
-    if (selectedTier === "explorer") return 4999;
-    if (selectedTier === "premium-expedition") return 14999;
-    return trip.price || 8999; // Adventure tier
-  };
-
-  const getTierName = () => {
-    if (selectedTier === "explorer") return "Explorer Package";
-    if (selectedTier === "premium-expedition") return "Premium Expedition Package";
-    return "Adventure Package";
-  };
-
-  // Live calculation variables
-  const baseCost = getTierPrice();
-  const addonPhotoPrice = addPhoto ? 1500 : 0;
-  const addonStayPrice = addStay ? 3000 : 0;
-  const addonGuidePrice = addGuide ? 2000 : 0;
-  const singleCost = baseCost + addonPhotoPrice + addonStayPrice + addonGuidePrice;
-  const grandTotal = singleCost * numTravelers;
+  const baseCost = trip.price || 8999;
+  const grandTotal = baseCost * numTravelers;
 
   // Handle direct WhatsApp Booking Submission
   const handleSubmitBooking = async (e: React.FormEvent) => {
@@ -104,11 +80,11 @@ export default function BookingForm({ trip, onClose, onBookingSuccess }: Booking
         email: formEmail.toLowerCase(),
         phone: formPhone,
         numTravelers: numTravelers,
-        tierSelected: getTierName(),
+        tierSelected: "Standard Package",
         addOns: {
-          photographer: addPhoto,
-          premiumStay: addStay,
-          localGuide: addGuide,
+          photographer: false,
+          premiumStay: false,
+          localGuide: false,
         },
         totalCost: grandTotal,
         bookingDate: trip.dates,
@@ -161,10 +137,7 @@ export default function BookingForm({ trip, onClose, onBookingSuccess }: Booking
 • *Phone*: ${formPhone}
 • *Seats to Reserve*: ${numTravelers} member(s)
 
-📦 *Service Tier & Upgrades*:
-• *Package Tier*: ${getTierName()}
-${addPhoto ? "• [Add-on] Personal Photographer (+₹1,500)\n" : ""}${addStay ? "• [Add-on] Single Suite Upgrade (+₹3,000)\n" : ""}${addGuide ? "• [Add-on] Private Naturalist Guide (+₹2,000)\n" : ""}
-💵 *Estimated Total Amount*: ₹${grandTotal.toLocaleString("en-IN")}
+💵 *Total Amount*: ₹${grandTotal.toLocaleString("en-IN")}
 🎟️ *Booking Ref Code*: ${newBooking.id}
 
 Looking forward to our epic road trip caravan! Let me know how to pay and lock this in. Thanks!`;
@@ -197,7 +170,7 @@ Looking forward to our epic road trip caravan! Let me know how to pay and lock t
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 15 }}
         transition={{ type: "spring", stiffness: 220, damping: 22 }}
-        className="relative glass border border-white/10 rounded-[32px] w-full max-w-2xl max-h-[92vh] overflow-y-auto shadow-2xl z-20 flex flex-col custom-scrollbar"
+        className="relative glass border border-white/10 rounded-[32px] w-full max-w-xl max-h-[92vh] overflow-y-auto shadow-2xl z-20 flex flex-col custom-scrollbar"
       >
         {/* Header bar */}
         <div className="p-6 sm:p-8 border-b border-white/10 flex justify-between items-start relative overflow-hidden">
@@ -224,9 +197,9 @@ Looking forward to our epic road trip caravan! Let me know how to pay and lock t
           </div>
         )}
 
-        <form onSubmit={handleSubmitBooking} className="p-6 sm:p-8 space-y-8 flex-1">
-          {/* Traveler basic logs */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+        <form onSubmit={handleSubmitBooking} className="p-6 sm:p-8 space-y-6 flex-1">
+          {/* Enter Details Section */}
+          <div className="space-y-5">
             <div>
               <label className="block text-xs uppercase tracking-wider text-zinc-500 font-bold mb-2">
                 Primary Traveler Name
@@ -240,35 +213,37 @@ Looking forward to our epic road trip caravan! Let me know how to pay and lock t
                 className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-white/30 transition-colors placeholder:text-zinc-600"
               />
             </div>
-            <div>
-              <label className="block text-xs uppercase tracking-wider text-zinc-500 font-bold mb-2">
-                Phone / Mobile
-              </label>
-              <input
-                type="tel"
-                required
-                placeholder="e.g. +91 98765 43210"
-                value={formPhone}
-                onChange={(e) => setFormPhone(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-white/30 transition-colors placeholder:text-zinc-600"
-              />
-            </div>
-          </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-xs uppercase tracking-wider text-zinc-500 font-bold mb-2">
-                Email Address
-              </label>
-              <input
-                type="email"
-                required
-                placeholder="e.g. abhi@raasta.com"
-                value={formEmail}
-                onChange={(e) => setFormEmail(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-white/30 transition-colors placeholder:text-zinc-600"
-              />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+              <div>
+                <label className="block text-xs uppercase tracking-wider text-zinc-500 font-bold mb-2">
+                  Phone / Mobile
+                </label>
+                <input
+                  type="tel"
+                  required
+                  placeholder="e.g. +91 98765 43210"
+                  value={formPhone}
+                  onChange={(e) => setFormPhone(e.target.value)}
+                  className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-white/30 transition-colors placeholder:text-zinc-600"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs uppercase tracking-wider text-zinc-500 font-bold mb-2">
+                  Email Address
+                </label>
+                <input
+                  type="email"
+                  required
+                  placeholder="e.g. abhi@raasta.com"
+                  value={formEmail}
+                  onChange={(e) => setFormEmail(e.target.value)}
+                  className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-white/30 transition-colors placeholder:text-zinc-600"
+                />
+              </div>
             </div>
+
             <div>
               <label className="block text-xs uppercase tracking-wider text-zinc-500 font-bold mb-2">
                 Number of Travelers
@@ -294,147 +269,28 @@ Looking forward to our epic road trip caravan! Let me know how to pay and lock t
                   +
                 </button>
                 <span className="text-xs text-brand-orange font-semibold tracking-wide ml-2">
-                  {trip.seatsAvailable} berths left
+                  {trip.seatsAvailable} seats available
                 </span>
               </div>
             </div>
           </div>
 
-          {/* Package Tier pricing */}
-          <div>
-            <label className="block text-xs uppercase tracking-wider text-zinc-500 font-bold mb-3">
-              Select Package Tier
-            </label>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {[
-                { id: "explorer", name: "Explorer", price: 4999, desc: "Shared Stays" },
-                { id: "adventure", name: "Adventure", price: trip.price || 8999, desc: "Boutique Stays" },
-                { id: "premium-expedition", name: "Premium", price: 14999, desc: "Luxury Camp" },
-              ].map((tier) => (
-                <div
-                  key={tier.id}
-                  onClick={() => setSelectedTier(tier.id)}
-                  className={`p-4 rounded-2xl cursor-pointer text-center transition-all duration-300 flex flex-col justify-between border ${
-                    selectedTier === tier.id
-                      ? "border-brand-emerald bg-brand-emerald/10 text-brand-emerald"
-                      : "border-white/10 bg-white/5 text-zinc-400 hover:border-white/20 hover:bg-white/10"
-                  }`}
-                >
-                  <span className={`text-sm font-bold block select-none ${selectedTier === tier.id ? 'text-white' : ''}`}>
-                    {tier.name}
-                  </span>
-                  <span className={`block text-base font-bold mt-2 ${selectedTier === tier.id ? 'text-brand-emerald' : 'text-zinc-300'}`}>
-                    ₹{tier.price.toLocaleString("en-IN")}
-                  </span>
-                  <span className="block text-[10px] uppercase tracking-widest font-semibold mt-2 opacity-80">
-                    {tier.desc}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Optional enhancements */}
-          <div className="space-y-4">
-            <label className="block text-xs uppercase tracking-wider text-zinc-500 font-bold mb-2">
-              Optional Add-on upgrades
-            </label>
-            
-            <div
-              onClick={() => setAddPhoto(!addPhoto)}
-              className={`p-4 rounded-2xl cursor-pointer flex items-center justify-between transition-all duration-300 border ${
-                addPhoto ? "border-brand-blue bg-brand-blue/10" : "border-white/10 bg-white/5 hover:bg-white/10"
-              }`}
-            >
-              <div className="flex items-center gap-4">
-                <div className={`w-5 h-5 rounded flex items-center justify-center border transition-colors ${addPhoto ? "border-brand-blue bg-brand-blue text-white" : "border-zinc-500"}`}>
-                  {addPhoto && <Check className="w-3.5 h-3.5 stroke-[3]" />}
-                </div>
-                <div>
-                  <span className={`text-sm font-semibold block ${addPhoto ? 'text-white' : 'text-zinc-300'}`}>Personal Photographer Upgrade</span>
-                  <span className="text-xs text-zinc-500 block font-light mt-1">Media captain to shoot high-resolution cinematic video highlights</span>
-                </div>
-              </div>
-              <span className={`text-sm font-bold shrink-0 ml-4 ${addPhoto ? 'text-brand-blue' : 'text-white'}`}>+₹1,500</span>
-            </div>
-
-            <div
-              onClick={() => setAddStay(!addStay)}
-              className={`p-4 rounded-2xl cursor-pointer flex items-center justify-between transition-all duration-300 border ${
-                addStay ? "border-brand-blue bg-brand-blue/10" : "border-white/10 bg-white/5 hover:bg-white/10"
-              }`}
-            >
-              <div className="flex items-center gap-4">
-                <div className={`w-5 h-5 rounded flex items-center justify-center border transition-colors ${addStay ? "border-brand-blue bg-brand-blue text-white" : "border-zinc-500"}`}>
-                  {addStay && <Check className="w-3.5 h-3.5 stroke-[3]" />}
-                </div>
-                <div>
-                  <span className={`text-sm font-semibold block ${addStay ? 'text-white' : 'text-zinc-300'}`}>Single Suite Accommodation</span>
-                  <span className="text-xs text-zinc-500 block font-light mt-1">Upgrade from twin sharing to entirely private luxury valley suite</span>
-                </div>
-              </div>
-              <span className={`text-sm font-bold shrink-0 ml-4 ${addStay ? 'text-brand-blue' : 'text-white'}`}>+₹3,000</span>
-            </div>
-
-            <div
-              onClick={() => setAddGuide(!addGuide)}
-              className={`p-4 rounded-2xl cursor-pointer flex items-center justify-between transition-all duration-300 border ${
-                addGuide ? "border-brand-blue bg-brand-blue/10" : "border-white/10 bg-white/5 hover:bg-white/10"
-              }`}
-            >
-              <div className="flex items-center gap-4">
-                <div className={`w-5 h-5 rounded flex items-center justify-center border transition-colors ${addGuide ? "border-brand-blue bg-brand-blue text-white" : "border-zinc-500"}`}>
-                  {addGuide && <Check className="w-3.5 h-3.5 stroke-[3]" />}
-                </div>
-                <div>
-                  <span className={`text-sm font-semibold block ${addGuide ? 'text-white' : 'text-zinc-300'}`}>Private Naturalist / Guide</span>
-                  <span className="text-xs text-zinc-500 block font-light mt-1">Dedicated 1-on-1 guided walks, cave crawlers, and scenic trails specialists</span>
-                </div>
-              </div>
-              <span className={`text-sm font-bold shrink-0 ml-4 ${addGuide ? 'text-brand-blue' : 'text-white'}`}>+₹2,000</span>
-            </div>
-          </div>
-
-          {/* Dynamic Invoice Estimator Box */}
+          {/* Amount Box in the End */}
           <div className="bg-white/5 border border-white/10 p-6 rounded-[24px] relative overflow-hidden group">
             <div className="absolute -right-6 -top-6 text-white/5 transition-transform duration-500 group-hover:scale-110">
               <Calculator className="w-32 h-32 stroke-[1]" />
             </div>
             <h4 className="text-xs uppercase tracking-wider text-zinc-500 font-bold mb-4 relative z-10">
-              Fare Breakdown Itemized Invoice
+              Booking Pricing
             </h4>
             <div className="text-sm space-y-3 text-zinc-300 relative z-10 font-light">
               <div className="flex justify-between">
-                <span>{getTierName()} base (₹{baseCost.toLocaleString("en-IN")} x {numTravelers})</span>
-                <span className="font-semibold text-white">₹{(baseCost * numTravelers).toLocaleString("en-IN")}</span>
+                <span>Base Cost per seat</span>
+                <span className="font-semibold text-white">₹{baseCost.toLocaleString("en-IN")}</span>
               </div>
 
-              {(addPhoto || addStay || addGuide) && (
-                <div className="pt-3 border-t border-white/10 space-y-2 text-sm text-zinc-400">
-                  <span className="block text-xs uppercase font-bold text-zinc-500 mb-2 tracking-wider">Premium Addons:</span>
-                  {addPhoto && (
-                    <div className="flex justify-between">
-                      <span>• Media Captain Upgrade</span>
-                      <span>+₹{(addonPhotoPrice * numTravelers).toLocaleString("en-IN")}</span>
-                    </div>
-                  )}
-                  {addStay && (
-                    <div className="flex justify-between">
-                      <span>• Private Suite Upgrade</span>
-                      <span>+₹{(addonStayPrice * numTravelers).toLocaleString("en-IN")}</span>
-                    </div>
-                  )}
-                  {addGuide && (
-                    <div className="flex justify-between">
-                      <span>• Private Naturalist Guide</span>
-                      <span>+₹{(addonGuidePrice * numTravelers).toLocaleString("en-IN")}</span>
-                    </div>
-                  )}
-                </div>
-              )}
-
               <div className="pt-4 border-t border-white/10 flex justify-between items-baseline text-white">
-                <span className="text-sm font-bold tracking-wide">Grand Total Amount</span>
+                <span className="text-sm font-bold tracking-wide">Total Amount ({numTravelers} traveler{numTravelers > 1 ? "s" : ""})</span>
                 <span className="text-2xl font-bold text-brand-orange">
                   ₹{grandTotal.toLocaleString("en-IN")}
                 </span>
@@ -449,7 +305,7 @@ Looking forward to our epic road trip caravan! Let me know how to pay and lock t
           </div>
 
           {/* Button controllers */}
-          <div className="pt-4 flex flex-col sm:flex-row justify-end gap-4">
+          <div className="pt-2 flex flex-col sm:flex-row justify-end gap-4">
             <button
               type="button"
               disabled={submitting}

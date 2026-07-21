@@ -132,8 +132,6 @@ export default function UpcomingTrips({
           <AnimatePresence mode="popLayout">
             {filteredTrips.length > 0 ? (
               filteredTrips.map((trip) => {
-                const seatsFillPercent = ((trip.seatsTotal - trip.seatsAvailable) / trip.seatsTotal) * 100;
-                
                 // Color style mapping for status badges
                 const getStatusStyle = (status: string) => {
                   switch (status) {
@@ -200,25 +198,7 @@ export default function UpcomingTrips({
                     </div>
 
                     {/* Inventory control meters */}
-                    <div className="space-y-6 pt-6 border-t border-white/10">
-                      <div>
-                        <div className="flex justify-between items-center text-xs mb-2 font-medium">
-                          <span className="text-zinc-500">Seat Booking Meter</span>
-                          <span className={trip.seatsAvailable <= 3 ? "text-brand-orange" : "text-brand-emerald"}>
-                            {trip.seatsAvailable} / {trip.seatsTotal} Open
-                          </span>
-                        </div>
-                        {/* Progress Bar background */}
-                        <div className="h-2 w-full bg-white/10 rounded-full overflow-hidden">
-                          <div
-                            style={{ width: `${seatsFillPercent}%` }}
-                            className={`h-full rounded-full transition-all duration-500 ${
-                              trip.seatsAvailable <= 3 ? "bg-brand-orange" : "bg-white"
-                            }`}
-                          ></div>
-                        </div>
-                      </div>
-
+                    <div className="pt-6 border-t border-white/10">
                       {trip.seatsAvailable > 0 ? (
                         <button
                           onClick={() => onBookTrip(trip)}
