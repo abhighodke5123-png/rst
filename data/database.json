@@ -1,0 +1,95 @@
+{
+  "users": [
+    {
+      "id": "user-admin",
+      "name": "RAASTA Administrator",
+      "email": "derek@raasta.com",
+      "password": "derek@raasta5586",
+      "role": "admin"
+    },
+    {
+      "id": "user-test",
+      "name": "Abhi Ghodke",
+      "email": "user@raasta.com",
+      "password": "userpassword",
+      "role": "user"
+    }
+  ],
+  "trips": [
+    {
+      "id": "trip-goa-1",
+      "destinationId": "goa",
+      "destinationName": "Goa Weekend Escape",
+      "dates": "12 – 14 July 2025",
+      "price": 8999,
+      "seatsTotal": 12,
+      "seatsAvailable": 4,
+      "description": "An intimate Monsoon escape covering old Goa's historic forts and hidden rain-washed rainforest networks.",
+      "status": "Selling Fast"
+    },
+    {
+      "id": "trip-gokarna-1",
+      "destinationId": "gokarna",
+      "destinationName": "Gokarna Backpack Trail",
+      "dates": "26 – 29 July 2025",
+      "price": 7499,
+      "seatsTotal": 15,
+      "seatsAvailable": 3,
+      "description": "Conquer the famous cliff trail and watch bioluminescent planktons illuminate the black surf after midnight.",
+      "status": "Almost Full"
+    },
+    {
+      "id": "trip-spiti-1",
+      "destinationId": "spiti",
+      "destinationName": "Spiti Summer Expedition",
+      "dates": "08 – 16 August 2025",
+      "price": 18999,
+      "seatsTotal": 10,
+      "seatsAvailable": 2,
+      "description": "The complete high-altitude circuit starting from Shimla through Kaza, terminating at Manali.",
+      "status": "Almost Full"
+    },
+    {
+      "id": "trip-goa-2",
+      "destinationId": "goa",
+      "destinationName": "Monsoon Coastal Wander",
+      "dates": "22 – 24 August 2025",
+      "price": 8499,
+      "seatsTotal": 14,
+      "seatsAvailable": 9,
+      "description": "Chase the wild winds, visit beautiful Dudhsagar Falls at peak roar, and relax in luxury homestays.",
+      "status": "Monsoon Special"
+    },
+    {
+      "id": "trip-gokarna-2",
+      "destinationId": "gokarna",
+      "destinationName": "Gokarna Monsoon Echoes",
+      "dates": "10 – 13 September 2025",
+      "price": 7299,
+      "seatsTotal": 12,
+      "seatsAvailable": 11,
+      "description": "Experience Gokarna's raw greenery, foggy cliffs, and completely private, crowd-free beaches.",
+      "status": "Seats Open"
+    }
+  ],
+  "bookings": [
+    {
+      "id": "book-1",
+      "tripId": "trip-goa-1",
+      "tripName": "Goa Weekend Escape",
+      "travelerName": "Abhi Ghodke",
+      "email": "user@raasta.com",
+      "phone": "+91 98765 43210",
+      "numTravelers": 2,
+      "tierSelected": "Adventure Plan",
+      "addOns": {
+        "photographer": true,
+        "premiumStay": false,
+        "localGuide": true
+      },
+      "totalCost": 19998,
+      "bookingDate": "12 – 14 July 2025",
+      "status": "Confirmed"
+    }
+  ]
+}

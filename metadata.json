@@ -1,0 +1,6 @@
+{
+  "name": "RAASTA Travels",
+  "description": "An ultra-premium curator of handcrafted road trips, weekend escapes, and unforgettable adventures across India with interactive booking, custom packages, and live traveler galleries.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
