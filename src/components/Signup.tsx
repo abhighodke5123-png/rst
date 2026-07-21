@@ -8,6 +8,7 @@ import { UserPlus, Mail, Lock, User, ShieldAlert, ArrowLeft, Loader2, CheckCircl
 import { motion, AnimatePresence } from "motion/react";
 import { auth, googleProvider } from "../firebase";
 import { createUserWithEmailAndPassword, signInWithPopup, updateProfile } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
 
 interface SignupProps {
   onBack: () => void;
@@ -23,7 +24,7 @@ export default function Signup({ onBack, onSuccess, onNavigateToLogin }: SignupP
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleRequestOtp = async (e: React.FormEvent) => {
+  const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
 
@@ -42,11 +43,21 @@ export default function Signup({ onBack, onSuccess, onNavigateToLogin }: SignupP
       const userCred = await createUserWithEmailAndPassword(auth, email, password);
       await updateProfile(userCred.user, { displayName: name });
       
+      // Update the Firestore user document with the correct name since onAuthStateChanged might have created it with "User"
+      import("../firebase").then(({ db }) => {
+        setDoc(doc(db, "users", userCred.user.uid), {
+          id: userCred.user.uid,
+          name: name,
+          email: userCred.user.email || "",
+          role: "user"
+        }, { merge: true }).catch(console.error);
+      });
+
       onSuccess({
         id: userCred.user.uid,
         name: name,
         email: userCred.user.email || "",
-        role: "user" // App.tsx will write this to Firestore
+        role: "user"
       });
     } catch (err: any) {
       setError(err.message || "An error occurred during account creation.");
@@ -128,7 +139,7 @@ export default function Signup({ onBack, onSuccess, onNavigateToLogin }: SignupP
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: 20 }}
               transition={{ duration: 0.25 }}
-              onSubmit={handleRequestOtp}
+              onSubmit={handleSignup}
               className="space-y-5"
             >
               {/* Full Name input */}

@@ -1,10 +1,6 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /{document=**} {
-      allow read, write: if false;
-    }
-
     function isSignedIn() {
       return request.auth != null;
     }
@@ -19,10 +15,6 @@ service cloud.firestore {
 
     function isAdmin() {
       return isSignedIn() && exists(/databases/$(database)/documents/users/$(request.auth.uid)) && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
-    }
-
-    function isValidId(id) {
-      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
     }
 
     match /users/{userId} {
@@ -55,7 +47,17 @@ service cloud.firestore {
       }
       allow get, list: if true;
       allow create: if isAdmin() && isValidTrip(incoming()) && incoming().id == tripId;
-      allow update: if isAdmin() && isValidTrip(incoming()) && incoming().id == existing().id;
+      allow update: if isAdmin() || (isSignedIn() && isValidTrip(incoming()) &&
+        incoming().id == existing().id &&
+        incoming().destinationId == existing().destinationId &&
+        incoming().destinationName == existing().destinationName &&
+        incoming().dates == existing().dates &&
+        incoming().price == existing().price &&
+        incoming().seatsTotal == existing().seatsTotal &&
+        incoming().description == existing().description &&
+        incoming().seatsAvailable >= 0 &&
+        incoming().seatsAvailable <= existing().seatsTotal
+      );
       allow delete: if isAdmin();
     }
 

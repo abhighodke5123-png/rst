@@ -34,7 +34,7 @@ interface DashboardProps {
   notificationCount: number;
 }
 
-import { collection, query, where, getDocs, deleteDoc, doc } from "firebase/firestore";
+import { collection, query, where, getDocs, deleteDoc, doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase";
 
 export default function Dashboard({ user, onLogout, onNavigateToHome, onReserveMore, onOpenNotifications, notificationCount }: DashboardProps) {
@@ -69,6 +69,17 @@ export default function Dashboard({ user, onLogout, onNavigateToHome, onReserveM
 
     setActionLoading(bookingId);
     try {
+      const bookingDoc = await getDoc(doc(db, "bookings", bookingId));
+      if (bookingDoc.exists()) {
+        const bookingData = bookingDoc.data();
+        const tripRef = doc(db, "trips", bookingData.tripId);
+        const tripDoc = await getDoc(tripRef);
+        if (tripDoc.exists()) {
+           await updateDoc(tripRef, {
+              seatsAvailable: tripDoc.data().seatsAvailable + bookingData.numTravelers
+           });
+        }
+      }
       await deleteDoc(doc(db, "bookings", bookingId));
       // Remove locally from dashboard view
       setBookings((prev) => prev.filter((b) => b.id !== bookingId));
