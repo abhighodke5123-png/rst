@@ -77,7 +77,7 @@ const INITIAL_USERS = [
     id: "user-admin",
     name: "RAASTA Administrator",
     email: "derek@raasta.com",
-    password: "derek@raasta5586",
+    password: "derek@2566",
     role: "admin"
   },
   {

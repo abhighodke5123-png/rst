@@ -52,7 +52,7 @@ export default function Login({ onBack, onSuccess, onNavigateToSignup }: LoginPr
   const handlePresetCredentials = (type: "user" | "admin") => {
     if (type === "admin") {
       setEmail("derek@raasta.com");
-      setPassword("derek@raasta5586");
+      setPassword("derek@2566");
     } else {
       setEmail("user@raasta.com");
       setPassword("userpassword");
