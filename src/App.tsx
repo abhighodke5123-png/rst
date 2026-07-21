@@ -23,7 +23,6 @@ import NotificationInbox from "./components/NotificationInbox";
 import { TRIPS } from "./data";
 import { SlidersHorizontal, Compass, HelpCircle, MessageSquareWarning, X, ShieldCheck } from "lucide-react";
 import WhyChooseUs from "./components/WhyChooseUs";
-import Experiences from "./components/Experiences";
 import ReviewsCarousel from "./components/ReviewsCarousel";
 import SocialFeed from "./components/SocialFeed";
 import BlogHub from "./components/BlogHub";
@@ -105,11 +104,40 @@ export default function App() {
   // 2. Fetch live tours & user bookings (if authenticated) on load
   const syncServerLogData = async () => {
     try {
+      // Automate Firestore alignment: ensure only Goa trip exists with correct prices
+      const goaTrip: Trip = {
+        id: "trip-goa-1",
+        destinationId: "goa",
+        destinationName: "Goa Beach & Party",
+        dates: "12 – 15 July 2025",
+        price: 8999,
+        originalPrice: 10999,
+        seatsTotal: 15,
+        seatsAvailable: 4,
+        description: "An intimate Monsoon escape covering old Goa's historic forts and hidden rain-washed rainforest networks.",
+        status: "Selling Fast"
+      };
+
+      // Set the correct Goa trip document
+      await setDoc(doc(db, "trips", "trip-goa-1"), goaTrip);
+
       // Fetch dynamic live departures list
       const tripsSnap = await getDocs(collection(db, "trips"));
-      const tripsData = tripsSnap.docs.map(doc => doc.data() as Trip);
+      
+      // Clean up other old trips if they exist in Firestore
+      for (const tripDoc of tripsSnap.docs) {
+        if (tripDoc.id !== "trip-goa-1") {
+          await deleteDoc(doc(db, "trips", tripDoc.id));
+        }
+      }
+
+      // Re-fetch clean list
+      const freshTripsSnap = await getDocs(collection(db, "trips"));
+      const tripsData = freshTripsSnap.docs.map(doc => doc.data() as Trip);
       if (tripsData.length > 0) {
         setTripsList(tripsData);
+      } else {
+        setTripsList([goaTrip]);
       }
 
       // Fetch bookings list (depending on login status)
@@ -344,9 +372,6 @@ export default function App() {
 
       {/* Why Choose Us */}
       <WhyChooseUs />
-
-      {/* Experiences (Horizontal Scrolling Gallery) */}
-      <Experiences />
 
       <div id="trips"></div>
 

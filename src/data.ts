@@ -15,6 +15,7 @@ export const DESTINATIONS: Destination[] = [
     season: "Oct – Mar",
     duration: "4 Days / 3 Nights",
     price: 8999,
+    originalPrice: 10999,
     attractions: ["Anjuna flea market", "Chapora Fort", "Old Goa churches"],
     category: "Beach",
     rating: 4.8,
@@ -34,90 +35,6 @@ export const DESTINATIONS: Destination[] = [
     pickupPoints: ["Goa Airport (Dabolim)", "Madgaon Railway Station", "Panjim Bus Stand"],
     packingList: ["Comfortable beachwear", "Sunscreen & Sunglasses", "One party outfit", "Flip-flops and walking shoes", "Reusable water bottle"],
     cancellationPolicy: "Cancel 15 days before the trip for a 100% refund. 50% refund if cancelled 7-14 days before. No refund within 7 days of departure."
-  },
-  {
-    id: "kerala",
-    name: "Kerala",
-    subTitle: "Backwaters & Hills",
-    desc: "A mesmerizing journey through misty tea gardens, wildlife sanctuaries, and serene backwaters of 'God’s Own Country'.",
-    image: "https://images.unsplash.com/photo-1593693397690-362cb9666fc2?auto=format&fit=crop&w=1400&q=80",
-    season: "Sep – Mar",
-    duration: "5 Days / 4 Nights",
-    price: 14999,
-    attractions: ["Munnar Tea Gardens", "Periyar Safari", "Alleppey Houseboat"],
-    category: "Adventure",
-    rating: 4.9,
-    longDesc: "From the colonial charm of Fort Kochi to the emerald slopes of Munnar and the tranquil waterways of Alleppey, this trip showcases the diverse beauty of Kerala. Enjoy spice plantations, wildlife, and a unique overnight houseboat stay.",
-    highlights: ["Fort Kochi Heritage Walk", "Eravikulam National Park", "Periyar Wildlife Safari", "Alleppey Houseboat Stay"],
-    itinerary: [
-      { day: "Day 1", title: "Kochi Heritage", description: "Fort Kochi walk, Chinese fishing nets, and Mattancherry Palace.", icons: ["map-pin", "camera"] },
-      { day: "Day 2", title: "Munnar Hills", description: "Munnar tea gardens, Eravikulam National Park, and Mattupetty Dam.", icons: ["mountain", "sun"] },
-      { day: "Day 3", title: "Wildlife & Culture", description: "Munnar to Thekkady. Visit spice plantations, Periyar wildlife safari, and enjoy a Kathakali show.", icons: ["compass", "ticket"] },
-      { day: "Day 4", title: "Backwater Bliss", description: "Alleppey – overnight houseboat stay on the serene backwaters.", icons: ["anchor", "moon"] },
-      { day: "Day 5", title: "Return", description: "Morning on the backwaters, return via Kochi for departure.", icons: ["bus", "home"] }
-    ]
-  },
-  {
-    id: "gokarna",
-    name: "Gokarna",
-    subTitle: "Beach Trek Combo",
-    desc: "A rugged coastal trail crossing clifftops and quiet bays, merging serene sacred traditions with bohemian beachside living.",
-    image: "https://images.unsplash.com/photo-1627894483216-2138af692e32?auto=format&fit=crop&w=1400&q=80",
-    season: "Oct – Feb",
-    duration: "3 Days / 2 Nights",
-    price: 7499,
-    attractions: ["Om Beach trek", "Half Moon Beach", "Yana Caves"],
-    category: "Adventure",
-    rating: 4.9,
-    longDesc: "For those who find Goa too crowded, Gokarna offers a mystical refuge. Trek across five beautiful beaches, sleep under the canopy of starfields, and wake up to the sound of breaking waves.",
-    highlights: ["Om & Kudle Beach Sunsets", "Beach Trek to Paradise Beach", "Gokarna Temple Visit", "Yana Caves Exploration"],
-    itinerary: [
-      { day: "Day 1", title: "Arrival & Sunset", description: "Explore Om Beach and Kudle Beach, ending with a stunning sunset point.", icons: ["map-pin", "sunset"] },
-      { day: "Day 2", title: "Beach Trek", description: "Beach trek to Half Moon & Paradise Beach via the scenic cliff trail. Evening Gokarna temple visit.", icons: ["compass", "moon"] },
-      { day: "Day 3", title: "Yana Caves & Departure", description: "Half-day trip to the mystical Yana Caves or a leisure beach morning, followed by departure.", icons: ["camera", "bus"] }
-    ]
-  },
-  {
-    id: "hyderabad",
-    name: "Hyderabad",
-    subTitle: "Heritage & Food",
-    desc: "Dive into the city of Nizams, experiencing majestic palaces, ancient forts, and world-famous culinary delights.",
-    image: "https://images.unsplash.com/photo-1599661046289-e31897846e41?auto=format&fit=crop&w=1400&q=80",
-    season: "Oct – Mar",
-    duration: "3 Days / 2 Nights",
-    price: 8499,
-    attractions: ["Charminar", "Golconda Fort", "Ramoji Film City"],
-    category: "Cultural",
-    rating: 4.7,
-    longDesc: "Experience the royal grandeur of Hyderabad. Walk through bustling bazaars, marvel at the architecture of Chowmahalla Palace, and indulge in the legendary local biryani trail.",
-    highlights: ["Charminar & Laad Bazaar", "Golconda Sound & Light Show", "Local Biryani Trail", "Hussain Sagar Boat Ride"],
-    itinerary: [
-      { day: "Day 1", title: "Nizami Heritage", description: "Charminar, Laad Bazaar, Mecca Masjid, and Chowmahalla Palace.", icons: ["map-pin", "camera"] },
-      { day: "Day 2", title: "Forts & Films", description: "Golconda Fort (sound & light show), Qutb Shahi Tombs, with an option for a Ramoji Film City full-day tour.", icons: ["ticket", "moon"] },
-      { day: "Day 3", title: "Lakes & Biryani", description: "Hussain Sagar (Buddha statue boat ride), Birla Mandir, and the ultimate local biryani trail before departure.", icons: ["compass", "bus"] }
-    ]
-  },
-  {
-    id: "pune-forts",
-    name: "Pune Forts Circuit",
-    subTitle: "Flexible 1-Day Treks",
-    desc: "Conquer the historic hill forts of the Maratha Empire with our flexible 1-day or weekend camping treks.",
-    image: "https://images.unsplash.com/photo-1605649487212-47bdab064df7?auto=format&fit=crop&w=1400&q=80",
-    season: "Jun – Feb",
-    duration: "1 - 2 Days",
-    price: 1999,
-    attractions: ["Sinhagad Fort", "Rajgad Fort", "Torna Fort"],
-    category: "Mountain",
-    rating: 4.8,
-    longDesc: "Ideal for beginners and seasoned trekkers alike. Bundle Sinhagad for a sunrise trek, tackle the moderate Lohagad-Visapur twin forts, or camp overnight at Shivaji's former capital, Rajgad.",
-    highlights: ["Sinhagad Sunrise Trek", "Rajgad Overnight Camping", "Lohagad-Visapur Monsoon Waterfalls", "Torna Steep Climb"],
-    itinerary: [
-      { day: "Trek 1", title: "Sinhagad Fort", description: "Easy, popular, and great for beginners. Perfect for a quick sunrise trek.", icons: ["sun", "mountain"] },
-      { day: "Trek 2", title: "Rajgad Fort", description: "Shivaji's former capital. Moderate-hard trek, excellent for monsoon trekking with an overnight camping option.", icons: ["moon", "mountain"] },
-      { day: "Trek 3", title: "Torna Fort", description: "The toughest of the three. A steep climb recommended for experienced trekkers.", icons: ["compass", "mountain"] },
-      { day: "Trek 4", title: "Lohagad-Visapur", description: "Twin forts with monsoon waterfalls en route. A moderate trek great for weekends.", icons: ["waves", "mountain"] },
-      { day: "Trek 5", title: "Purandar Fort", description: "Moderate trek with immense historic significance and breathtaking views.", icons: ["camera", "mountain"] }
-    ]
   }
 ];
 
@@ -128,54 +45,11 @@ export const TRIPS: Trip[] = [
     destinationName: "Goa Beach & Party",
     dates: "12 – 15 July 2025",
     price: 8999,
+    originalPrice: 10999,
     seatsTotal: 15,
     seatsAvailable: 4,
     description: "An intimate Monsoon escape covering old Goa's historic forts and hidden rain-washed rainforest networks.",
     status: "Selling Fast"
-  },
-  {
-    id: "trip-kerala-1",
-    destinationId: "kerala",
-    destinationName: "Kerala Backwaters & Hills",
-    dates: "20 – 24 August 2025",
-    price: 14999,
-    seatsTotal: 12,
-    seatsAvailable: 5,
-    description: "Experience the magic of Munnar's tea gardens and an overnight stay in an Alleppey houseboat.",
-    status: "Filling Fast"
-  },
-  {
-    id: "trip-gokarna-1",
-    destinationId: "gokarna",
-    destinationName: "Gokarna Beach Trek Combo",
-    dates: "26 – 28 July 2025",
-    price: 7499,
-    seatsTotal: 15,
-    seatsAvailable: 3,
-    description: "Conquer the famous cliff trail and watch beautiful sunsets over Om Beach and Kudle Beach.",
-    status: "Almost Full"
-  },
-  {
-    id: "trip-hyd-1",
-    destinationId: "hyderabad",
-    destinationName: "Hyderabad Heritage & Food",
-    dates: "10 – 12 September 2025",
-    price: 8499,
-    seatsTotal: 20,
-    seatsAvailable: 10,
-    description: "Dive into the city of Nizams with majestic palaces and the ultimate biryani trail.",
-    status: "Seats Open"
-  },
-  {
-    id: "trip-pune-1",
-    destinationId: "pune-forts",
-    destinationName: "Pune Forts: Rajgad Camping",
-    dates: "02 – 03 August 2025",
-    price: 2499,
-    seatsTotal: 25,
-    seatsAvailable: 8,
-    description: "Shivaji's former capital. Moderate-hard trek with an incredible overnight camping experience.",
-    status: "Monsoon Special"
   }
 ];
 

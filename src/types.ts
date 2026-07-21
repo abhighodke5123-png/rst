@@ -12,6 +12,7 @@ export interface Destination {
   season: string;
   duration: string;
   price: number;
+  originalPrice?: number;
   attractions: string[];
   category: "Beach" | "Mountain" | "Adventure" | "Cultural";
   rating: number;
@@ -32,6 +33,7 @@ export interface Trip {
   destinationName: string;
   dates: string;
   price: number;
+  originalPrice?: number;
   seatsTotal: number;
   seatsAvailable: number;
   description: string;

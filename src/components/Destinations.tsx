@@ -123,9 +123,14 @@ export default function Destinations({ onSelectDestinationForDepartures }: Desti
                         <div className="text-xs text-zinc-500 font-medium mb-1">
                           {dest.duration}
                         </div>
-                        <div className="text-xl font-bold text-white">
-                          ₹{dest.price.toLocaleString()}
-                          <span className="text-xs text-zinc-500 font-normal ml-1">/person</span>
+                        <div className="text-xl font-bold text-white flex items-baseline gap-2">
+                          {dest.originalPrice && (
+                            <span className="text-sm text-zinc-500 line-through font-normal">
+                              ₹{dest.originalPrice.toLocaleString()}
+                            </span>
+                          )}
+                          <span>₹{dest.price.toLocaleString()}</span>
+                          <span className="text-xs text-zinc-500 font-normal">/person</span>
                         </div>
                       </div>
 
@@ -229,10 +234,15 @@ export default function Destinations({ onSelectDestinationForDepartures }: Desti
                     <div className="pt-6 mt-4 border-t border-white/5">
                       <div className="text-xs text-zinc-500 mb-2">Base Cost Plan</div>
                       <div className="flex items-baseline gap-2">
+                        {selectedDest.originalPrice && (
+                          <span className="text-zinc-500 line-through text-lg font-normal mr-2">
+                            ₹{selectedDest.originalPrice.toLocaleString()}
+                          </span>
+                        )}
                         <span className="text-3xl font-bold text-white">
                           ₹{selectedDest.price.toLocaleString()}
                         </span>
-                        <span className="text-zinc-500 text-sm">/ person</span>
+                        <span className="text-zinc-550 text-sm">/ person</span>
                       </div>
                     </div>
                   </div>

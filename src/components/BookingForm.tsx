@@ -54,7 +54,7 @@ export default function BookingForm({ trip, onClose, onBookingSuccess }: Booking
   const getTierPrice = () => {
     if (selectedTier === "explorer") return 4999;
     if (selectedTier === "premium-expedition") return 14999;
-    return 9999; // Adventure tier
+    return trip.price || 8999; // Adventure tier
   };
 
   const getTierName = () => {
@@ -341,7 +341,7 @@ export default function BookingForm({ trip, onClose, onBookingSuccess }: Booking
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   {[
                     { id: "explorer", name: "Explorer", price: 4999, desc: "Shared Stays" },
-                    { id: "adventure", name: "Adventure", price: 9999, desc: "Boutique Stays" },
+                    { id: "adventure", name: "Adventure", price: trip.price || 8999, desc: "Boutique Stays" },
                     { id: "premium-expedition", name: "Premium", price: 14999, desc: "Luxury Camp" },
                   ].map((tier) => (
                     <div

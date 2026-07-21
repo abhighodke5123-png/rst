@@ -42,14 +42,16 @@ export default function ReviewSubmissionModal({ isOpen, onClose, onSubmit }: Rev
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name || !trip || !text || !imagePreview) return;
+    if (!name || !trip || !text) return;
+    
+    const defaultAvatar = "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&q=80&w=150";
     
     onSubmit({
       name,
       trip,
       text,
       rating,
-      image: imagePreview
+      image: imagePreview || defaultAvatar
     });
     
     // Reset form
@@ -151,7 +153,7 @@ export default function ReviewSubmissionModal({ isOpen, onClose, onSubmit }: Rev
 
             <div>
               <label className="block text-[11px] font-bold text-zinc-400 uppercase tracking-widest mb-2">
-                Trip Photo
+                Trip Photo (Optional)
               </label>
               <div
                 onDragOver={(e) => e.preventDefault()}
@@ -195,7 +197,7 @@ export default function ReviewSubmissionModal({ isOpen, onClose, onSubmit }: Rev
               </button>
               <button
                 type="submit"
-                disabled={!name || !trip || !text || !imagePreview}
+                disabled={!name || !trip || !text}
                 className="bg-yellow-500 hover:bg-yellow-400 text-black px-6 py-2.5 rounded-xl text-sm font-extrabold transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
               >
                 <Upload className="w-4 h-4" />

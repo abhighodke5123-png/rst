@@ -164,9 +164,16 @@ export default function UpcomingTrips({
                           {trip.status}
                         </span>
                         
-                        <div className="flex items-center gap-1.5 text-zinc-400 text-sm font-medium">
-                          <Tag className="w-4 h-4" />
-                          <span>₹{trip.price.toLocaleString()}</span>
+                        <div className="flex flex-col items-end">
+                          {trip.originalPrice && (
+                            <span className="text-xs text-zinc-500 line-through font-normal mb-0.5">
+                              ₹{trip.originalPrice.toLocaleString()}
+                            </span>
+                          )}
+                          <div className="flex items-center gap-1.5 text-white text-sm font-semibold">
+                            <Tag className="w-4 h-4 text-brand-orange" />
+                            <span>₹{trip.price.toLocaleString()}</span>
+                          </div>
                         </div>
                       </div>
 
