@@ -226,21 +226,32 @@ export default function Admin({ user, onLogout, onNavigateToHome, onOpenNotifica
 
   const handleSaveTripEdits = async (tripId: string) => {
     try {
-      await updateDoc(doc(db, "trips", tripId), {
-          dates: editDates,
-          price: Number(editPrice),
-          seatsTotal: Number(editSeatsTotal),
-          seatsAvailable: Number(editSeatsAvail),
-          description: editDesc,
-          status: editStatus,
-          captainName: editCaptainName,
-          isFlexibleDates: editFlexibleDates
-      });
+      const existingTrip = trips.find((t) => t.id === tripId);
+      const parsedPrice = Number(editPrice) || 0;
+      const parsedSeatsTotal = Math.max(0, Number(editSeatsTotal) || 0);
+      const parsedSeatsAvail = Math.min(parsedSeatsTotal, Math.max(0, Number(editSeatsAvail) || 0));
+
+      const updatedPayload: Trip = {
+        id: tripId,
+        destinationId: existingTrip?.destinationId || "goa",
+        destinationName: existingTrip?.destinationName || "RAASTA Trip Route",
+        dates: editDates.trim() || existingTrip?.dates || "Upcoming",
+        price: parsedPrice,
+        originalPrice: existingTrip?.originalPrice || parsedPrice,
+        seatsTotal: parsedSeatsTotal,
+        seatsAvailable: parsedSeatsAvail,
+        description: editDesc.trim().slice(0, 4900) || "Handcrafted RAASTA Escape",
+        status: editStatus || "Seats Open",
+        captainName: editCaptainName || "RAASTA Captain",
+        isFlexibleDates: editFlexibleDates
+      };
+
+      await setDoc(doc(db, "trips", tripId), updatedPayload, { merge: true });
       setEditingTripId(null);
-      loadAdminControlData();
+      await loadAdminControlData();
     } catch (err) {
-      console.error(err);
-      alert("Could not commit updates to backend server.");
+      console.error("Failed to commit trip updates:", err);
+      alert("Could not commit updates to backend server: " + (err instanceof Error ? err.message : String(err)));
     }
   };
 

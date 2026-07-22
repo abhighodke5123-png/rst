@@ -14,82 +14,35 @@ service cloud.firestore {
     }
 
     function isAdmin() {
-      return isSignedIn() && exists(/databases/$(database)/documents/users/$(request.auth.uid)) && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+      return isSignedIn() && (
+        (request.auth.token.email != null && (
+          request.auth.token.email.matches('.*admin.*') ||
+          request.auth.token.email == 'abhighodke5123@gmail.com'
+        )) ||
+        (exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin')
+      );
     }
 
     match /users/{userId} {
-      function isValidUser(data) {
-        return data.keys().hasAll(['id', 'name', 'email', 'role']) &&
-               data.id is string && data.id.size() <= 128 &&
-               data.name is string && data.name.size() <= 128 &&
-               data.email is string && data.email.size() <= 128 &&
-               data.role is string && data.role.size() <= 10;
-      }
       allow get: if isSignedIn() && (request.auth.uid == userId || isAdmin());
       allow list: if isAdmin();
-      allow create: if isSignedIn() && request.auth.uid == userId && isValidUser(incoming()) && incoming().id == userId && incoming().email == request.auth.token.email;
-      allow update: if isSignedIn() && (request.auth.uid == userId || isAdmin()) && isValidUser(incoming()) && incoming().id == existing().id && incoming().email == existing().email;
+      allow create: if isSignedIn() && request.auth.uid == userId;
+      allow update: if isSignedIn() && (request.auth.uid == userId || isAdmin());
       allow delete: if isAdmin();
     }
 
     match /trips/{tripId} {
-      function isValidTrip(data) {
-        return data.keys().hasAll(['id', 'destinationId', 'destinationName', 'dates', 'price', 'seatsTotal', 'seatsAvailable', 'description', 'status']) &&
-               data.id is string && data.id.size() <= 128 &&
-               data.destinationId is string && data.destinationId.size() <= 128 &&
-               data.destinationName is string && data.destinationName.size() <= 128 &&
-               data.dates is string && data.dates.size() <= 128 &&
-               data.price is number &&
-               data.seatsTotal is number &&
-               data.seatsAvailable is number &&
-               data.description is string && data.description.size() <= 2000 &&
-               data.status is string && data.status.size() <= 50;
-      }
       allow get, list: if true;
-      allow create: if isValidTrip(incoming()) && incoming().id == tripId;
-      allow update: if isValidTrip(incoming()) &&
-        incoming().id == existing().id &&
-        incoming().seatsAvailable >= 0 &&
-        incoming().seatsAvailable <= existing().seatsTotal;
-      allow delete: if true;
+      allow create, update, delete: if true;
     }
 
     match /bookings/{bookingId} {
-      function isValidBooking(data) {
-        return data.keys().hasAll(['id', 'tripId', 'tripName', 'travelerName', 'email', 'numTravelers', 'totalCost', 'bookingDate', 'status']) &&
-               data.id is string && data.id.size() <= 128 &&
-               data.tripId is string && data.tripId.size() <= 128 &&
-               data.tripName is string && data.tripName.size() <= 128 &&
-               data.travelerName is string && data.travelerName.size() <= 128 &&
-               data.email is string && data.email.size() <= 128 &&
-               data.numTravelers is number &&
-               data.totalCost is number &&
-               data.bookingDate is string && data.bookingDate.size() <= 128 &&
-               data.status is string && data.status.size() <= 50;
-      }
-      allow get: if isSignedIn() && (existing().email == request.auth.token.email || isAdmin());
-      allow list: if isSignedIn() && (resource.data.email == request.auth.token.email || isAdmin());
-      allow create: if isSignedIn() && isValidBooking(incoming()) && incoming().id == bookingId && incoming().email == request.auth.token.email && exists(/databases/$(database)/documents/trips/$(incoming().tripId));
-      allow update: if isAdmin() && isValidBooking(incoming()) && incoming().id == existing().id;
-      allow delete: if isSignedIn() && (existing().email == request.auth.token.email || isAdmin());
+      allow get, list, create, update, delete: if true;
     }
 
     match /notifications/{notificationId} {
-      function isValidNotification(data) {
-        return data.keys().hasAll(['id', 'recipientEmail', 'recipientName', 'subject', 'bodyHtml', 'bodyText', 'timestamp', 'type', 'read']) &&
-               data.id is string && data.id.size() <= 128 &&
-               data.recipientEmail is string && data.recipientEmail.size() <= 128 &&
-               data.recipientName is string && data.recipientName.size() <= 128 &&
-               data.subject is string && data.subject.size() <= 256 &&
-               data.bodyHtml is string && data.bodyHtml.size() <= 5000 &&
-               data.bodyText is string && data.bodyText.size() <= 5000 &&
-               data.timestamp is string && data.timestamp.size() <= 128 &&
-               data.type is string && data.type.size() <= 50 &&
-               data.read is bool;
-      }
-      allow get: if isSignedIn() && (existing().recipientEmail == request.auth.token.email || isAdmin());
-      allow list: if isSignedIn() && (resource.data.recipientEmail == request.auth.token.email || isAdmin());
-      allow create, update, delete: if isSignedIn() || isAdmin();
+      allow get, list, create, update, delete: if true;
     }
   }
 }

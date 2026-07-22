@@ -65,49 +65,6 @@ export default function AboutContact() {
                 Over 2,500 travelers have navigated our cliff routes, deep Himalayan loops, and tropical coastlines. We are committed to leaving every place cleaner than we found it.
               </p>
             </div>
-
-            {/* Direct Contact specs card */}
-            <div className="glass p-8 rounded-[32px] space-y-6 relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-bl-[100px] pointer-events-none"></div>
-              
-              <h4 className="text-xs uppercase font-bold tracking-wider text-zinc-500 mb-4">
-                Raasta Trips
-              </h4>
-
-              <div className="space-y-4 text-sm text-zinc-300">
-                <a href="mailto:abhighodke30@gmail.com" className="flex items-center gap-4 hover:text-white transition group">
-                  <div className="p-2.5 rounded-full bg-white/5 group-hover:bg-white/10 transition-colors">
-                    <Mail className="w-4 h-4 text-brand-blue" />
-                  </div>
-                  <span>abhighodke30@gmail.com</span>
-                </a>
-                <a href="tel:+919322309802" className="flex items-center gap-4 hover:text-white transition group">
-                  <div className="p-2.5 rounded-full bg-white/5 group-hover:bg-white/10 transition-colors">
-                    <Phone className="w-4 h-4 text-brand-emerald" />
-                  </div>
-                  <span>+91 93223 09802</span>
-                </a>
-                <a href="https://www.instagram.com/raasta.trips?igsh=Y2JlMXJ4ZzdkOGc5" target="_blank" rel="noreferrer" className="flex items-center gap-4 hover:text-white transition group">
-                  <div className="p-2.5 rounded-full bg-white/5 group-hover:bg-white/10 transition-colors">
-                    <svg className="w-4 h-4 text-brand-orange" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
-                      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
-                      <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
-                    </svg>
-                  </div>
-                  <span>@raasta.trips</span>
-                </a>
-              </div>
-
-              <div className="pt-6 border-t border-white/10 mt-6">
-                <button
-                  onClick={() => setInquiryOpen(true)}
-                  className="w-full py-4 rounded-2xl bg-white text-black font-bold text-sm tracking-wide hover:bg-zinc-200 transition-colors duration-300 cursor-pointer text-center block"
-                >
-                  Request Custom Route
-                </button>
-              </div>
-            </div>
           </div>
 
           {/* Accordion FAQ Area Row column */}

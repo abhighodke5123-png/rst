@@ -134,27 +134,45 @@ export default function App() {
         status: "Almost Full"
       };
 
-      // Set correct documents
-      await setDoc(doc(db, "trips", "trip-goa-1"), goaTrip);
-      await setDoc(doc(db, "trips", "trip-gokarna-1"), gokarnaTrip);
-
       // Fetch dynamic live departures list
-      const tripsSnap = await getDocs(collection(db, "trips"));
-      
-      // Clean up other old trips if they exist in Firestore
-      for (const tripDoc of tripsSnap.docs) {
-        if (tripDoc.id !== "trip-goa-1" && tripDoc.id !== "trip-gokarna-1") {
-          await deleteDoc(doc(db, "trips", tripDoc.id));
-        }
+      let tripsSnap = await getDocs(collection(db, "trips"));
+
+      // Seed initial trips only if Firestore collection is empty
+      if (tripsSnap.empty) {
+        const goaTrip: Trip = {
+          id: "trip-goa-1",
+          destinationId: "goa",
+          destinationName: "Goa Beach & Party Escape",
+          dates: "12 – 15 July 2025",
+          price: 8999,
+          originalPrice: 10999,
+          seatsTotal: 15,
+          seatsAvailable: 4,
+          description: "An intimate Monsoon escape covering old Goa's historic forts, secret South Goa beaches, and rain-washed coastal views.",
+          status: "Selling Fast"
+        };
+
+        const gokarnaTrip: Trip = {
+          id: "trip-gokarna-1",
+          destinationId: "gokarna",
+          destinationName: "Gokarna Beach Trek Combo",
+          dates: "19 – 21 July 2025",
+          price: 7999,
+          originalPrice: 9999,
+          seatsTotal: 15,
+          seatsAvailable: 8,
+          description: "Trek pristine beaches, explore the mystical monoliths of Yana Caves, and capture the green ruins of Mirjan Fort.",
+          status: "Almost Full"
+        };
+
+        await setDoc(doc(db, "trips", "trip-goa-1"), goaTrip);
+        await setDoc(doc(db, "trips", "trip-gokarna-1"), gokarnaTrip);
+        tripsSnap = await getDocs(collection(db, "trips"));
       }
 
-      // Re-fetch clean list
-      const freshTripsSnap = await getDocs(collection(db, "trips"));
-      const tripsData = freshTripsSnap.docs.map(doc => doc.data() as Trip);
-      if (freshTripsSnap.size > 0) {
+      const tripsData = tripsSnap.docs.map(doc => doc.data() as Trip);
+      if (tripsData.length > 0) {
         setTripsList(tripsData);
-      } else {
-        setTripsList([goaTrip, gokarnaTrip]);
       }
 
       // Fetch bookings list (depending on login status)

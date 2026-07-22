@@ -4,7 +4,7 @@
  */
 
 import React, { useState } from "react";
-import { UserPlus, Mail, Lock, User, ShieldAlert, ArrowLeft, Loader2, CheckCircle2, KeyRound, ShieldCheck } from "lucide-react";
+import { UserPlus, Mail, Lock, User, ShieldAlert, ArrowLeft, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { auth, googleProvider } from "../firebase";
 import { createUserWithEmailAndPassword, signInWithPopup, updateProfile } from "firebase/auth";

@@ -4,7 +4,7 @@
  */
 
 import React, { useState } from "react";
-import { LogIn, Mail, Lock, ShieldAlert, ArrowLeft, Loader2, Sparkles } from "lucide-react";
+import { LogIn, Mail, Lock, ShieldAlert, ArrowLeft, Loader2 } from "lucide-react";
 import { motion } from "motion/react";
 import { auth, googleProvider } from "../firebase";
 import { signInWithPopup, signInWithEmailAndPassword } from "firebase/auth";
@@ -63,16 +63,6 @@ export default function Login({ onBack, onSuccess, onNavigateToSignup }: LoginPr
       setError(err.message || "Google sign in failed.");
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handlePresetCredentials = (type: "user" | "admin") => {
-    if (type === "admin") {
-      setEmail("derek@raasta.com");
-      setPassword("derek@2566");
-    } else {
-      setEmail("user@raasta.com");
-      setPassword("userpassword");
     }
   };
 
@@ -194,30 +184,6 @@ export default function Login({ onBack, onSuccess, onNavigateToSignup }: LoginPr
           >
             Sign in with Google
           </button>
-        </div>
-
-        {/* Demo Credentials Box */}
-        <div className="mt-8 border-t border-zinc-200 pt-6">
-          <p className="text-[10px] font-bold text-zinc-600 uppercase tracking-wider text-center flex items-center justify-center gap-1.5 mb-3.5">
-            <Sparkles className="w-3.5 h-3.5 text-yellow-500" />
-            Sandbox Testing Presets (Click to Fill)
-          </p>
-          <div className="grid grid-cols-2 gap-2">
-            <button
-              onClick={() => handlePresetCredentials("user")}
-              className="px-3 py-2 text-[10px] font-semibold border border-zinc-200 bg-white text-zinc-600 hover:text-black rounded-lg transition text-left cursor-pointer"
-            >
-              <span className="text-zinc-500 block text-[8px] uppercase tracking-wider">Default User</span>
-              user@raasta.com
-            </button>
-            <button
-              onClick={() => handlePresetCredentials("admin")}
-              className="px-3 py-2 text-[10px] font-semibold border border-zinc-200 bg-white text-zinc-600 hover:text-black rounded-lg transition text-left cursor-pointer"
-            >
-              <span className="text-yellow-500 block text-[8px] uppercase tracking-wider">Default Admin</span>
-              derek@raasta.com
-            </button>
-          </div>
         </div>
 
         {/* Signup Link */}
