@@ -78,6 +78,7 @@ export interface Review {
   destination: string;
   content: string;
   date: string;
+  createdAt?: any;
 }
 
 export interface GalleryItem {
