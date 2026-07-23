@@ -78,7 +78,7 @@ export default function App() {
             role = userDoc.data().role;
           } else {
             // Check if admin email
-            role = (user.email?.includes("admin") || user.email?.includes("derek@raasta.com") || user.email?.includes("abhighodke5123@gmail.com")) ? "admin" : "user";
+            role = (user.email?.includes("admin") || user.email?.includes("derek@raasta.com") || user.email?.includes("abhighodke5123@gmail.com") || user.email?.includes("raastatrips.in@gmail.com")) ? "admin" : "user";
             // Create user document if it doesn't exist
             await setDoc(doc(db, "users", user.uid), {
               id: user.uid,

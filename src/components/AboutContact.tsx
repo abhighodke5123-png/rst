@@ -188,7 +188,7 @@ export default function AboutContact() {
                     <input
                       type="email"
                       required
-                      placeholder="e.g. abhi@gmail.com"
+                      placeholder="e.g. raastatrips.in@gmail.com"
                       value={inqEmail}
                       onChange={(e) => setInqEmail(e.target.value)}
                       className="w-full bg-white/5 border border-white/10 px-4 py-3.5 rounded-2xl text-sm text-white focus:outline-none focus:border-white/30 transition-colors placeholder:text-zinc-600"

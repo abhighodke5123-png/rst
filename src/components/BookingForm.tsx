@@ -334,7 +334,7 @@ Looking forward to our epic road trip caravan! Let me know how to pay and lock t
                 <input
                   type="email"
                   required
-                  placeholder="e.g. abhi@raasta.com"
+                  placeholder="e.g. raastatrips.in@gmail.com"
                   value={formEmail}
                   onChange={(e) => setFormEmail(e.target.value)}
                   className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3.5 text-sm text-white focus:outline-none focus:border-white/30 transition-colors placeholder:text-zinc-600"

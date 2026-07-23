@@ -176,7 +176,7 @@ export default function Signup({ onBack, onSuccess, onNavigateToLogin }: SignupP
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="you@example.com"
+                    placeholder="e.g. raastatrips.in@gmail.com"
                     className="w-full bg-white border border-zinc-200 focus:border-yellow-500/40 rounded-xl py-3 pl-11 pr-4 text-sm text-black placeholder-zinc-700 outline-none transition duration-250 font-sans"
                   />
                 </div>

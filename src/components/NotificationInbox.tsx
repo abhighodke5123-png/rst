@@ -229,7 +229,7 @@ export default function NotificationInbox({ isOpen, onClose, currentUser }: Noti
                             <div className="bg-zinc-50 border border-zinc-200 rounded-xl overflow-hidden shadow-inner relative max-h-[440px] overflow-y-auto p-4 flex flex-col gap-4">
                               {/* Headers layout block */}
                               <div className="text-[10px] text-zinc-500 border-b border-zinc-200 pb-3 space-y-1 leading-normal font-medium">
-                                <div><strong className="text-zinc-600 uppercase tracking-widest text-[9px]">Sender:</strong> RAASTA Automatic Concierge Relaying Hub &lt;concierge@raasta.com&gt;</div>
+                                <div><strong className="text-zinc-600 uppercase tracking-widest text-[9px]">Sender:</strong> RAASTA Automatic Concierge Relaying Hub &lt;raastatrips.in@gmail.com&gt;</div>
                                 <div><strong className="text-zinc-600 uppercase tracking-widest text-[9px]">Recipient:</strong> {notif.recipientName} &lt;{notif.recipientEmail}&gt;</div>
                                 <div><strong className="text-zinc-600 uppercase tracking-widest text-[9px]">Verification Status:</strong> Programmatically Signed (ECC Sandbox Cert #445)</div>
                               </div>

@@ -7,22 +7,17 @@ import { motion, AnimatePresence } from "motion/react";
 export default function Reviews() {
   const [reviewsList, setReviewsList] = useState<Review[]>(() => {
     try {
-      // Get deleted default review IDs
-      const deletedDefaults = JSON.parse(localStorage.getItem("raasta_deleted_default_reviews") || "[]");
-      const defaultReviewsFiltered = REVIEWS.filter(r => !deletedDefaults.includes(r.id));
-
       const saved = localStorage.getItem("raasta_custom_reviews");
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          return [...parsed, ...defaultReviewsFiltered];
+        if (Array.isArray(parsed)) {
+          return parsed;
         }
       }
-      return defaultReviewsFiltered;
     } catch (e) {
       // ignore
     }
-    return REVIEWS;
+    return [];
   });
 
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -36,18 +31,7 @@ export default function Reviews() {
     const updated = reviewsList.filter((r) => r.id !== id);
     setReviewsList(updated);
     try {
-      // Save user created reviews only to custom storage (excluding deleted custom ones)
-      const userCreatedOnly = updated.filter(r => r.id.startsWith("custom-rev-"));
-      localStorage.setItem("raasta_custom_reviews", JSON.stringify(userCreatedOnly));
-
-      // Track deleted default reviews so they don't reappear
-      if (!id.startsWith("custom-rev-")) {
-        const deletedDefaultIds = JSON.parse(localStorage.getItem("raasta_deleted_default_reviews") || "[]");
-        if (!deletedDefaultIds.includes(id)) {
-          deletedDefaultIds.push(id);
-        }
-        localStorage.setItem("raasta_deleted_default_reviews", JSON.stringify(deletedDefaultIds));
-      }
+      localStorage.setItem("raasta_custom_reviews", JSON.stringify(updated));
     } catch (e) {
       // ignore
     }
@@ -71,8 +55,7 @@ export default function Reviews() {
     setReviewsList(updated);
 
     try {
-      const userCreatedOnly = updated.filter(r => r.id.startsWith("custom-rev-"));
-      localStorage.setItem("raasta_custom_reviews", JSON.stringify(userCreatedOnly));
+      localStorage.setItem("raasta_custom_reviews", JSON.stringify(updated));
     } catch (err) {
       // ignore
     }
@@ -216,64 +199,72 @@ export default function Reviews() {
         </AnimatePresence>
 
         {/* Minimal Grid Reviews Display */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {reviewsList.map((review, i) => (
-            <motion.div
-              key={review.id}
-              initial={{ opacity: 0, y: 15 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
-              className="group relative bg-white border border-zinc-200 rounded-2xl p-6 flex flex-col justify-between hover:shadow-lg transition-all duration-300"
-            >
-              {/* Delete Button */}
-              <button
-                onClick={() => handleDeleteReview(review.id)}
-                title="Remove this review"
-                className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity p-1.5 text-zinc-400 hover:text-red-500 hover:bg-zinc-100 rounded-full cursor-pointer transition-colors"
+        {reviewsList.length === 0 ? (
+          <div className="text-center py-12 bg-white border border-zinc-200 rounded-2xl">
+            <MessageSquare className="w-8 h-8 text-zinc-300 mx-auto mb-3" />
+            <p className="text-zinc-500 text-sm font-medium">No reviews yet.</p>
+            <p className="text-zinc-400 text-xs mt-1">Be the first to share your field report!</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {reviewsList.map((review, i) => (
+              <motion.div
+                key={review.id}
+                initial={{ opacity: 0, y: 15 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+                className="group relative bg-white border border-zinc-200 rounded-2xl p-6 flex flex-col justify-between hover:shadow-lg transition-all duration-300"
               >
-                <Trash2 className="w-3.5 h-3.5" />
-              </button>
+                {/* Delete Button */}
+                <button
+                  onClick={() => handleDeleteReview(review.id)}
+                  title="Remove this review"
+                  className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity p-1.5 text-zinc-400 hover:text-red-500 hover:bg-zinc-100 rounded-full cursor-pointer transition-colors"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                </button>
 
-              <div>
-                <div className="flex items-center gap-1 mb-4 pr-6">
-                  {Array.from({ length: 5 }).map((_, idx) => (
-                    <Star
-                      key={idx}
-                      className={`w-3.5 h-3.5 ${
-                        idx < review.rating ? "text-yellow-400 fill-yellow-400" : "text-zinc-200"
-                      }`}
-                    />
-                  ))}
-                </div>
-
-                <p className="text-zinc-700 text-xs font-sans leading-relaxed italic mb-6">
-                  "{review.content}"
-                </p>
-              </div>
-
-              <div className="flex items-center gap-3 pt-4 border-t border-zinc-100">
-                <img
-                  src={review.avatar}
-                  alt={review.author}
-                  onError={(e) => {
-                    // Fallback avatar if unsplash image fails
-                    e.currentTarget.src = `https://api.dicebear.com/7.x/initials/svg?seed=${review.author}`;
-                  }}
-                  className="w-9 h-9 rounded-full object-cover border border-zinc-100"
-                />
                 <div>
-                  <h4 className="text-[11px] font-extrabold text-black font-sans leading-tight">
-                    {review.author}
-                  </h4>
-                  <p className="text-[10px] text-zinc-500 font-sans mt-0.5">
-                    {review.destination} • {review.date}
+                  <div className="flex items-center gap-1 mb-4 pr-6">
+                    {Array.from({ length: 5 }).map((_, idx) => (
+                      <Star
+                        key={idx}
+                        className={`w-3.5 h-3.5 ${
+                          idx < review.rating ? "text-yellow-400 fill-yellow-400" : "text-zinc-200"
+                        }`}
+                      />
+                    ))}
+                  </div>
+
+                  <p className="text-zinc-700 text-xs font-sans leading-relaxed italic mb-6">
+                    "{review.content}"
                   </p>
                 </div>
-              </div>
-            </motion.div>
-          ))}
-        </div>
+
+                <div className="flex items-center gap-3 pt-4 border-t border-zinc-100">
+                  <img
+                    src={review.avatar}
+                    alt={review.author}
+                    onError={(e) => {
+                      // Fallback avatar if unsplash image fails
+                      e.currentTarget.src = `https://api.dicebear.com/7.x/initials/svg?seed=${review.author}`;
+                    }}
+                    className="w-9 h-9 rounded-full object-cover border border-zinc-100"
+                  />
+                  <div>
+                    <h4 className="text-[11px] font-extrabold text-black font-sans leading-tight">
+                      {review.author}
+                    </h4>
+                    <p className="text-[10px] text-zinc-500 font-sans mt-0.5">
+                      {review.destination} • {review.date}
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        )}
       </div>
     </section>
   );
