@@ -122,7 +122,7 @@ export default function Navbar({
 
         {/* Action Buttons */}
         <div className="hidden md:flex items-center gap-4">
-          <a href="tel:+919322309802" className="text-zinc-300 hover:text-white transition-colors">
+          <a href="tel:+917348929802" className="text-zinc-300 hover:text-white transition-colors">
             Contact
           </a>
 
@@ -196,7 +196,7 @@ export default function Navbar({
               ))}
               <div className="flex flex-col gap-3 pt-3">
                 <a
-                  href="tel:+919322309802"
+                  href="tel:+917348929802"
                   className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-white/5 text-white hover:bg-white/10"
                 >
                   <PhoneCall className="w-4 h-4" />

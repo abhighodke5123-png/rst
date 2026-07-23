@@ -166,7 +166,7 @@ Looking forward to our epic road trip caravan! Let me know how to pay and lock t
 
       // 5. Open WhatsApp in new tab (may be blocked by popup blocker, so we ALSO show a direct button)
       const encodedText = encodeURIComponent(msgText);
-      const generatedUrl = `https://wa.me/919322309802?text=${encodedText}`;
+      const generatedUrl = `https://wa.me/917348929802?text=${encodedText}`;
       setWhatsappUrl(generatedUrl);
       setSuccessBooking(newBooking as any);
       setIsSuccess(true);

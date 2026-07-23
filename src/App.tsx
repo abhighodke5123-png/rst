@@ -516,7 +516,7 @@ export default function App() {
 
       {/* Floating WhatsApp CTA */}
       <a
-        href="https://wa.me/919322309802?text=Hi%20RAASTA,%20I'm%20looking%20for%20a%20curated%20road%20trip!"
+        href="https://wa.me/917348929802?text=Hi%20RAASTA,%20I'm%20looking%20for%20a%20curated%20road%20trip!"
         target="_blank"
         rel="noreferrer"
         className="fixed bottom-6 right-6 z-50 bg-[#25D366] text-white p-4 rounded-full shadow-2xl hover:scale-110 transition-transform flex items-center justify-center group"
