@@ -34,52 +34,57 @@ export default function TermsRegulationsModal({ isOpen, onClose, initialTab = "t
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          className="relative w-full max-w-3xl bg-zinc-950 border border-zinc-800 rounded-3xl overflow-hidden shadow-2xl flex flex-col max-h-[85vh] text-zinc-100"
+          className="relative w-full max-w-3xl bg-[#0b0c10] border border-white/10 rounded-[32px] overflow-hidden shadow-2xl flex flex-col max-h-[85vh] text-zinc-100 z-10"
         >
           {/* Header */}
-          <div className="p-6 border-b border-zinc-800 flex justify-between items-center bg-zinc-950 sticky top-0 z-10">
-            <div>
-              <h2 className="text-xl font-bold text-white tracking-tight flex items-center gap-2">
-                <Shield className="w-5 h-5 text-brand-orange" /> RAASTA Travels Regulations
-              </h2>
-              <p className="text-xs text-zinc-400 mt-1">Official Trip Guidelines & Compliance System</p>
+          <div className="p-6 md:p-8 border-b border-white/10 flex justify-between items-center bg-[#0b0c10] sticky top-0 z-10">
+            <div className="flex items-center gap-3">
+              <div className="p-2.5 rounded-2xl bg-amber-400/10 border border-amber-400/20 text-amber-400">
+                <Shield className="w-5 h-5" />
+              </div>
+              <div>
+                <h2 className="text-xl font-black text-white font-display tracking-tight">
+                  RAASTA Expedition Regulations
+                </h2>
+                <p className="text-xs text-zinc-400 mt-0.5">Official Trip Guidelines & Compliance System</p>
+              </div>
             </div>
             <button
               onClick={onClose}
-              className="p-2 hover:bg-zinc-800 rounded-full text-zinc-400 hover:text-white transition"
+              className="p-2.5 hover:bg-white/10 rounded-full text-zinc-400 hover:text-white transition cursor-pointer border border-white/10"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
 
           {/* Navigation Tabs */}
-          <div className="flex border-b border-zinc-800 bg-zinc-900/50 p-2 gap-2 text-xs font-semibold">
+          <div className="flex border-b border-white/10 bg-white/5 p-2 gap-2 text-xs font-bold font-display">
             <button
               onClick={() => setActiveTab("terms")}
-              className={`flex-1 py-2 px-3 rounded-lg text-center transition-all ${
+              className={`flex-1 py-2.5 px-3 rounded-xl text-center transition-all cursor-pointer ${
                 activeTab === "terms"
-                  ? "bg-brand-orange text-white"
-                  : "text-zinc-400 hover:text-white hover:bg-zinc-800"
+                  ? "bg-amber-400 text-black shadow-md shadow-amber-500/20"
+                  : "text-zinc-400 hover:text-white hover:bg-white/5"
               }`}
             >
               Trip Regulations
             </button>
             <button
               onClick={() => setActiveTab("refunds")}
-              className={`flex-1 py-2 px-3 rounded-lg text-center transition-all ${
+              className={`flex-1 py-2.5 px-3 rounded-xl text-center transition-all cursor-pointer ${
                 activeTab === "refunds"
-                  ? "bg-brand-orange text-white"
-                  : "text-zinc-400 hover:text-white hover:bg-zinc-800"
+                  ? "bg-amber-400 text-black shadow-md shadow-amber-500/20"
+                  : "text-zinc-400 hover:text-white hover:bg-white/5"
               }`}
             >
               Cancellation & Refund Policy
             </button>
             <button
               onClick={() => setActiveTab("agreement")}
-              className={`flex-1 py-2 px-3 rounded-lg text-center transition-all ${
+              className={`flex-1 py-2.5 px-3 rounded-xl text-center transition-all cursor-pointer ${
                 activeTab === "agreement"
-                  ? "bg-brand-orange text-white"
-                  : "text-zinc-400 hover:text-white hover:bg-zinc-800"
+                  ? "bg-amber-400 text-black shadow-md shadow-amber-500/20"
+                  : "text-zinc-400 hover:text-white hover:bg-white/5"
               }`}
             >
               User Agreement
@@ -87,19 +92,19 @@ export default function TermsRegulationsModal({ isOpen, onClose, initialTab = "t
           </div>
 
           {/* Body */}
-          <div className="p-6 md:p-8 overflow-y-auto custom-scrollbar text-zinc-300 text-sm leading-relaxed space-y-6">
+          <div className="p-6 md:p-8 overflow-y-auto custom-scrollbar text-zinc-300 text-sm leading-relaxed space-y-6 font-light">
             {activeTab === "terms" && (
               <>
-                <section className="space-y-4">
-                  <div className="flex items-center gap-2 text-white font-bold text-base">
-                    <ShieldAlert className="w-5 h-5 text-red-500" />
+                <section className="space-y-3">
+                  <div className="flex items-center gap-2 text-white font-bold text-base font-display">
+                    <ShieldAlert className="w-5 h-5 text-red-400" />
                     <span>1. Code of Conduct & Safety</span>
                   </div>
                   <p>
                     All participants must maintain a decorum of safety and mutual respect during the journey.
                     Our road trips traverse diverse ecological zones and local communities across India.
                   </p>
-                  <ul className="list-disc pl-5 space-y-2 text-zinc-400 marker:text-brand-orange">
+                  <ul className="list-disc pl-5 space-y-2 text-xs text-zinc-400 marker:text-amber-400">
                     <li>
                       <strong className="text-zinc-200">Zero Tolerance Policy:</strong> Possession or consumption of illegal substances is strictly forbidden. Anyone found carrying or consuming drugs will be immediately offloaded, and local law enforcement will be informed.
                     </li>
@@ -107,20 +112,20 @@ export default function TermsRegulationsModal({ isOpen, onClose, initialTab = "t
                       <strong className="text-zinc-200">Alcohol Misconduct:</strong> While moderate consumption of alcohol is permitted during leisure hours at designated overnight stays (unless prohibited by local laws), drinking inside any moving vehicle is strictly illegal and will lead to termination of the trip.
                     </li>
                     <li>
-                      <strong className="text-zinc-200">Environmental Respect:</strong> LRAASTA is a plastic-aware organization. Littering on beaches, mountain trails, or water bodies is punishable by a fine of ₹1,000.
+                      <strong className="text-zinc-200">Environmental Respect:</strong> RAASTA is a plastic-aware organization. Littering on beaches, mountain trails, or water bodies is punishable by a fine of ₹1,000.
                     </li>
                   </ul>
                 </section>
 
-                <section className="space-y-4">
-                  <div className="flex items-center gap-2 text-white font-bold text-base">
-                    <Clock className="w-5 h-5 text-brand-emerald" />
+                <section className="space-y-3">
+                  <div className="flex items-center gap-2 text-white font-bold text-base font-display">
+                    <Clock className="w-5 h-5 text-emerald-400" />
                     <span>2. Transport & Punctuality Protocols</span>
                   </div>
                   <p>
                     Road travel involves precise timing schedules to bypass traffic congestion and reach sunset spots/forts safely.
                   </p>
-                  <ul className="list-disc pl-5 space-y-2 text-zinc-400 marker:text-brand-emerald">
+                  <ul className="list-disc pl-5 space-y-2 text-xs text-zinc-400 marker:text-emerald-400">
                     <li>
                       <strong className="text-zinc-200">Departure Cut-offs:</strong> High-speed transfers wait for a maximum of 15 minutes past the scheduled departure time. Travelers missing the vehicle must join the next leg of the trip at their own cost.
                     </li>
@@ -130,15 +135,15 @@ export default function TermsRegulationsModal({ isOpen, onClose, initialTab = "t
                   </ul>
                 </section>
 
-                <section className="space-y-4">
-                  <div className="flex items-center gap-2 text-white font-bold text-base">
-                    <Flame className="w-5 h-5 text-amber-500" />
+                <section className="space-y-3">
+                  <div className="flex items-center gap-2 text-white font-bold text-base font-display">
+                    <Flame className="w-5 h-5 text-amber-400" />
                     <span>3. Adventure Activities & Liability Disclaimer</span>
                   </div>
                   <p>
                     Activities such as high-altitude beach treks, water sports (parasailing, scuba, jet-ski), and natural lagoon swims carry inherent elements of risk.
                   </p>
-                  <ul className="list-disc pl-5 space-y-2 text-zinc-400 marker:text-amber-500">
+                  <ul className="list-disc pl-5 space-y-2 text-xs text-zinc-400 marker:text-amber-400">
                     <li>
                       <strong className="text-zinc-200">Mandatory Gear:</strong> Wearing certified life jackets is compulsory during all marine sports and boat rides. No exceptions.
                     </li>
@@ -153,8 +158,8 @@ export default function TermsRegulationsModal({ isOpen, onClose, initialTab = "t
             {activeTab === "refunds" && (
               <>
                 <section className="space-y-4">
-                  <div className="flex items-center gap-2 text-white font-bold text-base">
-                    <CreditCard className="w-5 h-5 text-brand-emerald" />
+                  <div className="flex items-center gap-2 text-white font-bold text-base font-display">
+                    <CreditCard className="w-5 h-5 text-emerald-400" />
                     <span>Standard Cancellation Policy</span>
                   </div>
                   <p>
@@ -162,22 +167,22 @@ export default function TermsRegulationsModal({ isOpen, onClose, initialTab = "t
                   </p>
                   
                   {/* Visual table */}
-                  <div className="border border-zinc-800 rounded-xl overflow-hidden bg-zinc-900/30 text-xs">
-                    <div className="grid grid-cols-2 bg-zinc-800 p-3 font-bold text-white border-b border-zinc-800">
+                  <div className="border border-white/10 rounded-2xl overflow-hidden bg-white/5 text-xs font-mono">
+                    <div className="grid grid-cols-2 bg-white/10 p-3 font-bold text-white border-b border-white/10 font-display">
                       <div>Timeline Prior to Departure</div>
                       <div>Refund Percentage</div>
                     </div>
-                    <div className="grid grid-cols-2 p-3 border-b border-zinc-800/50">
+                    <div className="grid grid-cols-2 p-3 border-b border-white/5">
                       <div>More than 15 Days</div>
-                      <div className="text-brand-emerald font-bold">100% Refund (or 100% Credit Voucher)</div>
+                      <div className="text-emerald-400 font-bold">100% Refund (or 100% Credit Voucher)</div>
                     </div>
-                    <div className="grid grid-cols-2 p-3 border-b border-zinc-800/50">
+                    <div className="grid grid-cols-2 p-3 border-b border-white/5">
                       <div>7 to 14 Days</div>
-                      <div className="text-yellow-500 font-bold">50% Refund (or 100% Credit Voucher)</div>
+                      <div className="text-amber-400 font-bold">50% Refund (or 100% Credit Voucher)</div>
                     </div>
                     <div className="grid grid-cols-2 p-3">
                       <div>Less than 7 Days</div>
-                      <div className="text-red-500 font-bold">No Refund / No Credit Voucher</div>
+                      <div className="text-red-400 font-bold">No Refund / No Credit Voucher</div>
                     </div>
                   </div>
 
@@ -186,15 +191,15 @@ export default function TermsRegulationsModal({ isOpen, onClose, initialTab = "t
                   </p>
                 </section>
 
-                <section className="space-y-4">
-                  <div className="flex items-center gap-2 text-white font-bold text-base">
-                    <ShieldAlert className="w-5 h-5 text-brand-orange" />
+                <section className="space-y-3">
+                  <div className="flex items-center gap-2 text-white font-bold text-base font-display">
+                    <ShieldAlert className="w-5 h-5 text-amber-400" />
                     <span>Acts of God & Weather Anomalies</span>
                   </div>
                   <p>
                     In the event of weather-triggered blockages (monsoon flooding, cloudbursts, landslide warnings, administrative lockdowns):
                   </p>
-                  <ul className="list-disc pl-5 space-y-2 text-zinc-400 marker:text-brand-orange">
+                  <ul className="list-disc pl-5 space-y-2 text-xs text-zinc-400 marker:text-amber-400">
                     <li>RAASTA Travels will issue a non-expiring credit voucher worth 100% of your paid amount. This can be redeemed on any future destination.</li>
                     <li>Cash refunds will not be processed for disruptions arising from climate force majeure or highway-level state restrictions.</li>
                   </ul>
@@ -205,14 +210,14 @@ export default function TermsRegulationsModal({ isOpen, onClose, initialTab = "t
             {activeTab === "agreement" && (
               <>
                 <section className="space-y-4">
-                  <div className="flex items-center gap-2 text-white font-bold text-base">
-                    <Users className="w-5 h-5 text-brand-orange" />
+                  <div className="flex items-center gap-2 text-white font-bold text-base font-display">
+                    <Users className="w-5 h-5 text-amber-400" />
                     <span>User Booking & Liability Release Agreement</span>
                   </div>
                   <p>
                     By clicking "Agree and Book" or reserving an online ticket through our portal, you certify:
                   </p>
-                  <ol className="list-decimal pl-5 space-y-3 text-zinc-400 marker:text-brand-orange">
+                  <ol className="list-decimal pl-5 space-y-3 text-xs text-zinc-400 marker:text-amber-400">
                     <li>
                       <strong className="text-zinc-200">Fitness Self-Declaration:</strong> You are in sound health and are free from underlying respiratory, cardiovascular, or physical conditions that might restrict walking, beach trekking, or mild hiking.
                     </li>
@@ -229,13 +234,13 @@ export default function TermsRegulationsModal({ isOpen, onClose, initialTab = "t
           </div>
 
           {/* Footer Actions */}
-          <div className="p-6 border-t border-zinc-800 bg-zinc-950 flex flex-col sm:flex-row gap-4 items-center justify-between">
-            <span className="text-zinc-500 text-xs">For offline disputes: raastatrips.in@gmail.com</span>
+          <div className="p-6 border-t border-white/10 bg-[#07080a] flex flex-col sm:flex-row gap-4 items-center justify-between">
+            <span className="text-zinc-400 text-xs font-mono">Helpline: +91 7348929802 | raastatrips.in@gmail.com</span>
             <button
               onClick={onClose}
-              className="w-full sm:w-auto px-8 py-3 bg-white text-zinc-950 font-bold text-sm uppercase tracking-wider rounded-xl hover:bg-zinc-200 transition"
+              className="w-full sm:w-auto px-8 py-3 bg-amber-400 text-black font-black text-xs uppercase tracking-widest rounded-xl hover:bg-amber-300 transition shadow-lg shadow-amber-500/20 cursor-pointer font-display"
             >
-              Understood
+              I Agree & Understand
             </button>
           </div>
         </motion.div>

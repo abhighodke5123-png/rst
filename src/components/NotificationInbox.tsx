@@ -79,37 +79,37 @@ export default function NotificationInbox({ isOpen, onClose, currentUser }: Noti
     <AnimatePresence>
       {isOpen && (
         <div className="fixed inset-0 z-50 overflow-hidden select-none">
-          {/* Backdrop screen grey glass */}
+          {/* Backdrop screen luxury blur */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 bg-white/75 backdrop-blur-xs"
+            className="absolute inset-0 bg-black/80 backdrop-blur-md"
             onClick={onClose}
           ></motion.div>
 
-          {/* Sldie over right side container */}
+          {/* Slide over right side container */}
           <motion.div
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", stiffness: 220, damping: 24 }}
-            className="absolute top-0 right-0 h-full w-full max-w-lg bg-zinc-50 border-l border-zinc-200 shadow-2xl flex flex-col overflow-hidden"
+            className="absolute top-0 right-0 h-full w-full max-w-lg bg-[#0b0c10] border-l border-white/10 shadow-2xl flex flex-col overflow-hidden text-white"
           >
             {/* Header section */}
-            <div className="p-6 border-b border-zinc-200 flex justify-between items-center bg-zinc-100/10">
+            <div className="p-6 border-b border-white/10 flex justify-between items-center bg-white/[0.02]">
               <div className="flex items-center gap-3">
-                <div className="relative p-2 rounded-xl bg-yellow-500/5 border border-yellow-500/20 text-yellow-500">
+                <div className="relative p-2.5 rounded-2xl bg-amber-400/10 border border-amber-400/20 text-amber-400">
                   <Mail className="w-5 h-5 animate-pulse" />
                   {unreadCount > 0 && (
-                    <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-650 text-[9px] font-black text-black px-1">
+                    <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-amber-400 text-[9px] font-black text-black px-1">
                       {unreadCount}
                     </span>
                   )}
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-black tracking-tight">Concierge Mail Inbox</h3>
-                  <p className="text-[10px] text-zinc-500 mt-0.5 tracking-wide uppercase font-bold">
+                  <h3 className="text-base font-bold text-white tracking-tight font-display">Concierge Mail Inbox</h3>
+                  <p className="text-[10px] text-zinc-400 mt-0.5 tracking-wide uppercase font-bold font-display">
                     {currentUser?.role === "admin" ? "System Notification Broadcasts Audit" : "Simulated email notifications inbox"}
                   </p>
                 </div>
@@ -118,14 +118,14 @@ export default function NotificationInbox({ isOpen, onClose, currentUser }: Noti
                 {unreadCount > 0 && (
                   <button
                     onClick={markAllRead}
-                    className="px-3 py-1.5 text-[9px] font-black text-zinc-600 hover:text-black border border-zinc-200 rounded-lg hover:bg-zinc-100 uppercase tracking-widest transition cursor-pointer"
+                    className="px-3 py-1.5 text-[9px] font-black text-amber-400 hover:text-amber-300 border border-amber-400/30 rounded-lg hover:bg-amber-400/10 uppercase tracking-widest transition cursor-pointer font-display"
                   >
                     Mark read
                   </button>
                 )}
                 <button
                   onClick={onClose}
-                  className="p-2 rounded-xl border border-zinc-200 text-zinc-600 hover:text-black hover:bg-zinc-100 transition cursor-pointer"
+                  className="p-2.5 rounded-xl border border-white/10 text-zinc-400 hover:text-white hover:bg-white/5 transition cursor-pointer"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -133,26 +133,26 @@ export default function NotificationInbox({ isOpen, onClose, currentUser }: Noti
             </div>
 
             {/* Simulated Client inbox listing */}
-            <div className="flex-1 overflow-y-auto divide-y divide-zinc-900/60 custom-scrollbar p-1">
+            <div className="flex-1 overflow-y-auto divide-y divide-white/5 custom-scrollbar p-1">
               {!currentUser ? (
-                <div className="p-12 text-center text-zinc-650 flex flex-col items-center justify-center space-y-4">
-                  <Inbox className="w-12 h-12 text-zinc-800" />
-                  <p className="text-xs font-semibold leading-relaxed">Sign in to your Seeker account to capture live transacted notification logs.</p>
+                <div className="p-12 text-center text-zinc-400 flex flex-col items-center justify-center space-y-4">
+                  <Inbox className="w-12 h-12 text-zinc-600" />
+                  <p className="text-xs font-medium leading-relaxed">Sign in to your Seeker account to capture live transacted notification logs.</p>
                 </div>
               ) : loading && notifications.length === 0 ? (
-                <div className="p-12 text-center text-zinc-650 flex items-center justify-center gap-2 text-xs font-semibold uppercase tracking-wider animate-pulse">
-                  <RefreshCw className="w-4 h-4 text-zinc-550 animate-spin" />
+                <div className="p-12 text-center text-zinc-400 flex items-center justify-center gap-2 text-xs font-semibold uppercase tracking-wider animate-pulse font-display">
+                  <RefreshCw className="w-4 h-4 text-amber-400 animate-spin" />
                   <span>Linking RAASTA Sockets...</span>
                 </div>
               ) : notifications.length === 0 ? (
-                <div className="p-12 text-center text-zinc-650 flex flex-col items-center justify-center space-y-4">
-                  <div className="p-3 bg-zinc-100/40 rounded-full">
-                    <Inbox className="w-8 h-8 text-zinc-700" />
+                <div className="p-12 text-center text-zinc-400 flex flex-col items-center justify-center space-y-4">
+                  <div className="p-4 bg-white/5 rounded-full border border-white/10">
+                    <Inbox className="w-8 h-8 text-amber-400/60" />
                   </div>
                   <div className="space-y-1">
-                    <span className="text-xs font-bold text-zinc-600 block uppercase tracking-wider">Your Mailbox is Empty</span>
-                    <span className="text-[11px] text-zinc-500 leading-normal block max-w-xs">
-                      Simulated registration, booking confirmation, cancellation receipts, and trip news broadcasts appear automatically in this sandbox outbox!
+                    <span className="text-xs font-bold text-white block uppercase tracking-wider font-display">Your Mailbox is Empty</span>
+                    <span className="text-[11px] text-zinc-400 leading-normal block max-w-xs font-light">
+                      Simulated registration, booking confirmation, cancellation receipts, and trip news broadcasts appear automatically in this concierge outbox!
                     </span>
                   </div>
                 </div>
@@ -162,56 +162,56 @@ export default function NotificationInbox({ isOpen, onClose, currentUser }: Noti
                   return (
                     <div
                       key={notif.id}
-                      className={`p-5 transition hover:bg-zinc-100/40 relative cursor-pointer ${
-                        !notif.read ? "bg-zinc-100/15" : ""
-                      } ${isSelected ? "bg-zinc-100/60" : ""}`}
+                      className={`p-5 transition hover:bg-white/[0.04] relative cursor-pointer ${
+                        !notif.read ? "bg-amber-400/[0.03]" : ""
+                      } ${isSelected ? "bg-white/[0.06]" : ""}`}
                       onClick={() => setSelectedNotif(isSelected ? null : notif)}
                     >
                       {/* Notification unread marker bar indicator */}
                       {!notif.read && (
-                        <div className="absolute left-0 top-0 bottom-0 w-1 bg-yellow-500"></div>
+                        <div className="absolute left-0 top-0 bottom-0 w-1 bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.8)]"></div>
                       )}
 
                       <div className="flex justify-between items-start gap-4">
                         <div className="space-y-1 flex-1">
                           <div className="flex items-center gap-1.5 flex-wrap">
-                            <span className="text-[9px] font-black uppercase tracking-wider bg-zinc-100 px-2 py-0.5 rounded text-zinc-600">
+                            <span className="text-[9px] font-black uppercase tracking-wider bg-white/10 border border-white/10 px-2 py-0.5 rounded text-zinc-300 font-display">
                               Concierge System Email
                             </span>
                             {notif.type === "welcome" && (
-                              <span className="text-[8px] font-black uppercase tracking-wider bg-[#1c3fdc]/10 text-blue-400 border border-blue-500/20 px-1.5 py-0.5 rounded-full">
+                              <span className="text-[8px] font-black uppercase tracking-wider bg-blue-500/10 text-blue-400 border border-blue-500/20 px-1.5 py-0.5 rounded-full font-display">
                                 Access Active
                               </span>
                             )}
                             {notif.type === "booking" && (
-                              <span className="text-[8px] font-black uppercase tracking-wider bg-[#064e3b]/10 text-emerald-400 border border-emerald-500/20 px-1.5 py-0.5 rounded-full">
+                              <span className="text-[8px] font-black uppercase tracking-wider bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 px-1.5 py-0.5 rounded-full font-display">
                                 Invoice Checked
                               </span>
                             )}
                             {notif.type === "cancellation" && (
-                              <span className="text-[8px] font-black uppercase tracking-wider bg-red-950/20 text-red-400 border border-red-500/20 px-1.5 py-0.5 rounded-full">
+                              <span className="text-[8px] font-black uppercase tracking-wider bg-red-500/10 text-red-400 border border-red-500/20 px-1.5 py-0.5 rounded-full font-display">
                                 Refund Sent
                               </span>
                             )}
                             {notif.type === "new-trip" && (
-                              <span className="text-[8px] font-black uppercase tracking-wider bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 px-1.5 py-0.5 rounded-full">
+                              <span className="text-[8px] font-black uppercase tracking-wider bg-amber-500/10 text-amber-400 border border-amber-500/20 px-1.5 py-0.5 rounded-full font-display">
                                 Live Launch
                               </span>
                             )}
                             {notif.type === "otp" && (
-                              <span className="text-[8px] font-black uppercase tracking-wider bg-purple-500/10 text-purple-650 border border-purple-500/20 px-1.5 py-0.5 rounded-full">
+                              <span className="text-[8px] font-black uppercase tracking-wider bg-purple-500/10 text-purple-400 border border-purple-500/20 px-1.5 py-0.5 rounded-full font-display">
                                 Security Code
                               </span>
                             )}
                           </div>
-                          <h4 className={`text-xs tracking-tight ${!notif.read ? "font-extrabold text-black" : "font-medium text-zinc-700"}`}>
+                          <h4 className={`text-xs tracking-tight ${!notif.read ? "font-extrabold text-white font-display" : "font-medium text-zinc-300"}`}>
                             {notif.subject}
                           </h4>
-                          <p className="text-[10px] text-zinc-600 line-clamp-2 leading-relaxed">
+                          <p className="text-[10px] text-zinc-400 line-clamp-2 leading-relaxed font-light">
                             {notif.bodyText}
                           </p>
                         </div>
-                        <span className="text-[9px] font-mono text-zinc-650 tracking-wider shrink-0 whitespace-nowrap mt-1">
+                        <span className="text-[9px] font-mono text-zinc-500 tracking-wider shrink-0 whitespace-nowrap mt-1">
                           {notif.timestamp}
                         </span>
                       </div>
@@ -223,29 +223,29 @@ export default function NotificationInbox({ isOpen, onClose, currentUser }: Noti
                             initial={{ opacity: 0, height: 0 }}
                             animate={{ opacity: 1, height: "auto" }}
                             exit={{ opacity: 0, height: 0 }}
-                            className="mt-4 pt-4 border-t border-zinc-200 relative"
+                            className="mt-4 pt-4 border-t border-white/10 relative"
                             onClick={(e) => e.stopPropagation()}
                           >
-                            <div className="bg-zinc-50 border border-zinc-200 rounded-xl overflow-hidden shadow-inner relative max-h-[440px] overflow-y-auto p-4 flex flex-col gap-4">
+                            <div className="bg-black/50 border border-white/10 rounded-2xl overflow-hidden shadow-inner relative max-h-[440px] overflow-y-auto p-4 flex flex-col gap-4">
                               {/* Headers layout block */}
-                              <div className="text-[10px] text-zinc-500 border-b border-zinc-200 pb-3 space-y-1 leading-normal font-medium">
-                                <div><strong className="text-zinc-600 uppercase tracking-widest text-[9px]">Sender:</strong> RAASTA Automatic Concierge Relaying Hub &lt;raastatrips.in@gmail.com&gt;</div>
-                                <div><strong className="text-zinc-600 uppercase tracking-widest text-[9px]">Recipient:</strong> {notif.recipientName} &lt;{notif.recipientEmail}&gt;</div>
-                                <div><strong className="text-zinc-600 uppercase tracking-widest text-[9px]">Verification Status:</strong> Programmatically Signed (ECC Sandbox Cert #445)</div>
+                              <div className="text-[10px] text-zinc-400 border-b border-white/10 pb-3 space-y-1 leading-normal font-light">
+                                <div><strong className="text-amber-400 uppercase tracking-widest text-[9px] font-display">Sender:</strong> RAASTA Automatic Concierge Relaying Hub &lt;raastatrips.in@gmail.com&gt;</div>
+                                <div><strong className="text-amber-400 uppercase tracking-widest text-[9px] font-display">Recipient:</strong> {notif.recipientName} &lt;{notif.recipientEmail}&gt;</div>
+                                <div><strong className="text-amber-400 uppercase tracking-widest text-[9px] font-display">Verification:</strong> Cryptographically Verified (RAASTA SHA-256)</div>
                               </div>
 
                               {/* Simulated email HTML output */}
                               <div
-                                className="sandbox-email-wrapper select-text overflow-x-auto"
+                                className="sandbox-email-wrapper select-text overflow-x-auto text-zinc-200 text-xs"
                                 dangerouslySetInnerHTML={{ __html: notif.bodyHtml }}
                               ></div>
                             </div>
 
                             {/* Alert advising console outputs */}
-                            <div className="mt-3 p-3 bg-zinc-100/30 border border-zinc-200 rounded-xl flex items-center gap-2.5">
-                              <ShieldAlert className="w-4 h-4 text-blue-400 shrink-0" />
-                              <span className="text-[10px] text-zinc-500 leading-normal font-medium max-w-sm">
-                                System also printed a copy of this email to the node standard out. Verify inside terminal container logs!
+                            <div className="mt-3 p-3 bg-white/5 border border-white/10 rounded-xl flex items-center gap-2.5">
+                              <ShieldAlert className="w-4 h-4 text-amber-400 shrink-0" />
+                              <span className="text-[10px] text-zinc-400 leading-normal font-light max-w-sm">
+                                System log dispatched via simulated socket runner.
                               </span>
                             </div>
                           </motion.div>
@@ -258,8 +258,8 @@ export default function NotificationInbox({ isOpen, onClose, currentUser }: Noti
             </div>
 
             {/* Footer status board */}
-            <div className="p-4 border-t border-zinc-200 bg-zinc-100/20 text-center text-[10px] text-zinc-600 font-bold uppercase tracking-widest">
-              RAASTA SMTP Relay Engine • Version 2026.01
+            <div className="p-4 border-t border-white/10 bg-white/[0.02] text-center text-[10px] text-zinc-500 font-bold uppercase tracking-widest font-display">
+              RAASTA Concierge Relay Engine • 2026
             </div>
           </motion.div>
         </div>

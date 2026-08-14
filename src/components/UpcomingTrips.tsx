@@ -6,9 +6,10 @@
 import React, { useState } from "react";
 import { Trip, Booking } from "../types";
 import { TRIPS } from "../data";
-import { Calendar, Users, SlidersHorizontal, MapPin, Tag, Search, ArrowRight } from "lucide-react";
+import { Calendar, Users, SlidersHorizontal, MapPin, Tag, Search, ArrowRight, Sparkles, Compass } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import BookingForm from "./BookingForm";
+import TopographicOverlay from "./TopographicOverlay";
 
 interface UpcomingTripsProps {
   tripsList: Trip[];
@@ -54,37 +55,38 @@ export default function UpcomingTrips({
   });
 
   return (
-    <section id="trips" className="py-32 px-6 bg-[#040404] relative">
-      {/* Decorative vertical lines to emulate the RAASTA road path */}
-      <div className="absolute left-1/2 top-0 bottom-0 w-[1px] bg-white/5 border-dashed pointer-events-none"></div>
+    <section id="trips" className="py-32 px-6 bg-[#07080a] relative overflow-hidden">
+      <div className="absolute left-1/2 top-1/4 -translate-x-1/2 w-[700px] h-[500px] bg-amber-500/5 blur-[160px] rounded-full pointer-events-none"></div>
 
       <motion.div
-        initial={{ opacity: 0, y: 60 }}
+        initial={{ opacity: 0, y: 40 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.08 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
         className="max-w-7xl mx-auto relative z-10"
       >
-        
         {/* Header Block */}
         <div className="max-w-3xl mb-16">
-          <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-white mb-6">
+          <span className="text-xs tracking-widest text-amber-400 uppercase font-bold mb-3 block font-display">
+            Curated Expeditions
+          </span>
+          <h2 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight text-white mb-6 font-display">
             Upcoming <br/>
-            <span className="text-zinc-500">Departures.</span>
+            <span className="font-editorial text-amber-300 font-normal italic text-5xl sm:text-6xl md:text-7xl">Departures & Caravans</span>
           </h2>
-          <p className="text-zinc-400 text-lg leading-relaxed font-light">
-            Reserve your seat on our next handcrafted expeditions. To protect local ecosystems, we curate tiny microgroups with custom-equipped vehicles.
+          <p className="text-zinc-400 text-base sm:text-lg leading-relaxed font-light">
+            Reserve your seat on our next handcrafted expeditions. To protect local ecosystems, we strictly cap group size to 14 travelers per caravan.
           </p>
 
           {/* Active Deep Dive Destination Filter Alert */}
           {initialFilterDestinationId && (
-            <div className="mt-6 inline-flex items-center gap-3.5 px-5 py-3 rounded-full border border-brand-orange/20 bg-brand-orange/10 text-brand-orange text-sm font-medium">
+            <div className="mt-6 inline-flex items-center gap-3.5 px-5 py-2.5 rounded-full border border-amber-400/30 bg-amber-400/10 text-amber-300 text-xs font-semibold">
               <span>
-                Showing: {tripsList.find(t => t.destinationId === initialFilterDestinationId)?.destinationName.split(" ")[0]} Route
+                Filtered by: {tripsList.find(t => t.destinationId === initialFilterDestinationId)?.destinationName.split(" ")[0]} Route
               </span>
               <button
                 onClick={onClearInitialFilter}
-                className="font-bold underline hover:text-white transition uppercase text-xs tracking-wider cursor-pointer ml-2"
+                className="font-bold underline hover:text-white transition uppercase text-[10px] tracking-wider cursor-pointer ml-2"
               >
                 Clear Filter
               </button>
@@ -93,37 +95,34 @@ export default function UpcomingTrips({
         </div>
 
         {/* Filters Controls Card */}
-        <div className="glass p-4 rounded-3xl mb-12 flex flex-col md:flex-row gap-4 items-center justify-between">
-          
+        <div className="glass border border-white/10 p-4 sm:p-5 rounded-3xl mb-12 flex flex-col md:flex-row gap-4 items-center justify-between shadow-xl">
           {/* Search bar */}
           <div className="relative w-full md:w-96">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
             <input
               type="text"
-              placeholder="Search dates, destinations..."
+              placeholder="Search dates, passes, mountains..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-white/5 border border-white/10 rounded-2xl pl-12 pr-4 py-3.5 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-white/30 transition-colors"
+              className="w-full bg-white/5 border border-white/10 rounded-2xl pl-11 pr-4 py-3 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-amber-400/50 transition-colors"
             />
           </div>
 
           {/* Availability Status list filters */}
           <div className="flex flex-wrap gap-2 w-full md:w-auto items-center">
-            <div className="flex flex-wrap gap-2 p-1.5 w-full md:w-auto">
-              {statuses.map((st) => (
-                <button
-                  key={st}
-                  onClick={() => setStatusFilter(st)}
-                  className={`px-4 py-2.5 rounded-xl text-xs font-semibold tracking-wide transition-all duration-300 ${
-                    statusFilter === st
-                      ? "bg-white text-black"
-                      : "text-zinc-400 hover:text-white hover:bg-white/10"
-                  }`}
-                >
-                  {st}
-                </button>
-              ))}
-            </div>
+            {statuses.map((st) => (
+              <button
+                key={st}
+                onClick={() => setStatusFilter(st)}
+                className={`px-4 py-2 rounded-xl text-xs font-bold tracking-wider font-display uppercase transition-all duration-300 cursor-pointer ${
+                  statusFilter === st
+                    ? "bg-amber-400 text-black shadow-md shadow-amber-500/20"
+                    : "text-zinc-400 hover:text-white hover:bg-white/10"
+                }`}
+              >
+                {st}
+              </button>
+            ))}
           </div>
         </div>
 
@@ -137,11 +136,11 @@ export default function UpcomingTrips({
                   switch (status) {
                     case "Selling Fast":
                     case "Almost Full":
-                      return "bg-brand-orange/20 text-brand-orange border-brand-orange/30";
+                      return "bg-rose-500/10 text-rose-300 border-rose-500/30";
                     case "Monsoon Special":
-                      return "bg-brand-blue/20 text-brand-blue border-brand-blue/30";
+                      return "bg-sky-500/10 text-sky-300 border-sky-500/30";
                     default:
-                      return "bg-brand-emerald/20 text-brand-emerald border-brand-emerald/30";
+                      return "bg-emerald-500/10 text-emerald-300 border-emerald-500/30";
                   }
                 };
 
@@ -153,46 +152,49 @@ export default function UpcomingTrips({
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95 }}
                     transition={{ type: "spring", stiffness: 100, damping: 15 }}
-                    className="group relative glass rounded-[32px] p-8 transition-all duration-500 hover:-translate-y-2 hover:bg-white/[0.05] flex flex-col justify-between"
+                    className="group relative bg-[#0b0c10] border border-white/10 rounded-[32px] p-8 transition-all duration-500 hover:-translate-y-2 hover:border-amber-400/40 flex flex-col justify-between shadow-2xl hover:shadow-[0_20px_40px_-15px_rgba(245,158,11,0.15)] overflow-hidden"
                   >
-                    <div>
+                    {/* Subtle Topographic Cartography Lines */}
+                    <TopographicOverlay opacity={0.03} />
+
+                    <div className="relative z-10">
                       {/* Top status bar */}
                       <div className="flex justify-between items-center mb-6">
-                        <span className={`px-3 py-1.5 rounded-full border text-[10px] font-bold uppercase tracking-wider ${getStatusStyle(trip.status)}`}>
+                        <span className={`px-3 py-1 rounded-full border text-[10px] font-black uppercase tracking-widest font-display ${getStatusStyle(trip.status)}`}>
                           {trip.status}
                         </span>
                         
                         <div className="flex flex-col items-end">
                           {trip.originalPrice && (
-                            <span className="text-xs text-zinc-500 line-through font-normal mb-0.5">
+                            <span className="text-[11px] text-zinc-500 line-through font-normal">
                               ₹{trip.originalPrice.toLocaleString()}
                             </span>
                           )}
-                          <div className="flex items-center gap-1.5 text-white text-sm font-semibold">
-                            <Tag className="w-4 h-4 text-brand-orange" />
+                          <div className="flex items-center gap-1.5 text-amber-300 text-base font-black font-display">
+                            <Tag className="w-3.5 h-3.5 text-amber-400" />
                             <span>₹{trip.price.toLocaleString()}</span>
                           </div>
                         </div>
                       </div>
 
                       {/* Title information */}
-                      <h3 className="text-3xl font-bold text-white mb-4 tracking-tight">
+                      <h3 className="text-2xl sm:text-3xl font-black text-white mb-4 tracking-tight font-display">
                         {trip.destinationName}
                       </h3>
 
                       {/* Dates and location */}
-                      <div className="space-y-3 mb-6">
-                        <div className="flex items-center gap-3 text-white text-sm font-medium">
-                          <Calendar className="w-5 h-5 text-brand-blue" />
+                      <div className="space-y-2.5 mb-6">
+                        <div className="flex items-center gap-3 text-zinc-200 text-xs font-medium">
+                          <Calendar className="w-4 h-4 text-amber-400" />
                           <span>{trip.dates}</span>
                         </div>
-                        <div className="flex items-center gap-3 text-zinc-400 text-sm">
-                          <MapPin className="w-5 h-5" />
-                          <span>Expedition Loop</span>
+                        <div className="flex items-center gap-3 text-zinc-400 text-xs font-light">
+                          <MapPin className="w-4 h-4 text-zinc-500" />
+                          <span>Expedition Loop & 4x4 Trail</span>
                         </div>
                       </div>
 
-                      <p className="text-zinc-400 text-sm leading-relaxed mb-8 font-light">
+                      <p className="text-zinc-400 text-xs sm:text-sm leading-relaxed mb-8 font-light">
                         {trip.description}
                       </p>
                     </div>
@@ -200,12 +202,12 @@ export default function UpcomingTrips({
                     {/* Inventory control meters */}
                     <div className="pt-6 border-t border-white/10 space-y-4">
                       <div className="flex justify-between items-center text-xs">
-                        <span className="text-zinc-400">Seats Capacity:</span>
-                        <span className="font-mono text-white font-bold">{trip.seatsAvailable} of {trip.seatsTotal} Available</span>
+                        <span className="text-zinc-400 text-[11px]">Seats Capacity:</span>
+                        <span className="font-mono text-white text-xs font-bold">{trip.seatsAvailable} of {trip.seatsTotal} Available</span>
                       </div>
-                      <div className="w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
+                      <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
                         <div
-                          className="h-full bg-brand-orange transition-all duration-500"
+                          className="h-full bg-gradient-to-r from-amber-400 to-amber-500 transition-all duration-500"
                           style={{ width: `${Math.min(100, Math.max(0, (trip.seatsAvailable / (trip.seatsTotal || 15)) * 100))}%` }}
                         />
                       </div>
@@ -213,17 +215,17 @@ export default function UpcomingTrips({
                       {trip.seatsAvailable > 0 ? (
                         <button
                           onClick={() => onBookTrip(trip)}
-                          className="w-full flex items-center justify-center gap-3 py-4 rounded-2xl bg-white text-black font-semibold text-sm hover:bg-zinc-200 transition-colors"
+                          className="w-full flex items-center justify-center gap-2.5 py-3.5 rounded-2xl bg-white hover:bg-amber-300 text-black font-black text-xs uppercase tracking-widest transition-all duration-300 shadow-md cursor-pointer font-display"
                         >
-                          <Users className="w-5 h-5" />
-                          Reserve Seat
+                          <Users className="w-4 h-4" />
+                          <span>Reserve Seat</span>
                         </button>
                       ) : (
                         <button
                           disabled
-                          className="w-full py-4 rounded-2xl bg-white/5 text-zinc-500 font-semibold text-sm cursor-not-allowed"
+                          className="w-full py-3.5 rounded-2xl bg-white/5 text-zinc-600 font-black text-xs uppercase tracking-widest cursor-not-allowed font-display"
                         >
-                          Waitlist Only
+                          Waitlist Full
                         </button>
                       )}
                     </div>
@@ -231,10 +233,10 @@ export default function UpcomingTrips({
                 );
               })
             ) : (
-              <div className="col-span-full py-20 text-center text-zinc-500 glass rounded-[32px]">
-                <Search className="w-12 h-12 stroke-[1] mx-auto mb-4 text-zinc-600" />
-                <p className="text-base font-semibold">No scheduled caravans found</p>
-                <p className="text-sm text-zinc-500 mt-2">Try resetting the filters.</p>
+              <div className="col-span-full py-20 text-center text-zinc-500 glass rounded-[32px] border border-white/10">
+                <Search className="w-10 h-10 stroke-[1] mx-auto mb-4 text-zinc-600" />
+                <p className="text-base font-semibold text-white font-display">No scheduled caravans found</p>
+                <p className="text-xs text-zinc-400 mt-1 font-light">Try searching a different month or clearing the status filter.</p>
               </div>
             )}
           </AnimatePresence>

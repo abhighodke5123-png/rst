@@ -6,8 +6,9 @@
 import React, { useState } from "react";
 import { DESTINATIONS } from "../data";
 import { Destination } from "../types";
-import { Compass, Calendar, ArrowRight, Star, CheckCircle, X, ChevronRight } from "lucide-react";
+import { Compass, Calendar, ArrowRight, Star, CheckCircle, X, ChevronRight, Sparkles, Mountain, ShieldCheck } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
+import TopographicOverlay from "./TopographicOverlay";
 
 interface DestinationsProps {
   onSelectDestinationForDepartures: (destId: string) => void;
@@ -24,9 +25,9 @@ export default function Destinations({ onSelectDestinationForDepartures }: Desti
     : DESTINATIONS.filter((item) => item.category === filter);
 
   return (
-    <section id="destinations" className="py-32 px-6 relative bg-brand-bg">
+    <section id="destinations" className="py-32 px-6 relative bg-[#07080a] overflow-hidden">
       {/* Visual Accent */}
-      <div className="absolute right-0 top-1/4 w-[50vw] h-[50vw] bg-brand-blue/10 rounded-full blur-[100px] pointer-events-none mix-blend-screen"></div>
+      <div className="absolute right-0 top-1/4 w-[50vw] h-[50vw] bg-sky-500/5 rounded-full blur-[140px] pointer-events-none mix-blend-screen"></div>
 
       <motion.div
         initial={{ opacity: 0, y: 60 }}
@@ -38,19 +39,22 @@ export default function Destinations({ onSelectDestinationForDepartures }: Desti
         {/* Header Block */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-20 gap-8">
           <div className="max-w-2xl">
-            <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-white mb-6">
+            <span className="text-xs tracking-widest text-amber-400 uppercase font-bold mb-3 block font-display">
+              Curated Circuits
+            </span>
+            <h2 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight text-white font-display leading-[1.1]">
               Destinations that <br/>
-              <span className="text-zinc-500">stay with you.</span>
+              <span className="font-editorial text-amber-300 font-normal italic text-5xl sm:text-6xl md:text-7xl">stay with you.</span>
             </h2>
           </div>
 
           {/* Luxury Filter Toggle */}
-          <div className="flex gap-2 glass p-2 rounded-2xl w-fit self-start md:self-end">
+          <div className="flex gap-2 glass p-1.5 rounded-2xl w-fit self-start md:self-end border border-white/10">
             {categories.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setFilter(cat)}
-                className={`px-5 py-2.5 rounded-xl text-sm font-medium tracking-wide transition-all duration-300 ${
+                className={`px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer ${
                   filter === cat
                     ? "bg-white text-black shadow-lg"
                     : "text-zinc-400 hover:text-white hover:bg-white/5"
@@ -73,45 +77,48 @@ export default function Destinations({ onSelectDestinationForDepartures }: Desti
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ duration: 0.3 }}
-                className="group relative overflow-hidden rounded-[32px] glass flex flex-col h-full transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_20px_40px_-15px_rgba(76,201,240,0.15)]"
+                className="group relative overflow-hidden rounded-[32px] bg-[#0b0c10] border border-white/10 flex flex-col h-full transition-all duration-500 hover:-translate-y-2 hover:border-amber-400/40 hover:shadow-[0_20px_45px_-15px_rgba(245,158,11,0.18)]"
               >
+                {/* Subtle topographic card pattern */}
+                <TopographicOverlay opacity={0.03} />
+
                 {/* Custom Card Header Image */}
                 <div className="h-72 overflow-hidden relative">
                   <img
                     alt={dest.name}
                     src={dest.image}
-                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out opacity-80 group-hover:opacity-100"
+                    className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-700 ease-in-out opacity-85 group-hover:opacity-100"
                     referrerPolicy="no-referrer"
                   />
                   
                   {/* Glass Tags */}
-                  <div className="absolute top-5 left-5 glass px-4 py-1.5 rounded-full text-xs font-semibold tracking-wider text-white">
-                    {dest.category}
+                  <div className="absolute top-5 left-5 bg-black/60 backdrop-blur-md px-3.5 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider text-white border border-white/15 font-display">
+                    {dest.category} Route
                   </div>
-                  <div className="absolute top-5 right-5 glass px-4 py-1.5 rounded-full text-xs font-semibold tracking-wider text-white">
+                  <div className="absolute top-5 right-5 bg-amber-400/20 backdrop-blur-md px-3.5 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider text-amber-300 border border-amber-400/30 font-display">
                     {dest.season}
                   </div>
 
                   {/* Gradient layer */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#080808] to-transparent opacity-90"></div>
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0b0c10] via-[#0b0c10]/60 to-transparent opacity-95"></div>
                 </div>
 
                 {/* Substantive body details */}
                 <div className="p-8 flex flex-col flex-1 justify-between relative z-10 -mt-20">
                   <div>
                     <div className="flex justify-between items-end mb-2">
-                      <h3 className="text-3xl font-bold text-white tracking-tight">
+                      <h3 className="text-3xl font-black text-white tracking-tight font-display">
                         {dest.name}
                       </h3>
-                      <div className="flex items-center gap-1.5 mb-1 bg-white/10 px-2 py-1 rounded-md backdrop-blur-md">
-                        <Star className="w-3.5 h-3.5 fill-brand-orange text-brand-orange" />
-                        <span className="text-xs font-bold text-white">{dest.rating.toFixed(1)}</span>
+                      <div className="flex items-center gap-1.5 mb-1 bg-white/10 border border-white/10 px-2.5 py-1 rounded-lg backdrop-blur-md">
+                        <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                        <span className="text-xs font-black text-white font-display">{dest.rating.toFixed(1)}</span>
                       </div>
                     </div>
-                    <p className="text-brand-blue text-sm font-medium mb-4">
+                    <p className="text-amber-400 text-xs font-semibold uppercase tracking-wider mb-3">
                       {dest.subTitle}
                     </p>
-                    <p className="text-zinc-400 text-sm leading-relaxed mb-8 font-light">
+                    <p className="text-zinc-400 text-sm leading-relaxed mb-8 font-light line-clamp-2">
                       {dest.desc}
                     </p>
                   </div>
@@ -120,23 +127,24 @@ export default function Destinations({ onSelectDestinationForDepartures }: Desti
                     {/* Price, duration and trigger link */}
                     <div className="border-t border-white/10 pt-6 flex items-center justify-between">
                       <div>
-                        <div className="text-xs text-zinc-500 font-medium mb-1">
+                        <div className="text-[11px] text-zinc-400 uppercase tracking-wider font-semibold mb-1">
                           {dest.duration}
                         </div>
-                        <div className="text-xl font-bold text-white flex items-baseline gap-2">
+                        <div className="text-2xl font-black text-white font-display flex items-baseline gap-2">
                           {dest.originalPrice && (
-                            <span className="text-sm text-zinc-500 line-through font-normal">
+                            <span className="text-sm text-zinc-400 line-through font-normal">
                               ₹{dest.originalPrice.toLocaleString()}
                             </span>
                           )}
                           <span>₹{dest.price.toLocaleString()}</span>
-                          <span className="text-xs text-zinc-500 font-normal">/person</span>
+                          <span className="text-xs text-zinc-400 font-normal font-sans">/person</span>
                         </div>
                       </div>
 
                       <button
                         onClick={() => setSelectedDest(dest)}
-                        className="w-12 h-12 flex items-center justify-center rounded-full bg-white text-black hover:bg-zinc-200 transition-colors group-hover:scale-110 duration-300"
+                        className="w-12 h-12 flex items-center justify-center rounded-full bg-white text-black hover:bg-amber-300 transition-all duration-300 group-hover:scale-105 shadow-lg cursor-pointer"
+                        title="View Route Details"
                       >
                         <ArrowRight className="w-5 h-5 -rotate-45 group-hover:rotate-0 transition-transform duration-300" />
                       </button>
@@ -159,7 +167,7 @@ export default function Destinations({ onSelectDestinationForDepartures }: Desti
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setSelectedDest(null)}
-              className="absolute inset-0 bg-[#080808]/80 backdrop-blur-xl"
+              className="absolute inset-0 bg-black/85 backdrop-blur-xl"
             ></motion.div>
 
             {/* Modal Sheet Container */}
@@ -168,12 +176,12 @@ export default function Destinations({ onSelectDestinationForDepartures }: Desti
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 40 }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="relative bg-[#0F0F0F] border border-white/10 rounded-[32px] overflow-hidden w-full max-w-4xl shadow-2xl max-h-[90vh] overflow-y-auto z-10 custom-scrollbar"
+              className="relative bg-[#0d0f14] border border-white/15 rounded-[36px] overflow-hidden w-full max-w-4xl shadow-2xl max-h-[90vh] overflow-y-auto z-10"
             >
               {/* Close Button */}
               <button
                 onClick={() => setSelectedDest(null)}
-                className="absolute top-6 right-6 glass p-3 rounded-full hover:bg-white/20 transition text-white z-20"
+                className="absolute top-6 right-6 glass p-3 rounded-full hover:bg-white/20 transition text-white z-20 cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -186,17 +194,17 @@ export default function Destinations({ onSelectDestinationForDepartures }: Desti
                   className="w-full h-full object-cover"
                   referrerPolicy="no-referrer"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#0F0F0F] via-[#0F0F0F]/50 to-transparent"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-[#0d0f14] via-[#0d0f14]/50 to-transparent"></div>
                 
                 {/* Visual tags overlay */}
                 <div className="absolute bottom-8 left-8 right-8">
-                  <div className="inline-block px-4 py-1.5 glass text-white text-xs font-semibold rounded-full mb-4">
+                  <div className="inline-block px-4 py-1.5 glass text-white text-xs font-bold uppercase tracking-wider rounded-full mb-4 border border-white/20">
                     {selectedDest.category} Route
                   </div>
-                  <h3 className="text-4xl sm:text-6xl font-bold text-white tracking-tight">
+                  <h3 className="text-4xl sm:text-6xl font-black text-white tracking-tight font-display">
                     {selectedDest.name}
                   </h3>
-                  <p className="text-brand-blue text-sm sm:text-base font-medium mt-2">
+                  <p className="text-amber-300 text-sm sm:text-base font-semibold mt-2">
                     {selectedDest.subTitle}
                   </p>
                 </div>
@@ -205,55 +213,55 @@ export default function Destinations({ onSelectDestinationForDepartures }: Desti
               {/* Comprehensive Details Content Section */}
               <div className="p-8 sm:p-10 space-y-10">
                 <div>
-                  <h4 className="text-sm text-zinc-500 font-medium mb-3">Overview</h4>
+                  <h4 className="text-xs uppercase font-bold text-amber-400 tracking-widest mb-3 font-display">Overview</h4>
                   <p className="text-zinc-300 text-base sm:text-lg leading-relaxed font-light">
                     {selectedDest.longDesc}
                   </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-8 border-t border-white/5">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 pt-8 border-t border-white/10">
                   {/* Core Logistics Column */}
-                  <div className="glass p-6 rounded-[24px] flex flex-col justify-between">
-                    <div className="space-y-5">
-                      <div className="flex justify-between items-center border-b border-white/5 pb-3">
-                        <span className="text-sm text-zinc-400">Season</span>
-                        <span className="text-sm font-semibold text-white">{selectedDest.season}</span>
+                  <div className="glass p-6 rounded-[24px] flex flex-col justify-between border border-white/10">
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center border-b border-white/10 pb-3">
+                        <span className="text-xs uppercase tracking-wider text-zinc-400 font-semibold">Best Season</span>
+                        <span className="text-sm font-bold text-white">{selectedDest.season}</span>
                       </div>
-                      <div className="flex justify-between items-center border-b border-white/5 pb-3">
-                        <span className="text-sm text-zinc-400">Duration</span>
-                        <span className="text-sm font-semibold text-white">{selectedDest.duration}</span>
+                      <div className="flex justify-between items-center border-b border-white/10 pb-3">
+                        <span className="text-xs uppercase tracking-wider text-zinc-400 font-semibold">Duration</span>
+                        <span className="text-sm font-bold text-white">{selectedDest.duration}</span>
                       </div>
                       <div className="flex justify-between items-center pb-3">
-                        <span className="text-sm text-zinc-400">Rating</span>
-                        <span className="text-sm font-semibold text-brand-orange flex items-center gap-1">
-                          {selectedDest.rating} <Star className="w-3 h-3 fill-current" />
+                        <span className="text-xs uppercase tracking-wider text-zinc-400 font-semibold">Rating</span>
+                        <span className="text-sm font-bold text-amber-400 flex items-center gap-1">
+                          {selectedDest.rating} <Star className="w-3.5 h-3.5 fill-amber-400" />
                         </span>
                       </div>
                     </div>
 
-                    <div className="pt-6 mt-4 border-t border-white/5">
-                      <div className="text-xs text-zinc-500 mb-2">Base Cost Plan</div>
+                    <div className="pt-6 mt-4 border-t border-white/10">
+                      <div className="text-[10px] uppercase tracking-wider font-bold text-zinc-400 mb-1">Standard All-Inclusive</div>
                       <div className="flex items-baseline gap-2">
                         {selectedDest.originalPrice && (
-                          <span className="text-zinc-500 line-through text-lg font-normal mr-2">
+                          <span className="text-zinc-500 line-through text-base font-normal mr-1">
                             ₹{selectedDest.originalPrice.toLocaleString()}
                           </span>
                         )}
-                        <span className="text-3xl font-bold text-white">
+                        <span className="text-3xl font-black text-white font-display">
                           ₹{selectedDest.price.toLocaleString()}
                         </span>
-                        <span className="text-zinc-550 text-sm">/ person</span>
+                        <span className="text-zinc-400 text-xs">/ person</span>
                       </div>
                     </div>
                   </div>
 
                   {/* Handcrafted Highlights column */}
                   <div>
-                    <h4 className="text-sm text-zinc-500 font-medium mb-4">Highlights</h4>
-                    <ul className="space-y-4">
+                    <h4 className="text-xs uppercase font-bold text-amber-400 tracking-widest mb-4 font-display">Expedition Highlights</h4>
+                    <ul className="space-y-3.5">
                       {selectedDest.highlights.map((highlight) => (
-                        <li key={highlight} className="flex items-start gap-3 text-sm text-zinc-300 font-light">
-                          <CheckCircle className="w-5 h-5 text-brand-emerald shrink-0" />
+                        <li key={highlight} className="flex items-start gap-3 text-xs sm:text-sm text-zinc-300 font-light">
+                          <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
                           <span>{highlight}</span>
                         </li>
                       ))}
@@ -262,19 +270,19 @@ export default function Destinations({ onSelectDestinationForDepartures }: Desti
                 </div>
 
                 {/* Confirm Route departures action */}
-                <div className="pt-10 border-t border-white/5 flex flex-col sm:flex-row gap-6 items-center justify-between">
-                  <div className="text-zinc-500 text-sm font-light text-center sm:text-left max-w-md">
-                    Taxes and safety permits included. Limited seats to protect environment footprint.
+                <div className="pt-10 border-t border-white/10 flex flex-col sm:flex-row gap-6 items-center justify-between">
+                  <div className="text-zinc-400 text-xs font-light text-center sm:text-left max-w-md">
+                    Includes permits, stays, transfers, and seasoned expedition captains. Microgroup capped at 14 travelers.
                   </div>
                   <button
                     onClick={() => {
                       onSelectDestinationForDepartures(selectedDest.id);
                       setSelectedDest(null);
                     }}
-                    className="w-full sm:w-auto px-8 py-4 bg-white text-black font-semibold rounded-full hover:bg-zinc-200 transition-colors flex items-center justify-center gap-3"
+                    className="w-full sm:w-auto px-8 py-4 bg-white text-black font-black text-xs uppercase tracking-widest rounded-full hover:bg-amber-300 transition-all duration-300 flex items-center justify-center gap-3 shadow-xl cursor-pointer"
                   >
-                    View Departures
-                    <ArrowRight className="w-5 h-5" />
+                    <span>View Scheduled Batches</span>
+                    <ArrowRight className="w-4 h-4" />
                   </button>
                 </div>
               </div>

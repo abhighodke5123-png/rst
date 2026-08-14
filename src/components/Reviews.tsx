@@ -91,24 +91,29 @@ export default function Reviews() {
   const visibleReviews = isExpanded ? reviewsList : reviewsList.slice(0, 3);
 
   return (
-    <section id="reviews" className="py-24 px-6 bg-zinc-50 border-t border-zinc-200">
-      <div className="max-w-6xl mx-auto">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+    <section id="reviews" className="py-32 px-6 bg-[#07080a] relative border-t border-white/5 overflow-hidden">
+      <div className="absolute right-0 top-1/3 w-[600px] h-[600px] bg-amber-500/5 blur-[160px] rounded-full pointer-events-none"></div>
+
+      <div className="max-w-7xl mx-auto relative z-10">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-20 gap-8">
           <div>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-black tracking-tight mb-3">
-              Traveler Stories
+            <span className="text-xs tracking-widest text-amber-400 uppercase font-bold mb-3 block font-display">
+              Unfiltered Feedback
+            </span>
+            <h2 className="text-4xl sm:text-5xl md:text-6xl font-black text-white mb-4 tracking-tight font-display">
+              Traveler <span className="font-editorial text-amber-300 font-normal italic text-5xl sm:text-6xl md:text-7xl">Chronicles</span>
             </h2>
-            <p className="text-zinc-600 text-sm max-w-md font-sans">
-              Authentic stories and unfiltered field reports shared by the RAASTA travel community.
+            <p className="text-zinc-400 text-base sm:text-lg max-w-xl font-light">
+              Unscripted stories and verified field dispatches shared directly by the RAASTA travel community.
             </p>
           </div>
 
           <button
             onClick={() => setIsFormOpen(!isFormOpen)}
-            className="self-start md:self-auto flex items-center gap-2 bg-black hover:bg-zinc-800 text-white text-xs font-bold uppercase tracking-wider px-6 py-3 rounded-full transition-all duration-300 shadow-md"
+            className="self-start md:self-auto flex items-center gap-2.5 bg-amber-400 hover:bg-amber-300 text-black text-xs font-black uppercase tracking-widest px-7 py-4 rounded-2xl transition-all duration-300 shadow-lg shadow-amber-500/20 cursor-pointer"
           >
-            <Plus className="w-4 h-4" />
-            Share Your Journey
+            <Plus className="w-4 h-4 stroke-[3]" />
+            <span>Write Dispatch</span>
           </button>
         </div>
 
@@ -121,36 +126,36 @@ export default function Reviews() {
               exit={{ opacity: 0, y: -20, height: 0 }}
               className="mb-16 overflow-hidden"
             >
-              <div className="bg-white border border-zinc-200 p-8 rounded-2xl max-w-xl shadow-lg">
+              <div className="glass border border-white/15 p-8 sm:p-10 rounded-[32px] max-w-2xl mx-auto shadow-2xl bg-gradient-to-b from-[#181a24] to-[#0d0f14]">
                 {isSubmitted ? (
                   <motion.div 
                     initial={{ scale: 0.9, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     className="flex flex-col items-center justify-center py-8 text-center"
                   >
-                    <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center text-green-600 mb-4 animate-bounce">
-                      <Check className="w-6 h-6" />
+                    <div className="w-14 h-14 bg-emerald-400/20 border border-emerald-400/40 rounded-full flex items-center justify-center text-emerald-400 mb-4 animate-bounce">
+                      <Check className="w-7 h-7" />
                     </div>
-                    <h3 className="text-lg font-bold text-black mb-1">Thanks! Your review has been submitted.</h3>
-                    <p className="text-xs text-zinc-500">Your genuine travel story is now visible to the community.</p>
+                    <h3 className="text-xl font-bold text-white mb-2 font-display">Dispatch Published!</h3>
+                    <p className="text-sm text-zinc-400 font-light">Your genuine field report is now live for fellow adventurers.</p>
                   </motion.div>
                 ) : (
-                  <form onSubmit={handleSubmit} className="space-y-5">
-                    <div className="flex justify-between items-center border-b border-zinc-100 pb-3">
-                      <h3 className="font-bold text-black text-sm uppercase tracking-wider">Write a Review</h3>
+                  <form onSubmit={handleSubmit} className="space-y-6">
+                    <div className="flex justify-between items-center border-b border-white/10 pb-4">
+                      <h3 className="font-black text-white text-xs uppercase tracking-widest font-display">Log Field Experience</h3>
                       <button
                         type="button"
                         onClick={() => setIsFormOpen(false)}
-                        className="text-zinc-400 hover:text-black text-xs font-semibold"
+                        className="text-zinc-400 hover:text-white text-xs font-semibold uppercase tracking-wider cursor-pointer"
                       >
                         Cancel
                       </button>
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                       <div>
-                        <label className="block text-[10px] uppercase tracking-widest font-bold text-zinc-500 mb-1.5">
-                          Your Name
+                        <label className="block text-[10px] uppercase tracking-widest font-bold text-zinc-400 mb-2 font-display">
+                          Your Full Name
                         </label>
                         <input
                           type="text"
@@ -158,63 +163,65 @@ export default function Reviews() {
                           placeholder="e.g. Rohan Sharma"
                           value={newAuthor}
                           onChange={(e) => setNewAuthor(e.target.value)}
-                          className="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-4 py-2.5 text-xs text-black focus:outline-none focus:border-black font-sans"
+                          className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-xs text-white focus:outline-none focus:border-amber-400/60 placeholder:text-zinc-600"
                         />
                       </div>
                       <div>
-                        <label className="block text-[10px] uppercase tracking-widest font-bold text-zinc-500 mb-1.5">
-                          Destination
+                        <label className="block text-[10px] uppercase tracking-widest font-bold text-zinc-400 mb-2 font-display">
+                          Route Destination
                         </label>
                         <input
                           type="text"
-                          placeholder="e.g. Goa Beach Trek"
+                          placeholder="e.g. Spiti Valley Circuit"
                           value={newDestination}
                           onChange={(e) => setNewDestination(e.target.value)}
-                          className="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-4 py-2.5 text-xs text-black focus:outline-none focus:border-black font-sans"
+                          className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-xs text-white focus:outline-none focus:border-amber-400/60 placeholder:text-zinc-600"
                         />
                       </div>
                     </div>
 
                     <div>
-                      <label className="block text-[10px] uppercase tracking-widest font-bold text-zinc-500 mb-1.5">
-                        Your Story
+                      <label className="block text-[10px] uppercase tracking-widest font-bold text-zinc-400 mb-2 font-display">
+                        Your Story / Field Log
                       </label>
                       <textarea
                         required
                         rows={3}
-                        placeholder="Share your unscripted travel memory with us..."
+                        placeholder="Share your unscripted travel memory, favorite moments, captain highlights..."
                         value={newContent}
                         onChange={(e) => setNewContent(e.target.value)}
-                        className="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-4 py-2.5 text-xs text-black focus:outline-none focus:border-black font-sans resize-none"
+                        className="w-full bg-white/5 border border-white/10 rounded-2xl px-4 py-3 text-xs text-white focus:outline-none focus:border-amber-400/60 placeholder:text-zinc-600 resize-none font-light leading-relaxed"
                       />
                     </div>
 
-                    <div className="flex items-center gap-4">
-                      <span className="text-[10px] uppercase tracking-widest font-bold text-zinc-500">Rating:</span>
-                      <div className="flex gap-1">
-                        {[1, 2, 3, 4, 5].map((star) => (
-                          <button
-                            key={star}
-                            type="button"
-                            onClick={() => setNewRating(star)}
-                            className="focus:outline-none"
-                          >
-                            <Star
-                              className={`w-5 h-5 transition-colors ${
-                                star <= newRating ? "fill-yellow-400 text-yellow-400" : "text-zinc-300"
-                              }`}
-                            />
-                          </button>
-                        ))}
+                    <div className="flex items-center justify-between pt-2">
+                      <div className="flex items-center gap-3">
+                        <span className="text-[10px] uppercase tracking-widest font-bold text-zinc-400 font-display">Rating:</span>
+                        <div className="flex gap-1.5">
+                          {[1, 2, 3, 4, 5].map((star) => (
+                            <button
+                              key={star}
+                              type="button"
+                              onClick={() => setNewRating(star)}
+                              className="focus:outline-none cursor-pointer"
+                            >
+                              <Star
+                                className={`w-5 h-5 transition-colors ${
+                                  star <= newRating ? "fill-amber-400 text-amber-400" : "text-zinc-700"
+                                }`}
+                              />
+                            </button>
+                          ))}
+                        </div>
                       </div>
-                    </div>
 
-                    <button
-                      type="submit"
-                      className="w-full bg-black hover:bg-zinc-800 text-white font-bold text-xs uppercase tracking-wider py-3 rounded-xl transition-all shadow-md"
-                    >
-                      Submit Field Report
-                    </button>
+                      <button
+                        type="submit"
+                        className="bg-white text-black hover:bg-amber-300 font-black text-xs uppercase tracking-widest px-8 py-3.5 rounded-xl transition-all shadow-md cursor-pointer"
+                      >
+                        Publish Report
+                      </button>
+                    </div>
                   </form>
                 )}
               </div>
@@ -224,10 +231,10 @@ export default function Reviews() {
 
         {/* Minimal Grid Reviews Display */}
         {reviewsList.length === 0 ? (
-          <div className="text-center py-12 bg-white border border-zinc-200 rounded-2xl">
-            <MessageSquare className="w-8 h-8 text-zinc-300 mx-auto mb-3" />
-            <p className="text-zinc-500 text-sm font-medium">No reviews yet.</p>
-            <p className="text-zinc-400 text-xs mt-1">Be the first to share your field report!</p>
+          <div className="text-center py-16 glass border border-white/10 rounded-[32px]">
+            <MessageSquare className="w-10 h-10 text-zinc-600 mx-auto mb-3" />
+            <p className="text-zinc-300 text-base font-semibold">No dispatches logged yet.</p>
+            <p className="text-zinc-500 text-xs mt-1">Be the first explorer to share your field dispatch!</p>
           </div>
         ) : (
           <div className="space-y-12">
@@ -241,11 +248,11 @@ export default function Reviews() {
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.9, y: 20 }}
                     transition={{ duration: 0.3, delay: i * 0.05 }}
-                    className="group relative bg-white border border-zinc-200 rounded-2xl p-6 flex flex-col justify-between hover:shadow-lg transition-all duration-300 overflow-hidden"
+                    className="group relative glass border border-white/10 rounded-[32px] p-8 flex flex-col justify-between hover:border-white/25 hover:-translate-y-1.5 transition-all duration-300 overflow-hidden shadow-xl"
                   >
                     {/* NEW Badge */}
                     {review.createdAt && isNewReview(review.createdAt) && (
-                      <div className="absolute top-0 right-0 bg-black text-white text-[9px] font-black uppercase tracking-widest px-3 py-1 rounded-bl-xl z-10 shadow-sm">
+                      <div className="absolute top-0 right-0 bg-gradient-to-r from-amber-400 to-amber-500 text-black text-[9px] font-black uppercase tracking-widest px-3.5 py-1 rounded-bl-2xl z-10 shadow-md">
                         NEW
                       </div>
                     )}
@@ -254,29 +261,29 @@ export default function Reviews() {
                     <button
                       onClick={() => handleDeleteReview(review.id)}
                       title="Remove this review"
-                      className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity p-1.5 text-zinc-400 hover:text-red-500 hover:bg-zinc-100 rounded-full cursor-pointer z-10"
+                      className="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity p-2 text-zinc-400 hover:text-red-400 hover:bg-white/10 rounded-full cursor-pointer z-10"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
 
                     <div>
-                      <div className="flex items-center gap-1 mb-4 pr-6">
+                      <div className="flex items-center gap-1.5 mb-6 pr-6">
                         {Array.from({ length: 5 }).map((_, idx) => (
                           <Star
                             key={idx}
-                            className={`w-3.5 h-3.5 ${
-                              idx < review.rating ? "text-yellow-400 fill-yellow-400" : "text-zinc-200"
+                            className={`w-4 h-4 ${
+                              idx < review.rating ? "text-amber-400 fill-amber-400" : "text-zinc-700"
                             }`}
                           />
                         ))}
                       </div>
 
-                      <p className="text-zinc-700 text-xs font-sans leading-relaxed italic mb-6">
+                      <p className="text-zinc-300 text-sm font-light leading-relaxed italic mb-8">
                         "{review.content}"
                       </p>
                     </div>
 
-                    <div className="flex items-center gap-3 pt-4 border-t border-zinc-100">
+                    <div className="flex items-center gap-4 pt-6 border-t border-white/10">
                       <img
                         src={review.avatar}
                         alt={review.author}
@@ -284,15 +291,15 @@ export default function Reviews() {
                           // Fallback avatar if unsplash image fails
                           e.currentTarget.src = `https://api.dicebear.com/7.x/initials/svg?seed=${review.author}`;
                         }}
-                        className="w-9 h-9 rounded-full object-cover border border-zinc-100"
+                        className="w-10 h-10 rounded-full object-cover border border-white/15"
                       />
                       <div>
-                        <h4 className="text-[11px] font-extrabold text-black font-sans leading-tight">
+                        <h4 className="text-sm font-bold text-white font-display leading-tight">
                           {review.author}
                         </h4>
-                        <p className="text-[10px] text-zinc-500 font-sans mt-0.5 flex flex-col sm:flex-row sm:items-center sm:gap-1">
-                          <span>{review.destination}</span>
-                          <span className="hidden sm:inline">•</span>
+                        <p className="text-[11px] text-zinc-400 font-light mt-0.5 flex flex-col sm:flex-row sm:items-center sm:gap-1.5">
+                          <span className="text-amber-300/80 font-medium">{review.destination}</span>
+                          <span className="hidden sm:inline text-zinc-600">•</span>
                           <span>{review.date}</span>
                         </p>
                       </div>
@@ -306,17 +313,17 @@ export default function Reviews() {
               <motion.div layout className="flex justify-center">
                 <button
                   onClick={() => setIsExpanded(!isExpanded)}
-                  className="flex items-center gap-2 bg-white border border-zinc-200 hover:border-black text-black text-xs font-bold uppercase tracking-wider px-6 py-3 rounded-full transition-all duration-300 shadow-sm hover:shadow-md"
+                  className="flex items-center gap-2.5 bg-white/10 hover:bg-white hover:text-black border border-white/15 text-white text-xs font-black uppercase tracking-widest px-8 py-4 rounded-2xl transition-all duration-300 shadow-md cursor-pointer"
                 >
                   {isExpanded ? (
                     <>
                       <ChevronUp className="w-4 h-4" />
-                      Show Less
+                      <span>Show Less</span>
                     </>
                   ) : (
                     <>
                       <ChevronDown className="w-4 h-4" />
-                      View More Reviews
+                      <span>View More Dispatches ({reviewsList.length})</span>
                     </>
                   )}
                 </button>

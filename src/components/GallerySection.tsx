@@ -106,9 +106,9 @@ export default function GallerySection() {
     : items.filter((item) => item.category === activeCategory);
 
   return (
-    <section id="gallery" className="py-32 px-6 bg-brand-bg relative overflow-hidden">
+    <section id="gallery" className="py-32 px-6 bg-[#07080a] relative overflow-hidden">
       {/* Background glow */}
-      <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-brand-blue/10 blur-[150px] rounded-full pointer-events-none"></div>
+      <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-amber-500/5 blur-[160px] rounded-full pointer-events-none"></div>
 
       <motion.div
         initial={{ opacity: 0, y: 60 }}
@@ -117,29 +117,32 @@ export default function GallerySection() {
         transition={{ duration: 0.8, ease: "easeOut" }}
         className="max-w-7xl mx-auto relative z-10"
       >
-        
         {/* Header and trigger details */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-20 gap-8">
           <div>
-            <h2 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-white mb-6">
-              Snapshots <br/><span className="text-zinc-500">from the road.</span>
+            <span className="text-xs tracking-widest text-amber-400 uppercase font-bold mb-3 block font-display">
+              Unfiltered Journal
+            </span>
+            <h2 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight text-white mb-4 font-display">
+              Snapshots <br/>
+              <span className="font-editorial text-amber-300 font-normal italic text-5xl sm:text-6xl md:text-7xl">from the open road.</span>
             </h2>
-            <p className="text-zinc-400 text-lg max-w-xl font-light">
-              Moments frozen under wide Himalayan skies, inside foggy coastal cafes, and around late-night seaside bonfires.
+            <p className="text-zinc-400 text-base sm:text-lg max-w-xl font-light">
+              Moments frozen under wide Himalayan starfields, inside foggy coastal shacks, and around midnight bonfires.
             </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-4 self-start md:self-end">
             {/* Category selection */}
-            <div className="flex flex-wrap gap-2 p-1.5 glass rounded-2xl">
+            <div className="flex flex-wrap gap-1.5 p-1.5 glass rounded-2xl border border-white/10">
               {categoriesChoices.map((tc) => (
                 <button
                   key={tc}
                   onClick={() => setActiveCategory(tc)}
-                  className={`px-4 py-2.5 rounded-xl text-xs font-semibold uppercase tracking-wider transition-all duration-300 ${
+                  className={`px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer ${
                     activeCategory === tc
-                      ? "bg-white text-black"
-                      : "text-zinc-400 hover:text-white hover:bg-white/10"
+                      ? "bg-white text-black shadow-md"
+                      : "text-zinc-400 hover:text-white hover:bg-white/5"
                   }`}
                 >
                   {tc}
@@ -150,10 +153,10 @@ export default function GallerySection() {
             {/* trigger local simulation popup */}
             <button
               onClick={() => setUploadOpen(true)}
-              className="flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-white text-black text-xs font-bold uppercase tracking-wider hover:bg-zinc-200 transition-colors"
+              className="flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-amber-400 text-black text-xs font-black uppercase tracking-widest hover:bg-amber-300 transition-all duration-300 shadow-lg shadow-amber-500/20 cursor-pointer"
             >
               <Camera className="w-4 h-4" />
-              Upload
+              <span>Share Snapshot</span>
             </button>
           </div>
         </div>
@@ -170,45 +173,45 @@ export default function GallerySection() {
                 exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ duration: 0.4 }}
                 onClick={() => setSelectedPhoto(photo)}
-                className="group relative rounded-[32px] overflow-hidden cursor-crosshair border border-white/10 bg-white/5 break-inside-avoid"
+                className="group relative rounded-[32px] overflow-hidden cursor-pointer border border-white/10 glass break-inside-avoid hover:border-white/25 transition-all duration-500 hover:-translate-y-1.5 hover:shadow-[0_20px_45px_-15px_rgba(245,158,11,0.15)]"
               >
                 {/* Photo file */}
                 <img
                   alt={photo.title}
                   src={photo.url}
-                  className="w-full object-cover transition duration-700 group-hover:scale-110"
+                  className="w-full object-cover transition duration-700 group-hover:scale-106"
                   referrerPolicy="no-referrer"
                   style={{ minHeight: "250px" }}
                 />
 
                 {/* Overlays details */}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#040404] via-[#040404]/50 to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-500"></div>
+                <div className="absolute inset-0 bg-gradient-to-t from-[#07080a] via-[#07080a]/50 to-transparent opacity-60 group-hover:opacity-85 transition-opacity duration-500"></div>
 
-                <div className="absolute top-6 left-6 flex gap-2 flex-wrap">
+                <div className="absolute top-5 left-5 flex gap-2 flex-wrap">
                   <span className="text-[10px] font-bold tracking-wider glass border border-white/20 text-white px-3 py-1 rounded-full uppercase">
                     {photo.destination}
                   </span>
-                  <span className="text-[10px] font-bold tracking-wider glass border border-white/20 text-brand-emerald px-3 py-1 rounded-full uppercase">
+                  <span className="text-[10px] font-bold tracking-wider glass border border-amber-400/30 text-amber-300 px-3 py-1 rounded-full uppercase">
                     {photo.category}
                   </span>
                 </div>
 
-                <div className="absolute bottom-6 left-6 right-6 flex items-end justify-between">
+                <div className="absolute bottom-5 left-5 right-5 flex items-end justify-between">
                   <div>
-                    <h4 className="text-lg font-bold text-white leading-tight tracking-tight mb-1">
+                    <h4 className="text-lg font-black text-white leading-tight tracking-tight mb-1 font-display">
                       {photo.title}
                     </h4>
-                    <span className="text-[11px] text-zinc-400">
+                    <span className="text-[11px] text-zinc-400 font-light">
                       By {photo.photographer} • {photo.date}
                     </span>
                   </div>
 
                   <button
                     onClick={(e) => handleLike(photo.id, e)}
-                    className="flex items-center gap-1.5 px-3 py-2 rounded-full glass hover:bg-white/20 hover:scale-110 active:scale-95 transition-all border border-white/20 text-white shrink-0"
+                    className="flex items-center gap-1.5 px-3.5 py-2 rounded-full glass hover:bg-white/20 hover:scale-110 active:scale-95 transition-all border border-white/20 text-white shrink-0 cursor-pointer"
                   >
-                    <Heart className="w-4 h-4 fill-brand-orange text-brand-orange shrink-0" />
-                    <span className="text-xs font-semibold">{photo.likes}</span>
+                    <Heart className="w-4 h-4 fill-amber-400 text-amber-400 shrink-0" />
+                    <span className="text-xs font-bold font-display">{photo.likes}</span>
                   </button>
                 </div>
               </motion.div>

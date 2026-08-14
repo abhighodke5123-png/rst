@@ -67,16 +67,21 @@ export default function ReviewSubmissionModal({ isOpen, onClose, onSubmit }: Rev
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
         <motion.div
           initial={{ opacity: 0, scale: 0.95, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 20 }}
-          className="bg-zinc-950 border border-zinc-800 rounded-2xl w-full max-w-2xl overflow-hidden shadow-2xl relative"
+          className="bg-[#0b0c10] border border-white/10 rounded-[32px] w-full max-w-2xl overflow-hidden shadow-2xl relative text-white"
         >
-          <div className="p-6 border-b border-zinc-800 flex justify-between items-center bg-zinc-900/50">
-            <h2 className="text-xl font-bold text-white">Leave a Review</h2>
-            <button onClick={onClose} className="p-2 text-zinc-400 hover:text-white rounded-full hover:bg-zinc-800 transition cursor-pointer">
+          <div className="p-6 sm:p-7 border-b border-white/10 flex justify-between items-center bg-white/[0.02]">
+            <div>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-amber-400 font-display block mb-1">
+                Traveler Feedback
+              </span>
+              <h2 className="text-2xl font-black text-white font-display">Leave a Review</h2>
+            </div>
+            <button onClick={onClose} className="p-2.5 text-zinc-400 hover:text-white rounded-full bg-white/5 hover:bg-white/10 transition cursor-pointer border border-white/5">
               <X className="w-5 h-5" />
             </button>
           </div>
@@ -84,7 +89,7 @@ export default function ReviewSubmissionModal({ isOpen, onClose, onSubmit }: Rev
           <form onSubmit={handleSubmit} className="p-6 sm:p-8 space-y-6">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div>
-                <label className="block text-[11px] font-bold text-zinc-400 uppercase tracking-widest mb-2">
+                <label className="block text-[11px] font-bold text-amber-400/90 uppercase tracking-widest mb-2 font-display">
                   Your Name
                 </label>
                 <input
@@ -93,12 +98,12 @@ export default function ReviewSubmissionModal({ isOpen, onClose, onSubmit }: Rev
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="e.g. John Doe"
-                  className="w-full bg-zinc-900 border border-zinc-800 focus:border-yellow-500/50 rounded-xl py-3 px-4 text-sm text-white placeholder-zinc-600 outline-none transition"
+                  className="w-full bg-white/5 border border-white/10 focus:border-amber-400/50 rounded-2xl py-3.5 px-4 text-sm text-white placeholder-zinc-500 outline-none transition"
                 />
               </div>
               <div>
-                <label className="block text-[11px] font-bold text-zinc-400 uppercase tracking-widest mb-2">
-                  Trip Name
+                <label className="block text-[11px] font-bold text-amber-400/90 uppercase tracking-widest mb-2 font-display">
+                  Trip Destination
                 </label>
                 <input
                   type="text"
@@ -106,13 +111,13 @@ export default function ReviewSubmissionModal({ isOpen, onClose, onSubmit }: Rev
                   value={trip}
                   onChange={(e) => setTrip(e.target.value)}
                   placeholder="e.g. Spiti Valley Expedition"
-                  className="w-full bg-zinc-900 border border-zinc-800 focus:border-yellow-500/50 rounded-xl py-3 px-4 text-sm text-white placeholder-zinc-600 outline-none transition"
+                  className="w-full bg-white/5 border border-white/10 focus:border-amber-400/50 rounded-2xl py-3.5 px-4 text-sm text-white placeholder-zinc-500 outline-none transition"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-[11px] font-bold text-zinc-400 uppercase tracking-widest mb-2">
+              <label className="block text-[11px] font-bold text-amber-400/90 uppercase tracking-widest mb-2 font-display">
                 Rating
               </label>
               <div className="flex gap-2">
@@ -128,7 +133,7 @@ export default function ReviewSubmissionModal({ isOpen, onClose, onSubmit }: Rev
                     <Star
                       className={`w-8 h-8 ${
                         star <= (hoveredRating || rating)
-                          ? "fill-yellow-500 text-yellow-500"
+                          ? "fill-amber-400 text-amber-400 drop-shadow-[0_0_8px_rgba(251,191,36,0.5)]"
                           : "text-zinc-700"
                       } transition-colors`}
                     />
@@ -138,29 +143,29 @@ export default function ReviewSubmissionModal({ isOpen, onClose, onSubmit }: Rev
             </div>
 
             <div>
-              <label className="block text-[11px] font-bold text-zinc-400 uppercase tracking-widest mb-2">
+              <label className="block text-[11px] font-bold text-amber-400/90 uppercase tracking-widest mb-2 font-display">
                 Your Experience
               </label>
               <textarea
                 required
                 value={text}
                 onChange={(e) => setText(e.target.value)}
-                placeholder="Share your story..."
+                placeholder="Share your story, the road thrills, campfire memories, and team vibes..."
                 rows={4}
-                className="w-full bg-zinc-900 border border-zinc-800 focus:border-yellow-500/50 rounded-xl py-3 px-4 text-sm text-white placeholder-zinc-600 outline-none transition resize-none"
+                className="w-full bg-white/5 border border-white/10 focus:border-amber-400/50 rounded-2xl py-3.5 px-4 text-sm text-white placeholder-zinc-500 outline-none transition resize-none font-light"
               />
             </div>
 
             <div>
-              <label className="block text-[11px] font-bold text-zinc-400 uppercase tracking-widest mb-2">
+              <label className="block text-[11px] font-bold text-amber-400/90 uppercase tracking-widest mb-2 font-display">
                 Trip Photo (Optional)
               </label>
               <div
                 onDragOver={(e) => e.preventDefault()}
                 onDrop={handleDrop}
                 onClick={() => fileInputRef.current?.click()}
-                className={`w-full border-2 border-dashed rounded-xl p-8 flex flex-col items-center justify-center cursor-pointer transition-colors ${
-                  imagePreview ? "border-yellow-500/50 bg-yellow-500/5" : "border-zinc-800 hover:border-zinc-600 bg-zinc-900/50 hover:bg-zinc-900"
+                className={`w-full border-2 border-dashed rounded-2xl p-6 flex flex-col items-center justify-center cursor-pointer transition-colors ${
+                  imagePreview ? "border-amber-400/50 bg-amber-400/5" : "border-white/10 hover:border-white/20 bg-white/[0.02] hover:bg-white/[0.04]"
                 }`}
               >
                 <input
@@ -172,33 +177,33 @@ export default function ReviewSubmissionModal({ isOpen, onClose, onSubmit }: Rev
                 />
                 
                 {imagePreview ? (
-                  <div className="relative w-32 h-32 rounded-full overflow-hidden border-4 border-zinc-800">
+                  <div className="relative w-28 h-28 rounded-full overflow-hidden border-4 border-amber-400/30">
                     <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
                   </div>
                 ) : (
                   <div className="text-center">
-                    <div className="w-12 h-12 bg-zinc-800 rounded-full flex items-center justify-center mx-auto mb-3 text-zinc-400">
+                    <div className="w-12 h-12 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-3 text-amber-400 border border-white/10">
                       <ImageIcon className="w-6 h-6" />
                     </div>
-                    <p className="text-sm text-zinc-300 font-medium mb-1">Click to upload or drag and drop</p>
+                    <p className="text-sm text-zinc-200 font-medium mb-1 font-display">Click to upload or drag and drop</p>
                     <p className="text-xs text-zinc-500">SVG, PNG, JPG or GIF (max. 5MB)</p>
                   </div>
                 )}
               </div>
             </div>
 
-            <div className="pt-4 flex justify-end gap-3 border-t border-zinc-800">
+            <div className="pt-4 flex justify-end gap-3 border-t border-white/10">
               <button
                 type="button"
                 onClick={onClose}
-                className="px-6 py-2.5 rounded-xl text-sm font-bold text-zinc-400 hover:text-white transition cursor-pointer"
+                className="px-6 py-3 rounded-xl text-sm font-bold text-zinc-400 hover:text-white transition cursor-pointer font-display"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={!name || !trip || !text}
-                className="bg-yellow-500 hover:bg-yellow-400 text-black px-6 py-2.5 rounded-xl text-sm font-extrabold transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                className="bg-amber-400 hover:bg-amber-300 text-black px-7 py-3 rounded-xl text-sm font-black transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 shadow-lg shadow-amber-500/20 font-display uppercase tracking-wider"
               >
                 <Upload className="w-4 h-4" />
                 Submit Review

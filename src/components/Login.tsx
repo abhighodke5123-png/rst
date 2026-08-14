@@ -67,16 +67,16 @@ export default function Login({ onBack, onSuccess, onNavigateToSignup }: LoginPr
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col justify-center items-center px-6 py-12 relative overflow-hidden font-sans">
+    <div className="min-h-screen bg-[#07080a] text-white flex flex-col justify-center items-center px-6 py-12 relative overflow-hidden font-sans">
       {/* Decorative ambient backgrounds */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-yellow-500/5 rounded-full filter blur-[120px] pointer-events-none animate-pulse-slow"></div>
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-zinc-200/10 rounded-full filter blur-[150px] pointer-events-none"></div>
+      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-amber-400/5 rounded-full filter blur-[140px] pointer-events-none animate-pulse-slow"></div>
+      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-amber-500/5 rounded-full filter blur-[160px] pointer-events-none"></div>
 
       {/* Navigation top bar */}
       <div className="absolute top-8 left-6 sm:left-12">
         <button
           onClick={onBack}
-          className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-zinc-500 hover:text-black transition duration-200 cursor-pointer"
+          className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-zinc-400 hover:text-amber-400 transition duration-200 cursor-pointer font-display"
         >
           <ArrowLeft className="w-4 h-4" />
           Back To Home
@@ -87,14 +87,14 @@ export default function Login({ onBack, onSuccess, onNavigateToSignup }: LoginPr
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-md bg-zinc-50 border border-zinc-200 rounded-3xl p-8 sm:p-10 shadow-2xl relative z-10"
+        className="w-full max-w-md bg-[#0b0c10] border border-white/10 rounded-[32px] p-8 sm:p-10 shadow-2xl relative z-10"
       >
         <div className="text-center mb-8">
-          <div className="mx-auto w-12 h-12 bg-white rounded-xl flex items-center justify-center mb-4 shadow-lg">
-            <LogIn className="w-5 h-5 text-black" />
+          <div className="mx-auto w-12 h-12 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center mb-4 text-amber-400 shadow-lg">
+            <LogIn className="w-5 h-5" />
           </div>
-          <h2 className="text-2xl font-extrabold text-black tracking-tight">Welcome Back</h2>
-          <p className="text-xs text-zinc-500 font-medium uppercase tracking-wider mt-1.5 select-none">
+          <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight font-display">Welcome Back</h2>
+          <p className="text-xs text-amber-400/80 font-bold uppercase tracking-wider mt-1.5 select-none font-display">
             Secure Member Authentication
           </p>
         </div>
@@ -103,12 +103,12 @@ export default function Login({ onBack, onSuccess, onNavigateToSignup }: LoginPr
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-6 p-4 rounded-xl bg-red-950/20 border border-red-500/20 text-red-400 text-xs flex gap-3 items-start"
+            className="mb-6 p-4 rounded-2xl bg-red-950/20 border border-red-500/20 text-red-400 text-xs flex gap-3 items-start"
           >
-            <ShieldAlert className="w-5 h-5 shrink-0 text-red-500" />
+            <ShieldAlert className="w-5 h-5 shrink-0 text-red-400" />
             <div>
               <p className="font-bold">Access Denied</p>
-              <p className="mt-0.5 text-zinc-600 leading-relaxed">{error}</p>
+              <p className="mt-0.5 text-zinc-400 leading-relaxed font-light">{error}</p>
             </div>
           </motion.div>
         )}
@@ -116,11 +116,11 @@ export default function Login({ onBack, onSuccess, onNavigateToSignup }: LoginPr
         <form onSubmit={handleLogin} className="space-y-5">
           {/* Email input field */}
           <div>
-            <label className="block text-[11px] font-bold text-zinc-500 uppercase tracking-widest mb-2">
+            <label className="block text-[11px] font-bold text-amber-400/90 uppercase tracking-widest mb-2 font-display">
               Email Address
             </label>
             <div className="relative">
-              <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-zinc-600">
+              <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-zinc-500">
                 <Mail className="w-4 h-4" />
               </span>
               <input
@@ -129,7 +129,7 @@ export default function Login({ onBack, onSuccess, onNavigateToSignup }: LoginPr
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="e.g. raastatrips.in@gmail.com"
-                className="w-full bg-white border border-zinc-200 focus:border-yellow-500/40 rounded-xl py-3 pl-11 pr-4 text-sm text-black placeholder-zinc-700 outline-none transition duration-250 font-sans"
+                className="w-full bg-white/5 border border-white/10 focus:border-amber-400/50 rounded-2xl py-3.5 pl-11 pr-4 text-sm text-white placeholder-zinc-500 outline-none transition duration-200"
               />
             </div>
           </div>
@@ -137,12 +137,12 @@ export default function Login({ onBack, onSuccess, onNavigateToSignup }: LoginPr
           {/* Password input field */}
           <div>
             <div className="flex justify-between items-center mb-2">
-              <label className="block text-[11px] font-bold text-zinc-500 uppercase tracking-widest">
+              <label className="block text-[11px] font-bold text-amber-400/90 uppercase tracking-widest font-display">
                 Password
               </label>
             </div>
             <div className="relative">
-              <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-zinc-600">
+              <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-zinc-500">
                 <Lock className="w-4 h-4" />
               </span>
               <input
@@ -151,7 +151,7 @@ export default function Login({ onBack, onSuccess, onNavigateToSignup }: LoginPr
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••••••"
-                className="w-full bg-white border border-zinc-200 focus:border-yellow-500/40 rounded-xl py-3 pl-11 pr-4 text-sm text-black placeholder-zinc-700 outline-none transition duration-250 font-sans"
+                className="w-full bg-white/5 border border-white/10 focus:border-amber-400/50 rounded-2xl py-3.5 pl-11 pr-4 text-sm text-white placeholder-zinc-500 outline-none transition duration-200"
               />
             </div>
           </div>
@@ -159,7 +159,7 @@ export default function Login({ onBack, onSuccess, onNavigateToSignup }: LoginPr
           <button
             type="submit"
             disabled={loading}
-            className="w-full mt-2 bg-white hover:bg-yellow-500 hover:text-black text-black py-3.5 rounded-xl text-xs font-extrabold uppercase tracking-widest transition duration-300 flex items-center justify-center gap-2 shadow-lg disabled:opacity-50 cursor-pointer"
+            className="w-full mt-2 bg-amber-400 hover:bg-amber-300 text-black py-3.5 rounded-2xl text-xs font-black uppercase tracking-widest transition duration-300 flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 disabled:opacity-50 cursor-pointer font-display"
           >
             {loading ? (
               <>
@@ -180,18 +180,18 @@ export default function Login({ onBack, onSuccess, onNavigateToSignup }: LoginPr
             type="button"
             onClick={handleGoogleSignIn}
             disabled={loading}
-            className="w-full bg-zinc-100 hover:bg-zinc-200 text-black py-3.5 rounded-xl text-xs font-extrabold uppercase tracking-widest transition duration-300 flex items-center justify-center gap-2 cursor-pointer"
+            className="w-full bg-white/5 hover:bg-white/10 border border-white/10 text-white py-3.5 rounded-2xl text-xs font-bold uppercase tracking-widest transition duration-300 flex items-center justify-center gap-2 cursor-pointer font-display"
           >
             Sign in with Google
           </button>
         </div>
 
         {/* Signup Link */}
-        <p className="text-xs text-zinc-500 text-center mt-6">
+        <p className="text-xs text-zinc-400 text-center mt-6">
           New to RAASTA?{" "}
           <button
             onClick={onNavigateToSignup}
-            className="text-black hover:text-yellow-500 font-bold transition underline cursor-pointer"
+            className="text-amber-400 hover:text-amber-300 font-bold transition underline cursor-pointer font-display ml-1"
           >
             Create an account
           </button>
