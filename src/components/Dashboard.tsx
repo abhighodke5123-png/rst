@@ -37,6 +37,7 @@ interface DashboardProps {
 import { collection, query, where, getDocs, deleteDoc, doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import TermsRegulationsModal from "./TermsRegulationsModal";
+import NomadLoyaltyTiers from "./NomadLoyaltyTiers";
 
 export default function Dashboard({ user, onLogout, onNavigateToHome, onReserveMore, onOpenNotifications, notificationCount }: DashboardProps) {
   const [termsOpen, setTermsOpen] = useState(false);
@@ -52,10 +53,38 @@ export default function Dashboard({ user, onLogout, onNavigateToHome, onReserveM
       const q = query(collection(db, "bookings"), where("email", "==", user.email));
       const snap = await getDocs(q);
       const data = snap.docs.map(doc => doc.data() as Booking);
-      setBookings(data);
+
+      // Also merge any cached guest bookings if matching this user
+      let localBookings: Booking[] = [];
+      try {
+        const cached = localStorage.getItem("raasta_guest_bookings");
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          if (Array.isArray(parsed)) {
+            localBookings = parsed.filter((b: Booking) => b.email === user.email || !b.email);
+          }
+        }
+      } catch (e) {
+        // ignore
+      }
+
+      const combined = [...data];
+      for (const lb of localBookings) {
+        if (!combined.some(b => b.id === lb.id)) {
+          combined.push(lb);
+        }
+      }
+
+      setBookings(combined);
     } catch (err) {
       console.error(err);
       setError("Server connection offline.");
+      try {
+        const cached = localStorage.getItem("raasta_guest_bookings");
+        if (cached) {
+          setBookings(JSON.parse(cached));
+        }
+      } catch (e) {}
     } finally {
       setLoading(false);
     }
@@ -207,6 +236,16 @@ export default function Dashboard({ user, onLogout, onNavigateToHome, onReserveM
             Explore More Departures
             <ChevronRight className="w-3.5 h-3.5" />
           </button>
+        </div>
+
+        {/* Nomad Loyalty Tiers Progress */}
+        <div className="mb-10">
+          <NomadLoyaltyTiers
+            bookings={bookings}
+            userName={user.name}
+            userEmail={user.email}
+            onExploreDepartures={onReserveMore}
+          />
         </div>
 
         {/* Dashboard Grid split */}

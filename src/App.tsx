@@ -512,8 +512,8 @@ export default function App() {
                 Careers & Captains <span className="text-[9px] text-amber-400 font-bold uppercase ml-1 bg-amber-400/10 border border-amber-400/30 px-1.5 py-0.5 rounded">Hiring</span>
               </button>
               <a href="#contact" className="text-zinc-400 hover:text-amber-300 transition-colors text-xs">Contact & FAQs</a>
-              <a href="tel:+917348929802" className="text-zinc-400 hover:text-white transition-colors font-mono text-xs">
-                Direct: +91 7348929802
+              <a href="tel:+919226638440" className="text-zinc-400 hover:text-white transition-colors font-mono text-xs">
+                Direct: +91 9226638440
               </a>
             </div>
             <div className="flex flex-col gap-3">
@@ -549,7 +549,7 @@ export default function App() {
 
       {/* Floating WhatsApp CTA */}
       <a
-        href="https://wa.me/917348929802?text=Hi%20RAASTA,%20I'm%20looking%20for%20a%20curated%20road%20trip!"
+        href="https://wa.me/919226638440?text=Hi%20RAASTA,%20I'm%20looking%20for%20a%20curated%20road%20trip!"
         target="_blank"
         rel="noreferrer"
         className="fixed bottom-22 right-6 z-40 bg-[#25D366] text-white p-3.5 rounded-full shadow-2xl hover:scale-110 transition-transform flex items-center justify-center group border border-white/10"
@@ -636,6 +636,14 @@ export default function App() {
         onClose={() => setBookingsOpen(false)}
         bookings={bookings}
         onCancelBooking={handleCancelBooking}
+        onOpenDashboard={() => {
+          setBookingsOpen(false);
+          if (currentUser) {
+            setView(currentUser.role === "admin" ? "admin" : "dashboard");
+          } else {
+            setView("login");
+          }
+        }}
       />
 
       {/* Real-time Concierge simulated email inbox overlay */}

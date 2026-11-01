@@ -89,7 +89,7 @@ export default function PrivacyPolicyModal({ isOpen, onClose }: PrivacyPolicyMod
               </p>
               <div className="flex flex-col sm:flex-row gap-4 pt-2 text-xs font-mono text-zinc-300">
                 <span className="flex items-center gap-1.5"><Mail className="w-3.5 h-3.5 text-amber-400" /> raastatrips.in@gmail.com</span>
-                <span className="flex items-center gap-1.5"><PhoneCall className="w-3.5 h-3.5 text-emerald-400" /> +91 7348929802</span>
+                <span className="flex items-center gap-1.5"><PhoneCall className="w-3.5 h-3.5 text-emerald-400" /> +91 9226638440</span>
               </div>
             </section>
           </div>

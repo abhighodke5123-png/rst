@@ -235,7 +235,7 @@ export default function TermsRegulationsModal({ isOpen, onClose, initialTab = "t
 
           {/* Footer Actions */}
           <div className="p-6 border-t border-white/10 bg-[#07080a] flex flex-col sm:flex-row gap-4 items-center justify-between">
-            <span className="text-zinc-400 text-xs font-mono">Helpline: +91 7348929802 | raastatrips.in@gmail.com</span>
+            <span className="text-zinc-400 text-xs font-mono">Helpline: +91 9226638440 | raastatrips.in@gmail.com</span>
             <button
               onClick={onClose}
               className="w-full sm:w-auto px-8 py-3 bg-amber-400 text-black font-black text-xs uppercase tracking-widest rounded-xl hover:bg-amber-300 transition shadow-lg shadow-amber-500/20 cursor-pointer font-display"

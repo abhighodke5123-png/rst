@@ -8,7 +8,7 @@ export default function CommunityReferral() {
 
   const handleCopyReferral = () => {
     if (navigator.clipboard) {
-      navigator.clipboard.writeText(`Hey! Join me on a curated road trip with RAASTA Travels. Use my code ${referralCode} to get ₹500 OFF your first trip: https://wa.me/917348929802?text=Hi%20Raasta,%20I'm%20using%20referral%20code%20${referralCode}`);
+      navigator.clipboard.writeText(`Hey! Join me on a curated road trip with RAASTA Travels. Use my code ${referralCode} to get ₹500 OFF your first trip: https://wa.me/919226638440?text=Hi%20Raasta,%20I'm%20using%20referral%20code%20${referralCode}`);
       setCopied(true);
       setTimeout(() => setCopied(false), 2500);
     }

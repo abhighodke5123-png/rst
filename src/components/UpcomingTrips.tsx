@@ -3,10 +3,10 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Trip, Booking } from "../types";
 import { TRIPS } from "../data";
-import { Calendar, Users, SlidersHorizontal, MapPin, Tag, Search, ArrowRight, Sparkles, Compass } from "lucide-react";
+import { Calendar, Users, SlidersHorizontal, MapPin, Tag, Search, ArrowRight, Sparkles, Compass, ArrowUpDown, ChevronDown, Check, ArrowDownWideNarrow, ArrowUpNarrowWide, RotateCcw } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import BookingForm from "./BookingForm";
 import TopographicOverlay from "./TopographicOverlay";
@@ -21,6 +21,60 @@ interface UpcomingTripsProps {
   onClearInitialFilter?: () => void;
 }
 
+export type TripSortOption = "default" | "price-asc" | "price-desc" | "date-asc" | "date-desc";
+
+// Helper to robustly parse various trip date formats for chronological sorting
+function parseTripDate(dateStr: string): number {
+  if (!dateStr) return 0;
+
+  // Direct parse attempt
+  const direct = Date.parse(dateStr);
+  if (!isNaN(direct)) return direct;
+
+  // Standardize dashes (replace en-dash, em-dash with standard hyphen)
+  const normalized = dateStr.replace(/[–—]/g, "-").trim();
+
+  // Pattern 1: "12 - 15 July 2025" or "12 - 15 Jul 2025"
+  const rangeWithMonthYear = normalized.match(/(\d{1,2})\s*-\s*\d{1,2}\s+([A-Za-z]+)\s+(\d{4})/);
+  if (rangeWithMonthYear) {
+    const [, startDay, month, year] = rangeWithMonthYear;
+    const parsed = Date.parse(`${month} ${startDay}, ${year}`);
+    if (!isNaN(parsed)) return parsed;
+  }
+
+  // Pattern 2: "28 Oct - 2 Nov 2025"
+  const multiMonthRange = normalized.match(/(\d{1,2})\s+([A-Za-z]+)\s*-\s*\d{1,2}\s+[A-Za-z]+\s+(\d{4})/);
+  if (multiMonthRange) {
+    const [, startDay, month, year] = multiMonthRange;
+    const parsed = Date.parse(`${month} ${startDay}, ${year}`);
+    if (!isNaN(parsed)) return parsed;
+  }
+
+  // Pattern 3: "12 July 2025" or "July 12 2025"
+  const dayMonthYear = normalized.match(/(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})/);
+  if (dayMonthYear) {
+    const [, day, month, year] = dayMonthYear;
+    const parsed = Date.parse(`${month} ${day}, ${year}`);
+    if (!isNaN(parsed)) return parsed;
+  }
+
+  // Pattern 4: "July 2025"
+  const monthYear = normalized.match(/([A-Za-z]+)\s+(\d{4})/);
+  if (monthYear) {
+    const [, month, year] = monthYear;
+    const parsed = Date.parse(`${month} 1, ${year}`);
+    if (!isNaN(parsed)) return parsed;
+  }
+
+  // Pattern 5: Any 4-digit year e.g. "2025"
+  const yearOnly = normalized.match(/(\d{4})/);
+  if (yearOnly) {
+    return new Date(parseInt(yearOnly[1], 10), 0, 1).getTime();
+  }
+
+  return 0;
+}
+
 export default function UpcomingTrips({
   tripsList,
   onBookTrip,
@@ -32,27 +86,76 @@ export default function UpcomingTrips({
 }: UpcomingTripsProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
+  const [sortBy, setSortBy] = useState<TripSortOption>("default");
+  const [isSortOpen, setIsSortOpen] = useState(false);
+  const sortDropdownRef = useRef<HTMLDivElement>(null);
 
   const statuses = ["All", "Seats Open", "Selling Fast", "Almost Full", "Monsoon Special"];
 
-  // Filter our scheduled departures
+  const sortOptions: { id: TripSortOption; label: string; shortLabel: string; hint: string }[] = [
+    { id: "default", label: "Featured Order", shortLabel: "Featured", hint: "Curated expedition sequence" },
+    { id: "price-asc", label: "Price: Low to High", shortLabel: "Price (Low → High)", hint: "Budget friendly first" },
+    { id: "price-desc", label: "Price: High to Low", shortLabel: "Price (High → Low)", hint: "Premium caravans first" },
+    { id: "date-asc", label: "Date: Earliest First", shortLabel: "Date (Soonest)", hint: "Upcoming departures first" },
+    { id: "date-desc", label: "Date: Latest First", shortLabel: "Date (Later)", hint: "Future departures" },
+  ];
+
+  // Close dropdown on click outside
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (sortDropdownRef.current && !sortDropdownRef.current.contains(event.target as Node)) {
+        setIsSortOpen(false);
+      }
+    }
+    if (isSortOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isSortOpen]);
+
+  // 1. Filter our scheduled departures
   const filteredTrips = tripsList.filter((trip) => {
-    // 1. Check destination filter (passed down from Deep Dive triggers)
+    // Destination filter (passed down from Deep Dive triggers)
     if (initialFilterDestinationId && trip.destinationId !== initialFilterDestinationId) {
       return false;
     }
 
-    // 2. Search matches
+    // Search matches
     const matchesSearch =
       trip.destinationName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       trip.dates.toLowerCase().includes(searchTerm.toLowerCase()) ||
       trip.description.toLowerCase().includes(searchTerm.toLowerCase());
 
-    // 3. Status matches
+    // Status matches
     const matchesStatus = statusFilter === "All" || trip.status === statusFilter;
 
     return matchesSearch && matchesStatus;
   });
+
+  // 2. Sort filtered scheduled departures
+  const sortedTrips = [...filteredTrips].sort((a, b) => {
+    if (sortBy === "price-asc") {
+      return a.price - b.price;
+    }
+    if (sortBy === "price-desc") {
+      return b.price - a.price;
+    }
+    if (sortBy === "date-asc") {
+      const dateA = parseTripDate(a.dates);
+      const dateB = parseTripDate(b.dates);
+      return dateA - dateB;
+    }
+    if (sortBy === "date-desc") {
+      const dateA = parseTripDate(a.dates);
+      const dateB = parseTripDate(b.dates);
+      return dateB - dateA;
+    }
+    return 0;
+  });
+
+  const activeSort = sortOptions.find(o => o.id === sortBy) || sortOptions[0];
 
   return (
     <section id="trips" className="py-32 px-6 bg-[#07080a] relative overflow-hidden">
@@ -94,10 +197,10 @@ export default function UpcomingTrips({
           )}
         </div>
 
-        {/* Filters Controls Card */}
-        <div className="glass border border-white/10 p-4 sm:p-5 rounded-3xl mb-12 flex flex-col md:flex-row gap-4 items-center justify-between shadow-xl">
+        {/* Filters & Sorting Controls Bar */}
+        <div className="glass border border-white/10 p-4 sm:p-5 rounded-3xl mb-12 flex flex-col xl:flex-row gap-4 items-stretch xl:items-center justify-between shadow-xl">
           {/* Search bar */}
-          <div className="relative w-full md:w-96">
+          <div className="relative w-full xl:w-80">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
             <input
               type="text"
@@ -109,12 +212,12 @@ export default function UpcomingTrips({
           </div>
 
           {/* Availability Status list filters */}
-          <div className="flex flex-wrap gap-2 w-full md:w-auto items-center">
+          <div className="flex flex-wrap gap-2 items-center flex-1 justify-start xl:justify-center">
             {statuses.map((st) => (
               <button
                 key={st}
                 onClick={() => setStatusFilter(st)}
-                className={`px-4 py-2 rounded-xl text-xs font-bold tracking-wider font-display uppercase transition-all duration-300 cursor-pointer ${
+                className={`px-3.5 py-2.5 rounded-xl text-xs font-bold tracking-wider font-display uppercase transition-all duration-300 cursor-pointer ${
                   statusFilter === st
                     ? "bg-amber-400 text-black shadow-md shadow-amber-500/20"
                     : "text-zinc-400 hover:text-white hover:bg-white/10"
@@ -124,13 +227,138 @@ export default function UpcomingTrips({
               </button>
             ))}
           </div>
+
+          {/* Sorting Dropdown Menu */}
+          <div className="relative" ref={sortDropdownRef}>
+            <button
+              type="button"
+              onClick={() => setIsSortOpen(!isSortOpen)}
+              className={`w-full xl:w-auto min-w-[210px] px-4 py-3 rounded-2xl border text-xs font-medium flex items-center justify-between gap-3 transition-all duration-200 cursor-pointer ${
+                sortBy !== "default"
+                  ? "bg-amber-400/10 border-amber-400/40 text-amber-300 shadow-sm shadow-amber-500/10"
+                  : "bg-white/5 border-white/10 hover:border-white/20 text-zinc-200 hover:text-white"
+              }`}
+              aria-haspopup="listbox"
+              aria-expanded={isSortOpen}
+            >
+              <div className="flex items-center gap-2">
+                <ArrowUpDown className={`w-3.5 h-3.5 ${sortBy !== "default" ? "text-amber-400" : "text-zinc-400"}`} />
+                <span className="text-[11px] uppercase tracking-wider text-zinc-400 font-mono">Sort:</span>
+                <span className="font-semibold text-white truncate max-w-[120px]">{activeSort.shortLabel}</span>
+              </div>
+              <ChevronDown className={`w-3.5 h-3.5 text-zinc-400 transition-transform duration-200 ${isSortOpen ? "rotate-180" : ""}`} />
+            </button>
+
+            {/* Dropdown Options Popover */}
+            <AnimatePresence>
+              {isSortOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: -8, scale: 0.98 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -8, scale: 0.98 }}
+                  transition={{ duration: 0.15, ease: "easeOut" }}
+                  className="absolute right-0 top-full mt-2 w-72 bg-[#0c0d12] border border-white/15 rounded-2xl p-2 shadow-2xl backdrop-blur-2xl z-30 space-y-1"
+                  role="listbox"
+                >
+                  <div className="px-3 py-2 flex items-center justify-between border-b border-white/10 mb-1">
+                    <span className="text-[10px] uppercase font-bold tracking-widest text-zinc-400 font-mono">
+                      Sort Departures
+                    </span>
+                    {sortBy !== "default" && (
+                      <button
+                        onClick={() => {
+                          setSortBy("default");
+                          setIsSortOpen(false);
+                        }}
+                        className="text-[10px] text-amber-400 hover:text-amber-300 flex items-center gap-1 font-mono uppercase tracking-wider cursor-pointer"
+                      >
+                        <RotateCcw className="w-2.5 h-2.5" />
+                        Reset
+                      </button>
+                    )}
+                  </div>
+
+                  {sortOptions.map((opt) => {
+                    const isSelected = sortBy === opt.id;
+                    return (
+                      <button
+                        key={opt.id}
+                        type="button"
+                        onClick={() => {
+                          setSortBy(opt.id);
+                          setIsSortOpen(false);
+                        }}
+                        className={`w-full text-left px-3 py-2.5 rounded-xl text-xs transition-colors flex items-center justify-between cursor-pointer group ${
+                          isSelected
+                            ? "bg-amber-400/15 border border-amber-400/30 text-amber-300"
+                            : "hover:bg-white/5 text-zinc-300 hover:text-white border border-transparent"
+                        }`}
+                        role="option"
+                        aria-selected={isSelected}
+                      >
+                        <div>
+                          <div className="font-semibold flex items-center gap-2">
+                            {opt.id.startsWith("price") ? (
+                              <Tag className={`w-3.5 h-3.5 ${isSelected ? "text-amber-400" : "text-zinc-500 group-hover:text-amber-400"}`} />
+                            ) : opt.id.startsWith("date") ? (
+                              <Calendar className={`w-3.5 h-3.5 ${isSelected ? "text-amber-400" : "text-zinc-500 group-hover:text-amber-400"}`} />
+                            ) : (
+                              <Sparkles className={`w-3.5 h-3.5 ${isSelected ? "text-amber-400" : "text-zinc-500 group-hover:text-amber-400"}`} />
+                            )}
+                            <span>{opt.label}</span>
+                          </div>
+                          <p className="text-[10px] text-zinc-500 mt-0.5 pl-5.5 font-light">
+                            {opt.hint}
+                          </p>
+                        </div>
+                        {isSelected && (
+                          <Check className="w-4 h-4 text-amber-400 shrink-0 ml-2" />
+                        )}
+                      </button>
+                    );
+                  })}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+        </div>
+
+        {/* Quick status bar showing results count and active sort/filters */}
+        <div className="flex flex-wrap items-center justify-between gap-3 mb-8 px-2 text-xs text-zinc-400">
+          <div className="flex items-center gap-2">
+            <span className="font-mono text-white font-semibold">{sortedTrips.length}</span>
+            <span>{sortedTrips.length === 1 ? "caravan available" : "caravans available"}</span>
+            {searchTerm && (
+              <span className="text-zinc-500">
+                • matching "<span className="text-zinc-300">{searchTerm}</span>"
+              </span>
+            )}
+            {statusFilter !== "All" && (
+              <span className="text-zinc-500">
+                • status: <span className="text-amber-400 font-medium">{statusFilter}</span>
+              </span>
+            )}
+          </div>
+
+          {sortBy !== "default" && (
+            <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-amber-400/10 border border-amber-400/20 text-amber-300 text-[11px] font-mono">
+              <span>Sorted by: {activeSort.shortLabel}</span>
+              <button
+                onClick={() => setSortBy("default")}
+                className="hover:text-white transition cursor-pointer"
+                title="Reset to default sorting"
+              >
+                ✕
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Departures Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           <AnimatePresence mode="popLayout">
-            {filteredTrips.length > 0 ? (
-              filteredTrips.map((trip) => {
+            {sortedTrips.length > 0 ? (
+              sortedTrips.map((trip) => {
                 // Color style mapping for status badges
                 const getStatusStyle = (status: string) => {
                   switch (status) {

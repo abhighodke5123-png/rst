@@ -150,12 +150,12 @@ export default function Navbar({
 
           {/* Direct Phone link */}
           <a
-            href="tel:+917348929802"
+            href="tel:+919226638440"
             className="flex items-center gap-1.5 px-3.5 py-2 rounded-full glass text-xs font-medium text-zinc-300 hover:text-white hover:bg-white/10 transition-colors cursor-pointer border border-white/10"
-            title="Call +91 7348929802"
+            title="Call +91 9226638440"
           >
             <PhoneCall className="w-3.5 h-3.5 text-emerald-400" />
-            <span className="font-mono text-xs text-zinc-200">7348929802</span>
+            <span className="font-mono text-xs text-zinc-200">9226638440</span>
           </a>
 
           {/* User Auth or Dashboard */}
@@ -258,11 +258,11 @@ export default function Navbar({
                 </button>
 
                 <a
-                  href="tel:+917348929802"
+                  href="tel:+919226638440"
                   className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-white/5 text-white hover:bg-white/10 text-xs font-semibold border border-white/10"
                 >
                   <PhoneCall className="w-4 h-4 text-emerald-400" />
-                  <span>Call Us: 7348929802</span>
+                  <span>Call Us: 9226638440</span>
                 </a>
 
                 {!currentUser ? (

@@ -5,7 +5,7 @@
 
 import React from "react";
 import { Booking } from "../types";
-import { X, Calendar, Ticket, Compass, CheckSquare, Trash2, ShieldCheck } from "lucide-react";
+import { X, Calendar, Ticket, Compass, CheckSquare, Trash2, ShieldCheck, Mountain, Crown, Award } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 
 interface MyBookingsLedgerProps {
@@ -13,14 +13,22 @@ interface MyBookingsLedgerProps {
   onClose: () => void;
   bookings: Booking[];
   onCancelBooking: (bookingId: string) => void;
+  onOpenDashboard?: () => void;
 }
 
 export default function MyBookingsLedger({
   isOpen,
   onClose,
   bookings,
-  onCancelBooking
+  onCancelBooking,
+  onOpenDashboard
 }: MyBookingsLedgerProps) {
+  const tripCount = bookings.length;
+  const tierName = tripCount >= 5 ? "Legend" : tripCount >= 2 ? "Wanderer" : "Explorer";
+  const TierIcon = tripCount >= 5 ? Crown : tripCount >= 2 ? Mountain : Compass;
+  const nextTarget = tripCount < 2 ? 2 : tripCount < 5 ? 5 : null;
+  const tripsUntilNext = nextTarget ? nextTarget - tripCount : 0;
+
   return (
     <AnimatePresence>
       {isOpen && (
@@ -62,6 +70,31 @@ export default function MyBookingsLedger({
               >
                 <X className="w-5 h-5" />
               </button>
+            </div>
+
+            {/* Nomad Status Quick Bar */}
+            <div className="px-6 py-3.5 bg-white/[0.02] border-b border-white/10 flex items-center justify-between text-xs">
+              <div className="flex items-center gap-2">
+                <div className={`p-1.5 rounded-lg ${tripCount >= 5 ? "bg-amber-400/20 text-amber-300" : tripCount >= 2 ? "bg-emerald-400/20 text-emerald-300" : "bg-amber-400/15 text-amber-400"}`}>
+                  <TierIcon className="w-3.5 h-3.5" />
+                </div>
+                <div>
+                  <span className="text-[10px] font-mono text-zinc-400 uppercase tracking-wider block">Nomad Tier</span>
+                  <span className="font-bold text-white font-display">{tierName} Status</span>
+                </div>
+              </div>
+
+              <div className="text-right">
+                {nextTarget ? (
+                  <span className="text-[11px] text-zinc-400 font-light">
+                    <strong className="text-amber-400 font-mono font-bold tabular-nums">{tripsUntilNext}</strong> more to {tripCount < 2 ? "Wanderer" : "Legend"}
+                  </span>
+                ) : (
+                  <span className="text-[10px] font-bold text-amber-400 font-display uppercase tracking-wider">
+                    Apex Legend
+                  </span>
+                )}
+              </div>
             </div>
 
             {/* List scroll Area */}
@@ -171,7 +204,17 @@ export default function MyBookingsLedger({
             </div>
 
             {/* Footer drawer panel */}
-            <div className="p-6 border-t border-white/10 bg-white/[0.02] space-y-4">
+            <div className="p-6 border-t border-white/10 bg-white/[0.02] space-y-3.5">
+              {onOpenDashboard && (
+                <button
+                  onClick={onOpenDashboard}
+                  className="w-full py-3 px-4 rounded-2xl bg-amber-400 hover:bg-amber-300 text-black text-xs font-black uppercase tracking-widest transition flex items-center justify-center gap-2 cursor-pointer font-display shadow-lg shadow-amber-500/20"
+                >
+                  <Award className="w-4 h-4" />
+                  <span>View Full Nomad Loyalty Dashboard</span>
+                </button>
+              )}
+
               <div className="flex items-start gap-2.5 text-[10px] text-zinc-400 font-light leading-relaxed">
                 <ShieldCheck className="w-4 h-4 text-amber-400 shrink-0" />
                 <span>

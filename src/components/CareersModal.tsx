@@ -53,7 +53,7 @@ export default function CareersModal({ isOpen, onClose }: CareersModalProps) {
 
     // Send application via WhatsApp as direct fallback
     const message = `*New Raasta Career Application*%0A*Role:* ${selectedRole || "General Application"}%0A*Name:* ${encodeURIComponent(applicantName)}%0A*Email:* ${encodeURIComponent(applicantEmail)}%0A*Phone:* ${encodeURIComponent(applicantPhone)}%0A*Notes:* ${encodeURIComponent(applicantNotes)}`;
-    window.open(`https://wa.me/917348929802?text=${message}`, "_blank");
+    window.open(`https://wa.me/919226638440?text=${message}`, "_blank");
 
     setSubmitted(true);
     setTimeout(() => {
@@ -164,7 +164,7 @@ export default function CareersModal({ isOpen, onClose }: CareersModalProps) {
                       required
                       value={applicantPhone}
                       onChange={(e) => setApplicantPhone(e.target.value)}
-                      placeholder="e.g. 7348929802"
+                      placeholder="e.g. 9226638440"
                       className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder-zinc-500 focus:outline-none focus:border-amber-400"
                     />
                   </div>

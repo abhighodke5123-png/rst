@@ -25,7 +25,7 @@ export default function AboutContact() {
 
     // Direct WhatsApp dispatch
     const message = `*Raasta Road Trip Inquiry*%0A*Name:* ${encodeURIComponent(inqName)}%0A*Email:* ${encodeURIComponent(inqEmail)}%0A*Phone:* ${encodeURIComponent(inqPhone)}%0A*Destination:* ${encodeURIComponent(inqDest)}%0A*Message:* ${encodeURIComponent(inqMsg || "Looking for trip details")}`;
-    window.open(`https://wa.me/917348929802?text=${message}`, "_blank");
+    window.open(`https://wa.me/919226638440?text=${message}`, "_blank");
 
     setSuccess(true);
     setInqName("");
@@ -145,7 +145,7 @@ export default function AboutContact() {
             {/* Fast WhatsApp & Call Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <a
-                href="https://wa.me/917348929802?text=Hi%20RAASTA,%20I'd%20like%20to%20inquire%20about%20upcoming%20trips!"
+                href="https://wa.me/919226638440?text=Hi%20RAASTA,%20I'd%20like%20to%20inquire%20about%20upcoming%20trips!"
                 target="_blank"
                 rel="noreferrer"
                 className="glass border border-white/10 rounded-[24px] p-5 hover:border-[#25D366]/40 transition group flex flex-col justify-between"
@@ -158,12 +158,12 @@ export default function AboutContact() {
                 </div>
                 <div>
                   <h4 className="text-xs font-bold text-white mb-0.5 font-display">WhatsApp Ops</h4>
-                  <p className="text-xs text-zinc-400 font-mono">+91 7348929802</p>
+                  <p className="text-xs text-zinc-400 font-mono">+91 9226638440</p>
                 </div>
               </a>
 
               <a
-                href="tel:+917348929802"
+                href="tel:+919226638440"
                 className="glass border border-white/10 rounded-[24px] p-5 hover:border-amber-400/40 transition group flex flex-col justify-between"
               >
                 <div className="flex items-center justify-between mb-3">
@@ -174,7 +174,7 @@ export default function AboutContact() {
                 </div>
                 <div>
                   <h4 className="text-xs font-bold text-white mb-0.5 font-display">Helpline</h4>
-                  <p className="text-xs text-zinc-400 font-mono">+91 7348929802</p>
+                  <p className="text-xs text-zinc-400 font-mono">+91 9226638440</p>
                 </div>
               </a>
             </div>
@@ -238,7 +238,7 @@ export default function AboutContact() {
                       required
                       value={inqPhone}
                       onChange={(e) => setInqPhone(e.target.value)}
-                      placeholder="7348929802"
+                      placeholder="9226638440"
                       className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-amber-400/60 font-mono"
                     />
                   </div>
