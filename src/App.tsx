@@ -23,31 +23,23 @@ import Admin from "./components/Admin";
 import { Trip, Booking } from "./types";
 import NotificationInbox from "./components/NotificationInbox";
 import { TRIPS } from "./data";
-import { SlidersHorizontal, Compass, HelpCircle, MessageSquareWarning, X, ShieldCheck } from "lucide-react";
 import WhyChooseUs from "./components/WhyChooseUs";
 import SocialFeed from "./components/SocialFeed";
 import BlogHub from "./components/BlogHub";
 import Reviews from "./components/Reviews";
 import AmbientTrailAudio from "./components/AmbientTrailAudio";
 import PrivacyAgreementPopup from "./components/PrivacyAgreementPopup";
-import { auth, db } from "./firebase";
+import { auth, db, resetFirebaseConnection } from "./firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { collection, getDocs, query, where, doc, getDoc, setDoc, deleteDoc } from "firebase/firestore";
 
 export default function App() {
-  // Master Active App View State
   const [view, setView] = useState<"home" | "login" | "signup" | "dashboard" | "admin">("home");
-
-  // Authentication State
   const [currentUser, setCurrentUser] = useState<{ id: string; name: string; email: string; role: string } | null>(null);
-
-  // Master Scheduled departures list state - synced from server API
   const [tripsList, setTripsList] = useState<Trip[]>(TRIPS);
-
-  // Authenticated user's real bookings
   const [bookings, setBookings] = useState<Booking[]>([]);
 
-  // Active overlays controls
+  // Overlays
   const [selectedTripForBooking, setSelectedTripForBooking] = useState<Trip | null>(null);
   const [initialFilterDestinationId, setInitialFilterDestinationId] = useState<string | undefined>(undefined);
   const [quizOpen, setQuizOpen] = useState(false);
@@ -62,12 +54,10 @@ export default function App() {
   const [cookieConsent, setCookieConsent] = useState(true);
 
   useEffect(() => {
-    // Check if Privacy Policy & Traveler Agreement has been acknowledged
     const acceptedPrivacyAgreement = localStorage.getItem("raasta_privacy_agreement_accepted");
     if (!acceptedPrivacyAgreement) {
       setPrivacyAgreementOpen(true);
     }
-
     const consent = localStorage.getItem("raastacookieconsent");
     if (!consent) setCookieConsent(false);
   }, []);
@@ -84,21 +74,17 @@ export default function App() {
     setCookieConsent(true);
   };
 
-  // 1. Synchronize user details from Firebase Auth
+  // Synchronize user from Firebase Auth
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
-        // Fetch user doc from Firestore to get role
         try {
           const userDoc = await getDoc(doc(db, "users", user.uid));
           let role = "user";
           if (userDoc.exists()) {
             role = userDoc.data().role;
           } else {
-            // Check if admin email
             role = (user.email?.includes("admin") || user.email?.includes("derek@raasta.com") || user.email?.includes("abhighodke5123@gmail.com") || user.email?.includes("raastatrips.in@gmail.com")) ? "admin" : "user";
-            
-            // Create user document if it doesn't exist
             await setDoc(doc(db, "users", user.uid), {
               id: user.uid,
               name: user.displayName || "User",
@@ -123,15 +109,13 @@ export default function App() {
     return () => unsubscribe();
   }, []);
 
-  // 2. Fetch live tours & user bookings (if authenticated) on load
+  // Synchronize departures list and user bookings
   const syncServerLogData = async () => {
     try {
-      // Fetch dynamic live departures list
       const tripsSnap = await getDocs(collection(db, "trips"));
       const firestoreTrips = tripsSnap.docs.map(doc => doc.data() as Trip);
 
       if (firestoreTrips.length > 0) {
-        // Merge with our rich default catalog to ensure all 2026/2027 expeditions appear
         const mergedMap = new Map<string, Trip>();
         TRIPS.forEach(t => mergedMap.set(t.id, t));
         firestoreTrips.forEach(t => mergedMap.set(t.id, t));
@@ -140,14 +124,12 @@ export default function App() {
         setTripsList(TRIPS);
       }
 
-      // Fetch bookings list (depending on login status)
       if (currentUser) {
         const q = query(collection(db, "bookings"), where("email", "==", currentUser.email));
         const bookingsSnap = await getDocs(q);
         const userBookings = bookingsSnap.docs.map(doc => ({ id: doc.id, ...doc.data() } as Booking));
         setBookings(userBookings);
       } else {
-        // Retrieve local storage fallback bookings
         const localBookings = localStorage.getItem("raastabookings");
         if (localBookings) {
           try {
@@ -158,14 +140,13 @@ export default function App() {
         }
       }
 
-      // Sync notification alerts count
       if (currentUser) {
         const notifQuery = query(collection(db, "notifications"), where("userId", "==", currentUser.id), where("isRead", "==", false));
         const notifSnap = await getDocs(notifQuery);
         setNotificationCount(notifSnap.size);
       }
     } catch (err) {
-      console.warn("Server sync error (using local state):", err);
+      console.warn("Firestore sync fallback to curated catalog:", err);
       setTripsList(TRIPS);
     }
   };
@@ -174,7 +155,6 @@ export default function App() {
     syncServerLogData();
   }, [currentUser]);
 
-  // Handle successful reservation
   const handleBookingSuccess = async (newBooking: Booking) => {
     try {
       if (currentUser) {
@@ -187,7 +167,6 @@ export default function App() {
       setBookings(updated);
       localStorage.setItem("raastabookings", JSON.stringify(updated));
 
-      // Decrement seats on current trip
       const targetTrip = tripsList.find(t => t.id === newBooking.tripId);
       if (targetTrip && targetTrip.seatsAvailable > 0) {
         const updatedSeats = Math.max(0, targetTrip.seatsAvailable - newBooking.numTravelers);
@@ -206,14 +185,13 @@ export default function App() {
         setTripsList(prev => prev.map(t => t.id === targetTrip.id ? updatedTrip : t));
       }
     } catch (err) {
-      console.error("Booking record persistence error", err);
+      console.error("Booking record error", err);
     }
 
     setSelectedTripForBooking(null);
     setBookingsOpen(true);
   };
 
-  // Switch to specific destination departures in the list
   const handleSelectDestinationForDepartures = (destId: string) => {
     setInitialFilterDestinationId(destId);
     const tripsSection = document.getElementById("trips");
@@ -224,7 +202,6 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-[#07080a] text-white selection:bg-amber-400 selection:text-black">
-      {/* Top Navbar */}
       <Navbar
         onQuizClick={() => setQuizOpen(true)}
         onBookingsClick={() => setBookingsOpen(true)}
@@ -243,10 +220,8 @@ export default function App() {
         notificationCount={notificationCount}
       />
 
-      {/* Main View Router */}
       {view === "home" && (
         <main>
-          {/* Hero Section with interactive destination preview */}
           <Hero
             onExploreClick={() => {
               const el = document.getElementById("trips");
@@ -258,12 +233,10 @@ export default function App() {
             }}
           />
 
-          {/* Curated Circuits / Destinations */}
           <Destinations
             onSelectDestinationForDepartures={handleSelectDestinationForDepartures}
           />
 
-          {/* Upcoming Scheduled Departures */}
           <UpcomingTrips
             tripsList={tripsList}
             onBookTrip={(trip) => setSelectedTripForBooking(trip)}
@@ -274,28 +247,20 @@ export default function App() {
             onClearInitialFilter={() => setInitialFilterDestinationId(undefined)}
           />
 
-          {/* Why Travel With Us */}
           <WhyChooseUs />
 
-          {/* Real Traveler Reviews */}
           <Reviews />
 
-          {/* Social Community & Traveler Highlights */}
           <SocialFeed />
 
-          {/* Travel Stories & Blog Hub */}
           <BlogHub />
 
-          {/* Philosophy & Team */}
           <AboutSection />
 
-          {/* Referral Community Program */}
           <CommunityReferral />
 
-          {/* Contact, Operations & FAQs */}
           <AboutContact />
 
-          {/* Ambient Trail Audio Player */}
           <AmbientTrailAudio />
         </main>
       )}
@@ -397,7 +362,6 @@ export default function App() {
       {!cookieConsent && !privacyAgreementOpen && (
         <div className="fixed bottom-6 left-6 right-6 md:left-auto md:right-6 md:max-w-md z-50 p-5 rounded-2xl bg-[#0b0c10]/95 backdrop-blur-xl border border-white/10 shadow-2xl flex flex-col gap-3">
           <div className="flex items-start gap-3">
-            <ShieldCheck className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
             <p className="text-xs text-zinc-300 font-light leading-relaxed">
               We use minimal cookies for secure booking sessions and authentication state. No third-party trackers are used.
             </p>
