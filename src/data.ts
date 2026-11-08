@@ -3,18 +3,16 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { Destination, Trip, PackageTier, Review, GalleryItem, FAQItem } from "./types";
-// @ts-expect-error - Vite handles asset imports dynamically
+import { Destination, Trip, PackageTier, Review, GalleryItem, FAQItem, TeamMember } from "./types";
 import goaImg from "./assets/images/regenerated_image_1784640113613.jpg";
-// @ts-expect-error - Vite handles asset imports dynamically
 import gokarnaImg from "./assets/images/regenerated_image_1784640115451.jpg";
 
 export const DESTINATIONS: Destination[] = [
   {
     id: "spiti",
     name: "Spiti Valley",
-    subTitle: "High Mountain Desert & Ancient Monasteries",
-    desc: "An overland high-altitude expedition across rugged Himalayan passes, fossil villages, high monasteries, and starlit Chandratal Lake.",
+    subTitle: "Cold Desert Caravans & Ancient Monasteries",
+    desc: "An overland expedition through ancient mud monasteries, fossil villages, high mountain passes, and starlit Chandratal Lake.",
     image: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=2000&q=80",
     season: "May – Oct",
     duration: "8 Days / 7 Nights",
@@ -22,68 +20,64 @@ export const DESTINATIONS: Destination[] = [
     originalPrice: 26999,
     attractions: ["Key Monastery", "Chandratal Lake", "Hikkim Post Office", "Kunzum Pass"],
     category: "Mountain",
+    collectionDefault: "select",
     rating: 4.9,
-    longDesc: "Cross roaring glacial streams and ascend through the mighty Kunzum Pass into the cold desert wonderland of Spiti. Walk through ancient mud-walled monasteries perched on cliffs, send postcards from the world's highest post office at Hikkim, and camp under millions of stars along the moon-shaped crescent of Chandratal.",
-    highlights: ["Highest Post Office at Hikkim (4,400m)", "Key Monastery Morning Chants", "Chandratal Lake High-Altitude Camping", "Fossil Hunting in Langza"],
+    longDesc: "Ascend through the mighty Kunzum Pass into the high-altitude trans-Himalayan wonderland of Spiti. Walk through ancient mud-walled monasteries perched on razor cliffs, send postcards from the world's highest post office at Hikkim, and camp under millions of stars on the banks of Chandratal.",
+    highlights: ["Postcard dispatch from Hikkim (4,400m)", "Key Monastery morning prayer rituals", "Chandratal Lake campsite under the Milky Way", "Fossil searching in Langza village"],
     itinerary: [
-      { day: "Day 1", title: "Shimla to Kalpa via Kinnaur Valley", description: "Depart Shimla and wind through apple orchards of Kinnaur along the Sutlej river gorge. Overnight stay in Kalpa with sunset views of Kinner Kailash.", icons: ["map-pin", "mountain"] },
-      { day: "Day 2", title: "Kalpa to Tabo via Nako Lake", description: "Cross into the rain-shadow desert. Stop by mystical Nako lake and reach the 1,000-year-old Tabo Monastery, known as the Ajanta of the Himalayas.", icons: ["compass", "sun"] },
-      { day: "Day 3", title: "Tabo, Dhankar Fort & Kaza Arrival", description: "Explore Dhankar monastery perched precariously on a cliff ridge overlooking the Spiti-Pin confluence. Arrive at Kaza, the expedition base.", icons: ["camera", "mountain"] },
-      { day: "Day 4", title: "High Altitude Villages: Hikkim, Komic, Langza", description: "Visit Hikkim (world's highest post office), Komic (highest village with motorable road), and Langza (giant Buddha statue facing snow summits).", icons: ["compass", "map-pin"] },
-      { day: "Day 5", title: "Key Monastery & Kibber Wildlife Sanctuary", description: "Visit the iconic 11th-century Key Gompa. Continue to Kibber and the Chicham suspension bridge, soaring 13,500 ft above a deep gorge.", icons: ["camera", "mountain"] },
-      { day: "Day 6", title: "Kaza to Chandratal Lake via Kunzum La", description: "Ascend Kunzum Pass (4,590m) to offer prayers at Kunzum Mata temple. Hike down to the emerald shores of Chandratal for glamping under the Milky Way.", icons: ["sunset", "compass"] },
-      { day: "Day 7", title: "Chandratal to Manali via Atal Tunnel", description: "Navigate the rugged Batal-Chhatru river crossings and descend into the lush Kullu valley through the Atal Tunnel.", icons: ["bus", "mountain"] },
-      { day: "Day 8", title: "Manali Departure", description: "Morning leisure in Old Manali cafes before boarding departure transfers with lifetime Himalayan memories.", icons: ["check", "bus"] }
+      { day: "Day 1", title: "Shimla to Kalpa via Kinnaur Valley", description: "Ascend from Shimla along the dramatic Sutlej River gorge. Check in at Kalpa with sunset views over the sacred Kinner Kailash peak.", icons: ["map-pin", "mountain"] },
+      { day: "Day 2", title: "Kalpa to Tabo via Nako Lake", description: "Cross into the arid rain-shadow zone. Explore mystical Nako lake and the 1,000-year-old Tabo Monastery, renowned as the Ajanta of the Himalayas.", icons: ["compass", "sun"] },
+      { day: "Day 3", title: "Tabo to Dhankar & Kaza", description: "Explore the dramatic cliff-top Dhankar Fort and monastery overlooking the Pin-Spiti confluence before arriving in Kaza base.", icons: ["camera", "mountain"] },
+      { day: "Day 4", title: "High Altitude Villages: Hikkim, Komic, Langza", description: "Send postcards from Hikkim, stand by the giant Buddha statue at Langza, and visit Komic, one of the world's highest motorable villages.", icons: ["compass", "map-pin"] },
+      { day: "Day 5", title: "Key Monastery & Chicham Suspension Bridge", description: "Visit the iconic 11th-century Key Gompa. Cross the breathtaking Chicham Bridge soaring 13,500 ft above a vertiginous gorge.", icons: ["camera", "mountain"] },
+      { day: "Day 6", title: "Kaza to Chandratal via Kunzum Pass", description: "Cross Kunzum Pass (4,590m). Short hike to the turquoise waters of Chandratal (Moon Lake) for lakeside glamping.", icons: ["sunset", "compass"] },
+      { day: "Day 7", title: "Chandratal to Manali via Atal Tunnel", description: "Drive through the rugged Batal and Rohtang valley, transitioning through the Atal Tunnel into lush Manali pine forests.", icons: ["bus", "mountain"] },
+      { day: "Day 8", title: "Manali Departure", description: "Slow morning in Old Manali cafes before boarding onward journey transfers.", icons: ["check", "bus"] }
     ],
-    inclusions: ["7 Nights Homestay & High-Altitude Glamping", "Daily Breakfast & Traditional Dinners", "Expedition Spec 4x4 / Force Urbania Transfers", "Certified Mountain Captain & Oxygen Cylinders", "Inner Line Permits & Environmental Fees"],
-    exclusions: ["Travel to/from Shimla/Manali", "Personal Gear & Lunches", "Emergency Medical Evacuations", "Tips & Gratitude"],
+    inclusions: ["7 Nights Homestay & High-Altitude Glamping", "Breakfast and Traditional Dinners", "Force Urbania / 4x4 Expedition Vehicle", "Certified Mountain Lead & Oxygen Setup", "Inner Line Permits & Sanctuary Tolls"],
+    exclusions: ["Transit to/from Shimla/Manali", "Lunches & Personal Shopping", "Emergency Evacuations", "Gratuities"],
     faqs: [
-      { id: "sp1", question: "How should I prepare for Acute Mountain Sickness (AMS)?", answer: "Our itinerary is carefully staged with incremental altitude gains via Kinnaur for optimal acclimatization. We carry medical oxygen kits, oximeters, and stay well hydrated." }
+      { id: "sp1", question: "How does the itinerary handle acclimatization?", answer: "We climb gradually through Kinnaur over two days rather than rushing via Manali. Our vehicles carry portable medical oxygen and pulse oximeters." }
     ],
     pickupPoints: ["Shimla Old Bus Stand", "Chandigarh Airport", "Kalka Railway Station"],
-    packingList: ["Thermal base layers (2-3 pairs)", "Down jacket (-10°C rated)", "Sturdy waterproof hiking boots", "UV sunglasses & high-SPF sunscreen", "Personal hydration flask & electrolytes"],
-    cancellationPolicy: "Cancel 21 days before departure for a 100% credit refund. 50% refund between 10-20 days. Non-refundable within 10 days due to advance high-altitude permits."
+    packingList: ["Thermal innerwear (2-3 sets)", "Down jacket (-10°C rated)", "Waterproof hiking shoes", "UV Category 3 sunglasses", "Electrolytes & personal flask"],
+    cancellationPolicy: "100% credit refund up to 21 days before departure. 50% between 10-20 days. Non-refundable under 10 days due to advance permits."
   },
   {
-    id: "ladakh",
-    name: "Ladakh & Nubra",
-    subTitle: "High Altitude Passes & Starlit Sand Dunes",
-    desc: "The ultimate trans-Himalayan caravan: conquer Khardung La, ride double-humped camels in Nubra, and witness Pangong Tso's shifting azure hues.",
-    image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=2000&q=80",
-    season: "May – Sep",
-    duration: "9 Days / 8 Nights",
-    price: 27499,
-    originalPrice: 31999,
-    attractions: ["Pangong Tso", "Khardung La Pass", "Nubra Valley Hunder Dunes", "Thiksey Monastery"],
-    category: "Mountain",
+    id: "gokarna",
+    name: "Gokarna & Karwar",
+    subTitle: "Cliffside Trails, Secluded Bays & Caves",
+    desc: "A soulful coastal trek across golden cliffs, five untouched beaches, monolithic Yana caves, and bioluminescent surf.",
+    image: gokarnaImg,
+    season: "Oct – Mar",
+    duration: "3 Days / 2 Nights",
+    price: 7999,
+    originalPrice: 9999,
+    attractions: ["Om Beach", "Kudle Beach Sunset", "Yana Caves", "Mirjan Fort"],
+    category: "Beach",
+    collectionDefault: "explore",
     rating: 4.9,
-    longDesc: "From dramatic barren cliffs to surreal white sand dunes of Nubra Valley, this is the benchmark overland road adventure of India. Cross the legendary Khardung La, wake up to sunrise chants at Thiksey Gompa, and watch Pangong Tso shift through seven shades of turquoise.",
-    highlights: ["Khardung La Pass Summit (5,359m)", "Pangong Tso Lakeside Camps", "Bactrian Camel Safari in Hunder", "Magnetic Hill Phenomenon"],
+    longDesc: "Escape commercial beaches for the sacred cliffside coastline of Gokarna. Walk the legendary five-beach trail from Kudle to Paradise, swim in secluded lagoons, and hike through the Western Ghats to the ancient black karst monoliths of Yana.",
+    highlights: ["Sunset cliff walk above Om Beach", "Five-Beach coastal trek connecting remote bays", "Yana karst rock monolith forest hike", "Moss-covered ruins of Mirjan Fort"],
     itinerary: [
-      { day: "Day 1", title: "Leh Arrival & Mandatory Acclimatization", description: "Land at Kushok Bakula Rimpochee Airport (3,500m). Full day of gentle rest and hydration at our boutique Leh hotel.", icons: ["map-pin", "coffee"] },
-      { day: "Day 2", title: "Sham Valley & Confluence Tour", description: "Visit Hall of Fame, Magnetic Hill, and the dramatic confluence of the Indus and Zanskar rivers at Nimmu.", icons: ["compass", "mountain"] },
-      { day: "Day 3", title: "Leh to Nubra Valley via Khardung La", description: "Ascend the legendary Khardung La Pass (5,359m). Descend into Nubra Valley to explore the giant Maitreya Buddha at Diskit and sunset dunes at Hunder.", icons: ["mountain", "sunset"] },
-      { day: "Day 4", title: "Turtuk Border Village Excursion", description: "Drive along the Shyok river to Turtuk, the northernmost village of India with rich Balti culture, apricot orchards, and views of K2 ranges.", icons: ["camera", "compass"] },
-      { day: "Day 5", title: "Nubra Valley to Pangong Tso via Shyok", description: "Travel through rugged riverbed roads directly to the world's highest saltwater lake, Pangong Tso (4,350m). Night glamping by the lakeshore.", icons: ["waves", "moon"] },
-      { day: "Day 6", title: "Pangong Tso to Hanle Dark Sky Reserve", description: "Overland journey to Hanle, home to the Indian Astronomical Observatory and India's first designated Dark Sky Reserve.", icons: ["star", "mountain"] },
-      { day: "Day 7", title: "Hanle to Leh via Chang La", description: "Cross the formidable Chang La pass (5,360m) and visit Thiksey monastery on our return into Leh valley.", icons: ["mountain", "bus"] },
-      { day: "Day 8", title: "Leh Heritage Alleys & Celebration Dinner", description: "Explore Old Leh heritage streets, Leh Palace, and Shanti Stupa. Evening group farewell dinner around a warm fire.", icons: ["users", "utensils"] },
-      { day: "Day 9", title: "Departure from Leh", description: "Airport drop-offs with unforgettable Himalayan memories.", icons: ["check", "plane"] }
+      { day: "Day 1", title: "Arrival, Kudle Beach & Clifftop Sunset", description: "Check in to coastal eco-stays at Kudle. Walk along Om Beach and watch a crimson sunset from a secluded clifftop vantage.", icons: ["map-pin", "sunset"] },
+      { day: "Day 2", title: "Five-Beach Trek & Campfire Jam", description: "Signature guided trail: Kudle to Om, Half Moon, and Paradise Beach. Evening acoustic session and stargazing by the shoreline.", icons: ["compass", "sun"] },
+      { day: "Day 3", title: "Yana Caves & Mirjan Fort", description: "Trek into lush Western Ghats forests to explore towering volcanic karst monoliths. Visit Mirjan Fort before departure transfers.", icons: ["camera", "bus"] }
     ],
-    inclusions: ["8 Nights Premium Stays & Lakeside Glamping", "Breakfast & Dinners throughout", "Dedicated 4x4 / Force Urbania Vehicles", "Inner Line Permits & Wildlife Fees", "Oxygen Backup & Medical Oximeter Kit"],
-    exclusions: ["Airfare to/from Leh", "Lunches & Personal Shopping", "Camel Rides / ATV Rentals in Nubra"],
+    inclusions: ["2 Nights Boutique Beach Stays", "Daily Breakfasts", "Local AC Transport & Transfers", "Experienced Trek Lead & Captain", "Trek Permits & Safety Support"],
+    exclusions: ["Train/Flight to Hubli or Gokarna", "Lunches & Dinners", "Water Sports", "Personal Expenses"],
     faqs: [
-      { id: "ld1", question: "Is inner-line permit paperwork handled by Raasta?", answer: "Yes, all inner-line permits for Nubra, Pangong, and Hanle are processed by our team ahead of your arrival." }
+      { id: "gk1", question: "Is this trek suitable for beginners?", answer: "Yes! The five-beach cliff trail is an easy-to-moderate coastal walk suitable for all fitness levels." }
     ],
-    pickupPoints: ["Leh Kushok Bakula Airport (IXL)"],
-    packingList: ["Windproof & waterproof outer jacket", "Warm fleece & thermals", "UV sunglasses (Category 3 or 4)", "Moisturizer & lip balm with SPF", "Sturdy walking shoes"],
-    cancellationPolicy: "Full credit refund 20 days prior. 50% between 10-19 days. Non-refundable under 10 days."
+    pickupPoints: ["Gokarna Road Railway Station", "Hubli Airport", "Gokarna Main Bus Stand"],
+    packingList: ["Breathable cotton / linen clothes", "Sturdy walking / trail shoes", "Eco-friendly sunscreen & hat", "Quick-dry microfibre towel", "Waterproof pouch for gadgets"],
+    cancellationPolicy: "100% refund as travel credits up to 15 days before departure. 50% between 7-14 days. Transferable to friends at zero fee."
   },
   {
     id: "meghalaya",
     name: "Meghalaya Highlands",
     subTitle: "Living Root Bridges & Emerald Cascades",
-    desc: "Venture deep into the abode of clouds: trek to double-decker living root bridges, kayak crystal-clear Umngot river, and explore subterranean limestone caves.",
+    desc: "Trek into lush rainforest valleys, cross indigenous living root bridges, and kayak the crystal clear waters of Dawki.",
     image: "https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&w=2000&q=80",
     season: "Sep – May",
     duration: "6 Days / 5 Nights",
@@ -91,31 +85,32 @@ export const DESTINATIONS: Destination[] = [
     originalPrice: 21999,
     attractions: ["Double Decker Root Bridge", "Dawki River Kayaking", "Krang Shuri Falls", "Nohkalikai Falls"],
     category: "Adventure",
+    collectionDefault: "select",
     rating: 4.9,
-    longDesc: "Trek through misty rainforest stairways into lush valleys where Khasi indigenous tribes have engineered bridges out of living fig tree roots for centuries. Swim in natural azure plunge pools beneath roaring waterfalls, cliff-jump at Dawki, and explore sacred groves teeming with biodiversity.",
-    highlights: ["Nongriat Double Decker Living Root Bridge", "Crystal Clear Dawki River Boat Ride", "Krang Shuri Emerald Pool Swim", "Mawlynnong Cleanest Village Walk"],
+    longDesc: "Descend ancient stone stairways through misty rainforests where the Khasi people guide fig tree roots across roaring streams. Swim in natural turquoise plunge pools beneath Krang Shuri, kayak the glass-clear Umngot River, and explore subterranean limestone caves.",
+    highlights: ["Nongriat Double Decker Living Root Bridge trek", "Crystal clear boat ride on Umngot River in Dawki", "Swimming in turquoise waters of Krang Shuri", "Nohkalikai Falls panoramic overlook"],
     itinerary: [
-      { day: "Day 1", title: "Guwahati to Shillong via Umiam Lake", description: "Pickup from Guwahati airport. Scenic drive to the Scotland of the East. Stop by Umiam Lake and settle into our boutique Shillong stay.", icons: ["map-pin", "coffee"] },
-      { day: "Day 2", title: "Shillong to Cherrapunjee (Sohra)", description: "Visit Elephant Falls and drive towards Sohra. Witness Nohkalikai Falls (India's tallest plunge) and explore Mawsmai Limestone Cave.", icons: ["mountain", "camera"] },
-      { day: "Day 3", title: "Trek to Nongriat Double Decker Root Bridge", description: "Descend 3,000 steps into the rainforest valley to cross ancient living root bridges and take a refreshing dip at Rainbow Falls natural pool.", icons: ["compass", "waves"] },
-      { day: "Day 4", title: "Sohra to Mawlynnong & Dawki", description: "Visit Asia's cleanest village, Mawlynnong. Continue to the transparent waters of Dawki (Umngot River) along the Indo-Bangladesh border.", icons: ["sun", "waves"] },
-      { day: "Day 5", title: "Krang Shuri Falls & Jowai Hills", description: "Hike to the breathtaking turquoise lagoon of Krang Shuri Falls. Return to Shillong for music cafes in Police Bazar.", icons: ["waves", "music"] },
-      { day: "Day 6", title: "Shillong to Guwahati Departure", description: "Morning breakfast and transfer to Guwahati airport for return flights.", icons: ["check", "bus"] }
+      { day: "Day 1", title: "Guwahati to Shillong via Umiam Lake", description: "Meet in Guwahati and drive up to Shillong with a scenic pause at Umiam Lake. Evening cafe culture in Police Bazar.", icons: ["map-pin", "coffee"] },
+      { day: "Day 2", title: "Shillong to Cherrapunjee (Sohra)", description: "Visit Elephant Falls and drive towards Sohra. Overlook Nohkalikai Falls and explore Mawsmai limestone caves.", icons: ["mountain", "camera"] },
+      { day: "Day 3", title: "Trek to Nongriat Living Root Bridge", description: "Hike down the 3,000 stone steps into the deep rainforest valley to cross ancient living root bridges and dip in Rainbow Falls.", icons: ["compass", "waves"] },
+      { day: "Day 4", title: "Sohra to Mawlynnong & Dawki", description: "Visit Mawlynnong, celebrated for community cleanliness, and camp along the transparent waters of Dawki on the border.", icons: ["sun", "waves"] },
+      { day: "Day 5", title: "Krang Shuri Cascades & Jowai", description: "Hike to the emerald pool of Krang Shuri Falls for a swim before returning to Shillong for celebration dinner.", icons: ["waves", "music"] },
+      { day: "Day 6", title: "Shillong to Guwahati Departure", description: "Morning breakfast and transfer to Guwahati Airport with unforgettable Northeast memories.", icons: ["check", "bus"] }
     ],
-    inclusions: ["5 Nights Heritage Stays & Eco Cottages", "Daily Breakfast & Traditional Khasi Dinners", "All Transfers in AC Tempo / SUV", "Local Trek Guides & Village Entry Fees", "Boating Gear & Lifejackets in Dawki"],
-    exclusions: ["Airfare to Guwahati", "Lunches & Personal Shopping", "Adventure Activity Add-ons"],
+    inclusions: ["5 Nights Heritage Stays & Eco Cottages", "Daily Breakfasts & 3 Dinners", "All Internal Transfers in AC Vehicle", "Local Khasi Guides & Entry Permits", "Boating Gear & Lifejackets"],
+    exclusions: ["Airfare to Guwahati", "Lunches & Personal Shopping", "Adventure Add-ons"],
     faqs: [
-      { id: "mg1", question: "How demanding is the Nongriat trek?", answer: "It involves descending and ascending roughly 3,000 stone steps. Moderate fitness is recommended, with frequent breaks along the forest trail." }
+      { id: "mg1", question: "How physically demanding is the root bridge trek?", answer: "It involves descending and climbing approximately 3,000 steps. Anyone with moderate fitness can complete it comfortably with pauses." }
     ],
-    pickupPoints: ["Guwahati Lokpriya Gopinath Bordoloi Airport (GAU)", "Guwahati Railway Station"],
-    packingList: ["Trekking shoes with solid wet-rock grip", "Quick-dry synthetic clothing", "Light rain jacket / poncho", "Waterproof dry bag for gadgets", "Leech socks (for monsoonal hikes)"],
-    cancellationPolicy: "100% credit refund up to 15 days before trip. 50% refund 7-14 days before."
+    pickupPoints: ["Guwahati Airport (GAU)", "Guwahati Railway Station"],
+    packingList: ["Trekking shoes with strong wet grip", "Lightweight rain poncho", "Quick-dry shorts and tees", "Dry bag for electronics", "Natural insect repellent"],
+    cancellationPolicy: "100% credit refund up to 15 days before departure. 50% between 7-14 days."
   },
   {
     id: "goa",
     name: "Goa Coastal Heritage",
-    subTitle: "Beach, Heritage & Sunsets",
-    desc: "A perfect blend of coastal culture, secret white-sand lagoons, Portuguese heritage, and jaw-dropping cliffside sunsets.",
+    subTitle: "Old Quarters, Secret Coves & Clifftop Sunsets",
+    desc: "An authentic coastal road experience: pastel Latin alleys of Fontainhas, secluded South Goa lagoons, and uncrowded cliffside sunsets.",
     image: goaImg,
     season: "Oct – Mar",
     duration: "4 Days / 3 Nights",
@@ -123,58 +118,66 @@ export const DESTINATIONS: Destination[] = [
     originalPrice: 10999,
     attractions: ["Cabo de Rama Fort", "Cola Beach Lagoon", "Panjim Latin Quarter", "Basilica of Bom Jesus"],
     category: "Beach",
+    collectionDefault: "explore",
     rating: 4.8,
-    longDesc: "Experience the ultimate coastal journey. This curated itinerary sweeps through old Latin alleys and secret white-sand coverlets. From high-altitude sunset cliffs to calm backwaters, discover both the quiet soul and the electric pulse of Goa. Witness the finest sundown points on clifftops and enjoy authentic Goan curries with new friends.",
-    highlights: ["Scenic Sunset at Vagator", "Cabo de Rama Cliff Sunset", "Cola Beach Sweetwater Lagoon", "Panjim Latin Quarter Walk"],
+    longDesc: "Experience Goa beyond the commercial noise. Wander through pastel-painted Portuguese lanes in Fontainhas, kayak quiet backwater mangroves, discover freshwater lagoons surrounded by coconut palms at Cola Beach, and watch golden sunsets from Cabo de Rama cliffs.",
+    highlights: ["Sunset from Cabo de Rama Fort ruins", "Kayaking through secret Cola Beach lagoon", "Walking architecture tour of Fontainhas", "Heritage spice plantation lunch"],
     itinerary: [
-      { day: "Day 1", title: "Arrival, Fort Aguada & Vagator Sunset", description: "Meet your crew and check in to our boutique stay. Discover the massive ramparts of Fort Aguada. Later, gather at the iconic Vagator Beach cliffside sunset viewpoint, overlooking the Arabian Sea as the sky turns deep crimson.", icons: ["map-pin", "sunset"] },
-      { day: "Day 2", title: "Baga & Candolim Water Adventures", description: "High-adrenaline water sports at Candolim Beach. Explore the historic Chapora Fort (famous Dil Chahta Hai spot). Spend the evening at Tito's Lane or Anjuna's bustling seaside shacks.", icons: ["waves", "music"] },
-      { day: "Day 3", title: "South Goa: Secret Lagoons & Cabo de Rama Sunset", description: "Journey into serene South Goa. Explore the magical Cola Beach sweet-water lagoon flanked by coconut palms. Relax on the golden crescent of Palolem Beach. End your day at Cabo de Rama Fort clifftop, capturing Goa's most legendary sunset.", icons: ["compass", "sun"] },
-      { day: "Day 4", title: "Latin Quarter Heritage & Old Goa Church Walk", description: "Walk through the pastel-painted lanes of Panjim Latin Quarter (Fontainhas). Pay homage at the Basilica of Bom Jesus. Head to departure points with a heart full of coastal memories.", icons: ["camera", "bus"] }
+      { day: "Day 1", title: "Arrival, Vagator Clifftops & Welcome Dinner", description: "Check in to our boutique stay. Head to Vagator's quiet cliffline for sunset over the Arabian Sea, followed by Goan coastal dinner.", icons: ["map-pin", "sunset"] },
+      { day: "Day 2", title: "Historic Chapora & Northern Beach Trails", description: "Visit the historic ramparts of Chapora Fort. Spend a relaxing afternoon in quiet coastal cafes with sunset jams.", icons: ["waves", "music"] },
+      { day: "Day 3", title: "South Goa: Secret Lagoons & Cabo de Rama", description: "Journey into serene South Goa. Explore Cola Beach sweet-water lagoon and watch an unforgettable sunset from Cabo de Rama.", icons: ["compass", "sun"] },
+      { day: "Day 4", title: "Fontainhas Heritage Walk & Departure", description: "Walk through the historic Latin Quarter of Panjim, photographing colorful tiled balconies and colonial heritage.", icons: ["camera", "bus"] }
     ],
-    inclusions: ["3 Nights Boutique Stay", "All Breakfasts & 2 Special Dinners", "Internal Transfers (AC Tempo Traveller)", "Trip Captain"],
-    exclusions: ["Flights / Trains to Goa", "Lunches", "Personal Expenses", "Water Sports Fees"],
+    inclusions: ["3 Nights Boutique Stay", "Daily Breakfasts & 2 Dinners", "AC Internal Transfers", "Experienced RAASTA Captain", "Heritage Walks & Entry Fees"],
+    exclusions: ["Transit to/from Goa", "Lunches", "Water Sports", "Personal Expenses"],
     faqs: [
-      { id: "g1", question: "Is this trip suitable for solo travelers?", answer: "Absolutely! Over 60% of our travelers join solo. It's the best way to meet new friends." }
+      { id: "g1", question: "Is this suitable for solo travelers?", answer: "Over 65% of our travelers join solo! Our micro-groups are warm, welcoming, and perfect for making genuine friends." }
     ],
-    pickupPoints: ["Goa Airport (Dabolim)", "Madgaon Railway Station", "Panjim Bus Stand"],
-    packingList: ["Comfortable beachwear", "Sunscreen & Sunglasses", "One party outfit", "Flip-flops and walking shoes", "Reusable water bottle"],
-    cancellationPolicy: "Cancel 15 days before the trip for a 100% refund. 50% refund if cancelled 7-14 days before. No refund within 7 days of departure."
+    pickupPoints: ["Goa Dabolim Airport (GOI)", "Madgaon Railway Station", "MOPA Airport (GOX)"],
+    packingList: ["Comfortable beach and casual wear", "Walking shoes & sandals", "Sunscreen & sunglasses", "Swimwear", "Reusable water bottle"],
+    cancellationPolicy: "100% refund as travel credits up to 15 days before departure. 50% between 7-14 days."
   },
   {
-    id: "gokarna",
-    name: "Gokarna & Karwar",
-    subTitle: "Pristine Beaches & Cliff Trek",
-    desc: "A mesmerizing and soulful coastal getaway of golden sands, scenic cliff walks connecting five untouched beaches, and tranquil nights under starfields.",
-    image: gokarnaImg,
-    season: "Oct – Mar",
-    duration: "3 Days / 2 Nights",
-    price: 7999,
-    originalPrice: 9999,
-    attractions: ["Om Beach", "Kudle Beach Sunset", "Yana Caves", "Mirjan Fort"],
-    category: "Adventure",
+    id: "ladakh",
+    name: "Ladakh & Nubra",
+    subTitle: "Trans-Himalayan Passes & Starlit Sand Dunes",
+    desc: "Cross Khardung La, explore the white sand dunes of Nubra Valley on double-humped camels, and camp beside Pangong Tso.",
+    image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=2000&q=80",
+    season: "May – Sep",
+    duration: "9 Days / 8 Nights",
+    price: 27499,
+    originalPrice: 31999,
+    attractions: ["Pangong Tso", "Khardung La Pass", "Nubra Valley Hunder Dunes", "Thiksey Monastery"],
+    category: "Mountain",
+    collectionDefault: "select",
     rating: 4.9,
-    longDesc: "Escape the commercial rush to the sacred shores of Gokarna. Our customized itinerary connects clifftops, serene lagoons, and rich history. Walk the famous five-beach trek along ocean-facing cliffs, relax at boutique beach hostels, and swim in calm ocean waters. Finish by exploring the majestic black karst monoliths of Yana and the emerald-covered walls of Mirjan Fort.",
-    highlights: ["Om Beach clifftop sunset", "Five-Beach Cliffside Trek", "Mystical Karst Rock Yana Caves", "Moss-covered ruins of Mirjan Fort"],
+    longDesc: "The benchmark overland adventure of the trans-Himalayas. Cross the legendary Khardung La Pass (5,359m), watch sunrise chants echo through Thiksey Monastery, ride Bactrian camels across high-altitude sand dunes, and gaze at the Milky Way from the shores of Pangong Tso.",
+    highlights: ["Summiting Khardung La Pass (5,359m)", "Glamping beside azure Pangong Tso lake", "Double-humped camel safari in Hunder Dunes", "Thiksey Gompa sunrise prayer ceremony"],
     itinerary: [
-      { day: "Day 1", title: "Arrival, Kudle Beach & Clifftop Sunset", description: "Check in to beachside stays at Kudle. Settle in and walk over to Om Beach (shaped naturally like the sacred OM symbol). Watch a quiet, breathtaking sunset from a secret clifftop viewpoint.", icons: ["map-pin", "sunset"] },
-      { day: "Day 2", title: "Five-Beach Trek & Bioluminescence Hunt", description: "Embark on our signature beach-to-beach cliff trek: Kudle Beach to Om, Half Moon, Paradise, and Hell's Half Acre. Enjoy beach activities and search for magical glowing bioluminescence waves after dark.", icons: ["compass", "sun"] },
-      { day: "Day 3", title: "Yana Caves & Mirjan Fort Exploration", description: "Trek through lush Western Ghats forests to the high-rising volcanic karst rock monoliths of Yana. Next, explore and photograph the stunning green-tinted ruins of Mirjan Fort. Depart with unforgettable memories.", icons: ["camera", "bus"] }
+      { day: "Day 1", title: "Leh Arrival & Rest Acclimatization", description: "Arrive at Leh Airport (3,500m). Full day of gentle rest and hydration at our boutique hotel.", icons: ["map-pin", "coffee"] },
+      { day: "Day 2", title: "Sham Valley & Indus-Zanskar Confluence", description: "Gentle excursion to Magnetic Hill, Hall of Fame, and the dramatic Indus-Zanskar river confluence at Nimmu.", icons: ["compass", "mountain"] },
+      { day: "Day 3", title: "Leh to Nubra Valley via Khardung La", description: "Cross Khardung La Pass (5,359m) into the Nubra Valley. Sunset dunes walk at Hunder.", icons: ["mountain", "sunset"] },
+      { day: "Day 4", title: "Turtuk Balti Heritage Village", description: "Day trip along the Shyok River to Turtuk, exploring apricot orchards and Balti heritage houses.", icons: ["camera", "compass"] },
+      { day: "Day 5", title: "Nubra Valley to Pangong Tso via Shyok", description: "Drive along the wild Shyok riverbed to Pangong Tso. Check in to premium lakeside camps.", icons: ["waves", "moon"] },
+      { day: "Day 6", title: "Pangong Tso to Hanle Dark Sky Reserve", description: "Cross high plateaus to Hanle, home to the Indian Astronomical Observatory and pristine starlit night skies.", icons: ["star", "mountain"] },
+      { day: "Day 7", title: "Hanle to Leh via Chang La", description: "Ascend Chang La pass (5,360m) and visit Hemis & Thiksey monasteries on the return to Leh.", icons: ["mountain", "bus"] },
+      { day: "Day 8", title: "Leh Heritage Streets & Farewell Feast", description: "Explore Leh Palace and local market bazaars followed by a group dinner.", icons: ["users", "utensils"] },
+      { day: "Day 9", title: "Leh Departure", description: "Airport transfers with lifetime Himalayan memories.", icons: ["check", "plane"] }
     ],
-    inclusions: ["2 Nights Beachside Resort/Boutique Stay", "Daily Breakfasts", "Local AC Transport & Sightseeing", "Experienced Trek Lead & Captain", "Five-Beach Guided Trekking Permits"],
-    exclusions: ["Flights/Trains to Hubli or Gokarna", "Lunches & Dinners", "Water sport activities", "Personal Expenses"],
+    inclusions: ["8 Nights Boutique Stays & Glamping", "Daily Breakfast & Dinners", "Expedition-spec 4x4 / Force Urbania", "All Inner Line Permits & Environment Fees", "Medical Oxygen & Altitude Safety Kit"],
+    exclusions: ["Airfare to/from Leh", "Lunches & Personal Shopping", "Camel / ATV Rentals"],
     faqs: [
-      { id: "gk1", question: "How difficult is the Five-Beach Trek?", answer: "It is an easy-to-moderate trek covering rocky paths and sandy shores. Basic fitness is absolutely fine!" }
+      { id: "ld1", question: "Are permits included in the package?", answer: "Yes, all inner line permits for Nubra, Pangong, and Hanle are processed by Raasta in advance." }
     ],
-    pickupPoints: ["Gokarna Road Railway Station", "Hubli Airport", "Gokarna Main Bus Stand"],
-    packingList: ["Light breathable trekking clothes", "Trekking/sturdy sports shoes", "Quick-dry towel", "Waterproof pouch for phones", "Hat & eco-friendly sun protection"],
-    cancellationPolicy: "Cancel 15 days before the trip for a 100% refund. 50% refund if cancelled 7-14 days before. No refund within 7 days of departure."
+    pickupPoints: ["Leh Airport (IXL)"],
+    packingList: ["Heavy down jacket & windbreaker", "Thermal base layers", "Category 3 or 4 UV sunglasses", "SPF 50+ sunscreen & lip balm", "Sturdy walking boots"],
+    cancellationPolicy: "100% credit refund up to 20 days before departure. 50% between 10-19 days."
   },
   {
     id: "jaisalmer",
     name: "Jaisalmer & Thar Desert",
-    subTitle: "Caravan Dunes & Golden Fort",
-    desc: "A golden desert overland experience with camel caravans, desert luxury camping under starlit skies, and folk music around glowing bonfires.",
+    subTitle: "Golden Forts, Sand Dunes & Campfire Caravans",
+    desc: "An overland desert journey with sunset camel treks, 4x4 dune bashing, living fort alleys, and folk music nights under the stars.",
     image: "https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=2000&q=80",
     season: "Oct – Mar",
     duration: "4 Days / 3 Nights",
@@ -182,23 +185,24 @@ export const DESTINATIONS: Destination[] = [
     originalPrice: 14499,
     attractions: ["Sam Sand Dunes", "Sonar Qila (Jaisalmer Fort)", "Kuldhara Ghost Village", "Patwon Ki Haveli"],
     category: "Adventure",
+    collectionDefault: "explore",
     rating: 4.8,
-    longDesc: "Journey into the golden heart of Rajasthan. Walk the living lanes of the Sonar Qila, explore the mysterious abandoned village of Kuldhara, and head deep into the Thar desert for sunset camel treks, 4x4 dune bashing, and night camping under an unpolluted canopy of stars.",
-    highlights: ["Sunset Dune Bashing in Sam", "Stargazing Desert Luxury Camp", "Sonar Qila Heritage Walk", "Traditional Manganiyar Folk Music Night"],
+    longDesc: "Journey into the golden heart of Rajasthan. Walk the living lanes of the Sonar Qila, explore the mysterious abandoned village of Kuldhara, and venture into the Thar desert for sunset camel treks, 4x4 dune bashing, and night camping under an unpolluted canopy of stars.",
+    highlights: ["Sunset dune drive across Sam Sand Dunes", "Stargazing from boutique desert luxury tents", "Sonar Qila living fort heritage trail", "Traditional Manganiyar folk music night by the fire"],
     itinerary: [
-      { day: "Day 1", title: "Jaisalmer Arrival & Haveli Walk", description: "Meet in Jaisalmer, check in to our heritage Haveli hotel. Sunset walk at Gadisar Lake with view of sandstone temples.", icons: ["map-pin", "sunset"] },
-      { day: "Day 2", title: "Sonar Qila & Kuldhara Ghost Village", description: "Explore the golden fortress of Jaisalmer, Jain temples, and Patwon ki Haveli. Afternoon excursion to the cursed ghost village of Kuldhara.", icons: ["compass", "camera"] },
-      { day: "Day 3", title: "Thar Desert Safari & Bonfire Night", description: "Drive into the Sam Sand Dunes. Experience thrilling 4x4 dune bashing and a sunset camel caravan. Night luxury camp with Rajasthani folk dance and dinner.", icons: ["sun", "music"] },
-      { day: "Day 4", title: "Desert Sunrise & Departure", description: "Wake up to desert sunrise tea over the dunes. Transfer back to Jaisalmer station or airport with rich desert memories.", icons: ["coffee", "check"] }
+      { day: "Day 1", title: "Jaisalmer Arrival & Gadisar Lake Sunset", description: "Check in to our boutique sandstone haveli. Sunset walk by Gadisar Lake admiring sculpted pavilions.", icons: ["map-pin", "sunset"] },
+      { day: "Day 2", title: "Sonar Qila & Kuldhara Ghost Village", description: "Explore the golden fortress of Jaisalmer, Jain temples, and Patwon ki Haveli. Afternoon visit to the abandoned ghost village of Kuldhara.", icons: ["compass", "camera"] },
+      { day: "Day 3", title: "Thar Desert Safari & Bonfire Night", description: "Head into the Sam Sand Dunes for 4x4 dune bashing and sunset camel ride. Night luxury glamping with traditional Rajasthani dinner and folk music.", icons: ["sun", "music"] },
+      { day: "Day 4", title: "Desert Sunrise & Departure", description: "Early morning desert sunrise tea over the dunes. Departure transfers to Jaisalmer station or airport.", icons: ["coffee", "check"] }
     ],
-    inclusions: ["2 Nights Boutique Haveli & 1 Night Luxury Desert Camp", "All Breakfasts & 2 Traditional Rajasthani Dinners", "AC Transfers & 4x4 Dune Bashing", "Trip Captain & Local Historian Guides"],
-    exclusions: ["Trains/Flights to Jaisalmer", "Lunches & Personal Shopping", "Quad Biking Add-ons"],
+    inclusions: ["2 Nights Boutique Haveli & 1 Night Luxury Desert Camp", "Daily Breakfasts & 2 Traditional Dinners", "AC Transfers & 4x4 Dune Drive", "Trip Captain & Local Historian Guides", "Desert Cultural Program & Bonfire"],
+    exclusions: ["Transit to/from Jaisalmer", "Lunches & Personal Shopping", "Quad Biking Add-ons"],
     faqs: [
-      { id: "js1", question: "Is the desert camp comfortable in winter?", answer: "Yes! Our luxury Swiss tents come with plush bedding, attached private washrooms, and heated blankets for chilly desert nights." }
+      { id: "js1", question: "What are the desert camps like?", answer: "Our luxury Swiss tents feature proper beds, private attached bathrooms, and warm bedding for desert nights." }
     ],
-    pickupPoints: ["Jaisalmer Railway Station", "Jodhpur Airport (Optional Group Transfer)"],
-    packingList: ["Warm jacket for desert nights", "Light cotton clothes for day", "Sunglasses & scarf for dust protection", "Moisturizer & power bank"],
-    cancellationPolicy: "Full credit refund 15 days prior. 50% between 7-14 days. Non-refundable within 7 days."
+    pickupPoints: ["Jaisalmer Railway Station", "Jodhpur Airport (optional transfer)"],
+    packingList: ["Warm jacket for desert nights", "Light cotton clothes for daytime", "Sunglasses & scarf for dust", "Moisturizer & power bank"],
+    cancellationPolicy: "100% credit refund up to 15 days before departure. 50% between 7-14 days."
   }
 ];
 
@@ -206,127 +210,185 @@ export const TRIPS: Trip[] = [
   {
     id: "trip-spiti-1",
     destinationId: "spiti",
-    destinationName: "Spiti High Desert Autumn Expedition",
+    destinationName: "Spiti High Desert Overland Caravan",
+    collection: "select",
     dates: "14 – 21 Nov 2026",
     price: 22999,
     originalPrice: 26999,
-    seatsTotal: 14,
+    duration: "8 Days / 7 Nights",
+    seatsTotal: 12,
     seatsAvailable: 4,
     description: "Navigate high Himalayan passes, send postcards from Hikkim, and camp under the Milky Way at Chandratal.",
+    overview: "An intimate 8-day overland circuit across the trans-Himalayan rain shadow, featuring mud-walled monasteries, fossil hunting, and lakeside glamping.",
+    heroImage: "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=2000&q=80",
     status: "Selling Fast",
-    captainName: "Tenzin Norbu"
+    captainName: "Tenzin Norbu",
+    category: "Mountain",
+    transportDetails: "Force Urbania with captain and high-clearance 4x4 for river crossings",
+    accommodationDetails: "Curated heritage homestays with heating and boutique lakeside glamping at Chandratal",
+    mealsDetails: "All breakfasts and authentic local dinners with warm tea service",
+    inclusions: ["7 Nights Homestay & High-Altitude Glamping", "Breakfast and Traditional Dinners", "Force Urbania / 4x4 Expedition Vehicle", "Certified Mountain Lead & Oxygen Setup", "Inner Line Permits & Sanctuary Tolls"],
+    exclusions: ["Transit to/from Shimla/Manali", "Lunches & Personal Shopping", "Emergency Evacuations", "Gratuities"],
+    cancellationPolicy: "100% credit refund up to 21 days before departure. 50% between 10-20 days."
+  },
+  {
+    id: "trip-gokarna-1",
+    destinationId: "gokarna",
+    destinationName: "Gokarna Five-Beach Cliff Trail",
+    collection: "explore",
+    dates: "20 – 23 Nov 2026",
+    price: 7999,
+    originalPrice: 9999,
+    duration: "3 Days / 2 Nights",
+    seatsTotal: 14,
+    seatsAvailable: 6,
+    description: "Trek pristine ocean cliffs across five beaches, explore monolithic Yana Caves, and witness Mirjan Fort.",
+    overview: "A student-friendly and accessible coastal trail connecting Kudle, Om, Half Moon, and Paradise beaches with evening campfire jams.",
+    heroImage: gokarnaImg,
+    status: "Seats Open",
+    captainName: "Aditya Hegde",
+    category: "Beach",
+    transportDetails: "AC Tempo Traveller for local sightseeing and station transfers",
+    accommodationDetails: "Beachside boutique cottages with ocean breeze and garden areas",
+    mealsDetails: "Daily hearty breakfasts and coastal welcome dinner",
+    inclusions: ["2 Nights Boutique Beach Stays", "Daily Breakfasts", "Local AC Transport & Transfers", "Experienced Trek Lead & Captain", "Trek Permits & Safety Support"],
+    exclusions: ["Train/Flight to Hubli or Gokarna", "Lunches & Dinners", "Water Sports", "Personal Expenses"],
+    cancellationPolicy: "100% refund as travel credits up to 15 days before departure. 50% between 7-14 days."
+  },
+  {
+    id: "trip-meghalaya-1",
+    destinationId: "meghalaya",
+    destinationName: "Meghalaya Living Bridges & Cascades",
+    collection: "select",
+    dates: "05 – 10 Dec 2026",
+    price: 18499,
+    originalPrice: 21999,
+    duration: "6 Days / 5 Nights",
+    seatsTotal: 12,
+    seatsAvailable: 5,
+    description: "Trek to the double-decker root bridges, kayak the transparent Dawki river, and swim in Krang Shuri falls.",
+    overview: "A boutique 6-day expedition deep into Khasi rainforests, crystal rivers, and heritage mountain stays.",
+    heroImage: "https://images.unsplash.com/photo-1544644181-1484b3fdfc62?auto=format&fit=crop&w=2000&q=80",
+    status: "Selling Fast",
+    captainName: "Dapbiang Rymbai",
+    category: "Adventure",
+    transportDetails: "Private AC SUV / Force Traveller throughout the circuit",
+    accommodationDetails: "Eco-resorts overlooking cloud valleys and riverside cottages in Dawki",
+    mealsDetails: "Daily breakfasts and traditional Khasi tribal dinners",
+    inclusions: ["5 Nights Heritage Stays & Eco Cottages", "Daily Breakfasts & 3 Dinners", "All Internal Transfers in AC Vehicle", "Local Khasi Guides & Entry Permits", "Boating Gear & Lifejackets"],
+    exclusions: ["Airfare to Guwahati", "Lunches & Personal Shopping", "Adventure Add-ons"],
+    cancellationPolicy: "100% credit refund up to 15 days before departure. 50% between 7-14 days."
+  },
+  {
+    id: "trip-goa-1",
+    destinationId: "goa",
+    destinationName: "Goa Coastal Heritage & Secret Lagoons",
+    collection: "explore",
+    dates: "12 – 15 Dec 2026",
+    price: 8999,
+    originalPrice: 10999,
+    duration: "4 Days / 3 Nights",
+    seatsTotal: 14,
+    seatsAvailable: 3,
+    description: "Intimate coastal journey covering Fontainhas Latin quarters, secret South Goa beaches, and sunset clifftops.",
+    overview: "Skip the commercial clutter for old-world Portuguese architecture, clifftop sunsets at Cabo de Rama, and kayaking quiet sweetwater lagoons.",
+    heroImage: goaImg,
+    status: "Almost Full",
+    captainName: "Derek D'Souza",
+    category: "Beach",
+    transportDetails: "Dedicated AC Tempo Traveller with seasoned driver",
+    accommodationDetails: "Heritage Portuguese villa and boutique coastal rooms",
+    mealsDetails: "Daily breakfasts and authentic Goan seafood / vegetarian welcome dinner",
+    inclusions: ["3 Nights Boutique Stay", "Daily Breakfasts & 2 Dinners", "AC Internal Transfers", "Experienced RAASTA Captain", "Heritage Walks & Entry Fees"],
+    exclusions: ["Transit to/from Goa", "Lunches", "Water Sports", "Personal Expenses"],
+    cancellationPolicy: "100% refund as travel credits up to 15 days before departure. 50% between 7-14 days."
   },
   {
     id: "trip-ladakh-1",
     destinationId: "ladakh",
     destinationName: "Ladakh & Nubra Valley Overland",
-    dates: "05 – 13 Dec 2026",
+    collection: "select",
+    dates: "15 – 23 Jan 2027",
     price: 27499,
     originalPrice: 31999,
-    seatsTotal: 14,
-    seatsAvailable: 3,
+    duration: "9 Days / 8 Nights",
+    seatsTotal: 10,
+    seatsAvailable: 2,
     description: "Conquer Khardung La, explore white sand dunes at Hunder, and experience Pangong Tso's azure waters.",
+    overview: "The gold standard of trans-Himalayan overlanding, featuring high-altitude monasteries, Hanle dark sky stargazing, and private 4x4 support.",
+    heroImage: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=2000&q=80",
     status: "Almost Full",
-    captainName: "Rigzin Dorje"
-  },
-  {
-    id: "trip-meghalaya-1",
-    destinationId: "meghalaya",
-    destinationName: "Meghalaya Living Roots & Cascades",
-    dates: "18 – 24 Dec 2026",
-    price: 18499,
-    originalPrice: 21999,
-    seatsTotal: 14,
-    seatsAvailable: 6,
-    description: "Trek to the double-decker root bridges, kayak the transparent Dawki river, and swim in Krang Shuri falls.",
-    status: "Seats Open",
-    captainName: "Dapbiang Rymbai"
-  },
-  {
-    id: "trip-goa-1",
-    destinationId: "goa",
-    destinationName: "Goa Coastal Heritage & Sunset Escape",
-    dates: "12 – 15 Jan 2027",
-    price: 8999,
-    originalPrice: 10999,
-    seatsTotal: 15,
-    seatsAvailable: 5,
-    description: "Intimate coastal journey covering Fontainhas Latin quarters, secret South Goa beaches, and sunset clifftops.",
-    status: "Selling Fast",
-    captainName: "Derek D'Souza"
-  },
-  {
-    id: "trip-gokarna-1",
-    destinationId: "gokarna",
-    destinationName: "Gokarna Five-Beach Cliff Trek",
-    dates: "22 – 25 Jan 2027",
-    price: 7999,
-    originalPrice: 9999,
-    seatsTotal: 15,
-    seatsAvailable: 7,
-    description: "Trek pristine ocean cliffs across five beaches, explore monolithic Yana Caves, and witness Mirjan Fort.",
-    status: "Seats Open",
-    captainName: "Aditya Hegde"
+    captainName: "Rigzin Dorje",
+    category: "Mountain",
+    transportDetails: "Expedition-spec 4x4 SUVs with mountain-trained drivers",
+    accommodationDetails: "Handpicked premium hotels in Leh and luxury insulated dome tents by the lake",
+    mealsDetails: "Full breakfast and hot dinners with mountain tea service",
+    inclusions: ["8 Nights Boutique Stays & Glamping", "Daily Breakfast & Dinners", "Expedition-spec 4x4 / Force Urbania", "All Inner Line Permits & Environment Fees", "Medical Oxygen & Altitude Safety Kit"],
+    exclusions: ["Airfare to/from Leh", "Lunches & Personal Shopping", "Camel / ATV Rentals"],
+    cancellationPolicy: "100% credit refund up to 20 days before departure. 50% between 10-19 days."
   },
   {
     id: "trip-jaisalmer-1",
     destinationId: "jaisalmer",
     destinationName: "Thar Desert Starlit Caravan",
-    dates: "06 – 10 Feb 2027",
+    collection: "explore",
+    dates: "06 – 09 Feb 2027",
     price: 11999,
     originalPrice: 14499,
+    duration: "4 Days / 3 Nights",
     seatsTotal: 14,
-    seatsAvailable: 4,
+    seatsAvailable: 5,
     description: "4x4 dune bashing in Sam, sunset camel rides, and folk music bonfires under the vast desert sky.",
+    overview: "A vibrant 4-day desert caravan exploring the living sandstone fort of Jaisalmer, abandoned Kuldhara village, and starlit luxury desert camping.",
+    heroImage: "https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=2000&q=80",
     status: "Selling Fast",
-    captainName: "Manvendra Singh"
+    captainName: "Manvendra Singh",
+    category: "Adventure",
+    transportDetails: "AC vehicle for transfers and 4x4 modified Jeeps for dune bashing",
+    accommodationDetails: "2 nights in boutique sandstone haveli and 1 night in luxury Swiss desert tent",
+    mealsDetails: "Daily breakfasts and 2 authentic Rajasthani dinners",
+    inclusions: ["2 Nights Boutique Haveli & 1 Night Luxury Desert Camp", "Daily Breakfasts & 2 Traditional Dinners", "AC Transfers & 4x4 Dune Drive", "Trip Captain & Local Historian Guides", "Desert Cultural Program & Bonfire"],
+    exclusions: ["Transit to/from Jaisalmer", "Lunches & Personal Shopping", "Quad Biking Add-ons"],
+    cancellationPolicy: "100% credit refund up to 15 days before departure. 50% between 7-14 days."
   }
 ];
 
-export const PACKAGES: PackageTier[] = [
+export const TEAM_MEMBERS: TeamMember[] = [
   {
-    id: "explorer",
-    name: "Explorer Caravan",
-    desc: "Intimate weekend trails & coastal road loops",
-    basePrice: 7999,
-    features: [
-      "Curated boutique stays & heritage homestays",
-      "Dedicated AC Force Urbania / Traveler van",
-      "Signature trail routes & curated viewpoints",
-      "Certified RAASTA Trip Captain guidance",
-      "All breakfasts & local welcome dinner",
-      "Safety gear & route permits included"
-    ]
+    id: "team-1",
+    name: "Abhi Ghodke",
+    role: "Founder & Lead Overland Captain",
+    bio: "Passionate road-tripper with over 80,000 km across the Indian subcontinent. Founded RAASTA to make authentic road journeys accessible, safe, and deeply personal.",
+    image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400",
+    experience: "8+ Years Overlanding",
+    specialtyRoutes: ["Spiti Valley", "Western Ghats", "Goa Heritage"]
   },
   {
-    id: "adventure",
-    name: "Overland Expedition",
-    desc: "Multi-day high-altitude & desert journeys across India",
-    basePrice: 18499,
-    isMostLoved: true,
-    features: [
-      "Handpicked boutique resorts, glamping & heritage villas",
-      "Expedition-spec 4x4s with seasoned mountain drivers",
-      "All major culinary meals (authentic local cuisines)",
-      "Certified local naturalists & high-altitude captains",
-      "Full high-altitude oxygen backup & emergency protocols",
-      "Included professional photographer & 4K highlight reels",
-      "All inner-line, forest & sanctuary entry permits"
-    ]
+    id: "team-2",
+    name: "Tenzin Norbu",
+    role: "Himalayan Route Architect",
+    bio: "Born in Kinnaur, Tenzin has led high-altitude caravans across Spiti and Zanskar for over a decade. Wilderness First Aid certified with deep community roots.",
+    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=400",
+    experience: "10+ Years High Altitude",
+    specialtyRoutes: ["Spiti Circuit", "Ladakh & Nubra", "Kinnaur"]
   },
   {
-    id: "premium-expedition",
-    name: "Private Bespoke Charter",
-    desc: "Hyper-tailored private expeditions for families & microgroups",
-    basePrice: 28999,
-    features: [
-      "Exclusive luxury glamping, heritage forts & estate homestays",
-      "Private dedicated premium 4x4 cruiser (Thar / Fortuner / Isuzu)",
-      "24/7 dedicated personal route concierge & trip manager",
-      "Fully customized daily pace and unmapped off-road detours",
-      "All adventure gear, kayak rentals & trek permits included",
-      "Full cinema drone kit & private edited journey film"
-    ]
+    id: "team-3",
+    name: "Pooja Deshmukh",
+    role: "Traveler Experience & Operations Lead",
+    bio: "Ensures every traveler's enquiry receives thoughtful attention, coordinates bespoke stays with local homestay hosts, and champions solo female traveler safety.",
+    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=400",
+    experience: "6+ Years Hospitality",
+    specialtyRoutes: ["Gokarna Trails", "Meghalaya Highlands", "Rajasthan"]
+  },
+  {
+    id: "team-4",
+    name: "Siddharth Shinde",
+    role: "Expedition Photographer & Scout",
+    bio: "Documenting unmapped trailheads, campfire stories, and cultural heritage across India with a camera in hand and an ear for genuine travelers' stories.",
+    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=400",
+    experience: "7+ Years Documentary",
+    specialtyRoutes: ["Western Ghats", "Desert Caravans", "Coastal Cliffs"]
   }
 ];
 
@@ -336,8 +398,10 @@ export const REVIEWS: Review[] = [
     author: "Aditya Roy",
     avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=150",
     rating: 5,
-    destination: "Spiti Autumn Caravan",
-    content: "The high-altitude overlanding with RAASTA was absolute bliss. Navigating Kunzum Pass and camping at Chandratal felt completely seamless under the expert guidance of their captains.",
+    destination: "Spiti High Desert Overland",
+    tripCollection: "select",
+    verifiedTraveler: true,
+    content: "The high-altitude overlanding with RAASTA was absolute bliss. Navigating Kunzum Pass and camping at Chandratal felt completely seamless under Tenzin's expert guidance.",
     date: "October 2026"
   },
   {
@@ -345,8 +409,10 @@ export const REVIEWS: Review[] = [
     author: "Sneha Kapoor",
     avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=150",
     rating: 5,
-    destination: "Gokarna Cliff Trail",
-    content: "Waking up to the sound of waves at our secluded cliffside stay was unforgettable. Small group, zero touristy rush, and genuine conversations around the campfire.",
+    destination: "Gokarna Five-Beach Cliff Trail",
+    tripCollection: "explore",
+    verifiedTraveler: true,
+    content: "Waking up to the sound of waves at our cliffside stay was unforgettable. As a college student joining solo, I made incredible friends on the very first day.",
     date: "September 2026"
   },
   {
@@ -354,7 +420,9 @@ export const REVIEWS: Review[] = [
     author: "Kabir Mehta",
     avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=150",
     rating: 5,
-    destination: "Offbeat Goa Heritage",
+    destination: "Goa Coastal Heritage",
+    tripCollection: "explore",
+    verifiedTraveler: true,
     content: "RAASTA completely redefined Goa for me. We skipped commercial tourist traps and discovered secret South Goa lagoons and Fontainhas history. Absolute perfection!",
     date: "August 2026"
   },
@@ -364,6 +432,8 @@ export const REVIEWS: Review[] = [
     avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=150",
     rating: 5,
     destination: "Meghalaya Living Bridges",
+    tripCollection: "select",
+    verifiedTraveler: true,
     content: "The trek to Nongriat and swimming in Krang Shuri falls was otherworldly. As a solo female traveler, I felt completely safe, respected, and welcomed by the whole crew.",
     date: "October 2026"
   }
@@ -371,13 +441,13 @@ export const REVIEWS: Review[] = [
 
 export const GALLERY_ITEMS: GalleryItem[] = [
   {
-    id: "gal-3",
-    url: "https://images.unsplash.com/photo-1627894483216-2138af692e32?auto=format&fit=crop&w=1400&q=80",
-    title: "Om Beach Bonfire Night",
-    destination: "Gokarna",
-    category: "Beaches",
-    date: "Sep 2026",
-    likes: 312,
+    id: "gal-1",
+    url: "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?auto=format&fit=crop&w=1400&q=80",
+    title: "Kunzum Summit Sunrise",
+    destination: "Spiti Valley",
+    category: "Mountains",
+    date: "Oct 2026",
+    likes: 489,
     photographer: "Siddharth S."
   },
   {
@@ -388,17 +458,17 @@ export const GALLERY_ITEMS: GalleryItem[] = [
     category: "People",
     date: "Oct 2026",
     likes: 245,
-    photographer: "Varun K."
+    photographer: "Abhi G."
   },
   {
-    id: "gal-1",
-    url: "https://images.unsplash.com/photo-1611186871348-b1ce696e52c9?auto=format&fit=crop&w=1400&q=80",
-    title: "Kunzum Summit Sunrise",
-    destination: "Spiti Valley",
-    category: "Mountains",
-    date: "Oct 2026",
-    likes: 489,
-    photographer: "Meenal G."
+    id: "gal-3",
+    url: "https://images.unsplash.com/photo-1627894483216-2138af692e32?auto=format&fit=crop&w=1400&q=80",
+    title: "Om Beach Bonfire Night",
+    destination: "Gokarna",
+    category: "Beaches",
+    date: "Sep 2026",
+    likes: 312,
+    photographer: "Aditya H."
   },
   {
     id: "gal-4",
@@ -408,7 +478,7 @@ export const GALLERY_ITEMS: GalleryItem[] = [
     category: "Roads",
     date: "Sep 2026",
     likes: 428,
-    photographer: "Joydeep R."
+    photographer: "Tenzin N."
   },
   {
     id: "gal-5",
@@ -428,7 +498,7 @@ export const GALLERY_ITEMS: GalleryItem[] = [
     category: "People",
     date: "Oct 2026",
     likes: 374,
-    photographer: "Pranav M."
+    photographer: "Pooja D."
   }
 ];
 
@@ -436,26 +506,75 @@ export const FAQS: FAQItem[] = [
   {
     id: "faq-1",
     question: "How do RAASTA road trips work?",
-    answer: "RAASTA is not a standard bus tour or sightseeing agency. We design intimate group overland expeditions. Each caravan has a strict microgroup cap of 12 to 15 travelers led by a certified RAASTA Trip Captain and veteran local drivers. We travel in high-quality vehicles, stop at unmapped local spots, stay in boutique heritage homestays, and bond over campfires and acoustic jams."
+    answer: "RAASTA is not a standard sightseeing tour. We curate intimate group overland journeys. Each caravan has a strict microgroup cap of 12 to 14 travelers led by an experienced RAASTA Trip Captain and veteran local drivers. We travel in high-quality vehicles, pause at unmapped local spots, stay in boutique heritage homestays, and bond over campfires and acoustic jams."
   },
   {
     id: "faq-2",
-    question: "Do I have to drive my own vehicle?",
-    answer: "No! All packages include full overland transport in comfortable high-clearance SUVs or force travelers with professional mountain drivers. If you want to bring your own 4x4 SUV and join as a self-drive caravan, we offer dedicated convoy lead slots with mechanical assistance."
+    question: "What is the difference between RAASTA EXPLORE and RAASTA SELECT?",
+    answer: "RAASTA EXPLORE focuses on high-energy, accessible, student-friendly group adventures, coastal trails, and weekend backpacking escapes with comfortable homestays. RAASTA SELECT features boutique heritage stays, smaller micro-groups, dedicated 4x4 expedition cruisers, local naturalists, and premium inclusions."
   },
   {
     id: "faq-3",
+    question: "How does the enquiry and booking process work?",
+    answer: "We follow an Enquiry-First model. When you find a trip you love, submit an enquiry or connect with us on WhatsApp. A dedicated team member personally checks real-time seat availability, clarifies route logistics, and assists you directly before manual reservation confirmation. We never charge automated surprise fees."
+  },
+  {
+    id: "faq-4",
     question: "Are these trips safe for solo female travelers?",
     answer: "Over 65% of our explorers join solo, a large majority of whom are women. Rigorous safety audits, certified route captains, vetted accommodations, and zero-tolerance harassment policies make RAASTA one of India's most trusted travel communities for solo adventurers."
   },
   {
-    id: "faq-4",
+    id: "faq-5",
     question: "What is your refund & cancellation policy?",
     answer: "If you cancel 15 days or more prior to departure, you receive a 100% refund as RAASTA travel credits that never expire. If you cancel within 7 to 14 days, a 50% refund is issued. Within 7 days, cancellations can be transferred to any friend or family member at zero re-booking fee."
   },
   {
-    id: "faq-5",
+    id: "faq-6",
     question: "How are high-altitude medical emergencies handled?",
     answer: "All our Himalayan expeditions carry portable medical oxygen cylinders, pulse oximeters, specialized mountain first-aid kits, and 24/7 satellite ops connectivity with nearby base hospitals. Captains are trained in Wilderness First Aid."
+  }
+];
+
+export const PACKAGES: PackageTier[] = [
+  {
+    id: "adventure",
+    name: "Raasta Explorer",
+    desc: "Accessible group departures with comfortable homestays, road caravans, and essential permits.",
+    basePrice: 8999,
+    features: [
+      "Comfortable experiential homestays",
+      "Dedicated 4x4 / Force Urbania vehicle",
+      "Daily wholesome breakfasts & dinners",
+      "Certified RAASTA Trip Captain",
+      "Inner line permits & entry passes"
+    ]
+  },
+  {
+    id: "nomad",
+    name: "Raasta Select",
+    desc: "Curated micro-groups with boutique heritage stays, smaller group caps, and private naturalists.",
+    basePrice: 18499,
+    isMostLoved: true,
+    features: [
+      "Boutique heritage villas & high glamping",
+      "Micro-group capped at 8-10 people",
+      "Dedicated high-clearance SUV fleet",
+      "Curated local culinary trails",
+      "Specialized high-altitude naturalist",
+      "Priority assistance & flexible reschedule"
+    ]
+  },
+  {
+    id: "bespoke",
+    name: "Private Charter",
+    desc: "Customized private route tailored for families, couples, or private corporate expeditions.",
+    basePrice: 24999,
+    features: [
+      "Private vehicle & captain dedicated to your party",
+      "Fully customized dates & daily pacing",
+      "Handpicked luxury villas & estate stays",
+      "Personalized culinary arrangements",
+      "Airport/hub private transfers"
+    ]
   }
 ];
