@@ -144,21 +144,21 @@ export default function MyBookingsLedger({
                         </div>
 
                         {/* Summary of toggled addons */}
-                        {(b.addOns.photographer || b.addOns.premiumStay || b.addOns.localGuide) && (
+                        {b.addOns && (b.addOns.photographer || b.addOns.premiumStay || b.addOns.localGuide) && (
                           <div className="pt-1.5">
                             <span className="text-[9px] uppercase font-bold text-amber-400/90 block mb-1 font-display">Options:</span>
                             <div className="flex flex-wrap gap-1.5">
-                              {b.addOns.photographer && (
+                              {b.addOns?.photographer && (
                                 <span className="text-[9px] bg-white/5 border border-white/10 text-zinc-300 px-2 py-0.5 rounded-md font-medium uppercase font-display">
                                   + Pro Media
                                 </span>
                               )}
-                              {b.addOns.premiumStay && (
+                              {b.addOns?.premiumStay && (
                                 <span className="text-[9px] bg-white/5 border border-white/10 text-zinc-300 px-2 py-0.5 rounded-md font-medium uppercase font-display">
                                   + Private Suite
                                 </span>
                               )}
-                              {b.addOns.localGuide && (
+                              {b.addOns?.localGuide && (
                                 <span className="text-[9px] bg-white/5 border border-white/10 text-zinc-300 px-2 py-0.5 rounded-md font-medium uppercase font-display">
                                   + Naturalist Escort
                                 </span>

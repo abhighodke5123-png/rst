@@ -327,23 +327,23 @@ export default function Dashboard({ user, onLogout, onNavigateToHome, onReserveM
                           </div>
 
                           {/* Addons toggling */}
-                          {(b.addOns.photographer || b.addOns.premiumStay || b.addOns.localGuide) && (
+                          {b.addOns && (b.addOns.photographer || b.addOns.premiumStay || b.addOns.localGuide) && (
                             <div>
                               <span className="text-[9px] uppercase font-bold text-amber-400/90 block mb-1 font-display">
                                 Custom Package Selections:
                               </span>
                               <div className="flex flex-wrap gap-1.5">
-                                {b.addOns.photographer && (
+                                {b.addOns?.photographer && (
                                   <span className="text-[9px] bg-white/5 border border-white/10 text-zinc-300 px-2.5 py-1 rounded-lg font-medium uppercase font-display">
                                     + Pro Camera Setup
                                   </span>
                                 )}
-                                {b.addOns.premiumStay && (
+                                {b.addOns?.premiumStay && (
                                   <span className="text-[9px] bg-white/5 border border-white/10 text-zinc-300 px-2.5 py-1 rounded-lg font-medium uppercase font-display">
                                     + Luxury Stay Upgrade
                                   </span>
                                 )}
-                                {b.addOns.localGuide && (
+                                {b.addOns?.localGuide && (
                                   <span className="text-[9px] bg-white/5 border border-white/10 text-zinc-300 px-2.5 py-1 rounded-lg font-medium uppercase font-display">
                                     + Naturalist Guide
                                   </span>
