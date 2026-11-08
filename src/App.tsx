@@ -320,7 +320,13 @@ export default function App() {
       {/* VIEW 3: AUTHENTICATION (Login / Signup) */}
       {view === "login" && (
         <Login
-          onSuccess={() => setView("home")}
+          onSuccess={(loggedUser) => {
+            if (loggedUser.role === "admin") {
+              setView("admin");
+            } else {
+              setView("home");
+            }
+          }}
           onNavigateToSignup={() => setView("signup")}
           onBack={() => setView("home")}
         />

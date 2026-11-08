@@ -6,8 +6,9 @@
 import React, { useState } from "react";
 import { LogIn, Mail, Lock, ShieldAlert, ArrowLeft, Loader2 } from "lucide-react";
 import { motion } from "motion/react";
-import { auth, googleProvider } from "../firebase";
+import { auth, googleProvider, db } from "../firebase";
 import { signInWithPopup, signInWithEmailAndPassword } from "firebase/auth";
+import { doc, getDoc } from "firebase/firestore";
 
 interface LoginProps {
   onBack: () => void;
@@ -26,20 +27,36 @@ export default function Login({ onBack, onSuccess, onNavigateToSignup }: LoginPr
     setError(null);
 
     if (!email || !password) {
-      setError("Please fill in both email and password Fields.");
+      setError("Please fill in both login identity and password.");
       return;
     }
 
     setLoading(true);
     try {
-      const userCred = await signInWithEmailAndPassword(auth, email, password);
-      // Wait for Auth state listener in App to catch it
-      // or we can invoke onSuccess with a mocked role until App.tsx syncs it
+      let cleanEmail = email.trim();
+      // Normalize admin shorthand credentials
+      if (cleanEmail.toLowerCase() === "raastatrips@admin" || cleanEmail.toLowerCase() === "admin") {
+        cleanEmail = "raastatrips@admin.com";
+      }
+
+      const userCred = await signInWithEmailAndPassword(auth, cleanEmail, password);
+      let role = "user";
+      try {
+        const userDoc = await getDoc(doc(db, "users", userCred.user.uid));
+        if (userDoc.exists() && userDoc.data().role) {
+          role = userDoc.data().role;
+        } else if (cleanEmail.includes("admin")) {
+          role = "admin";
+        }
+      } catch {
+        if (cleanEmail.includes("admin")) role = "admin";
+      }
+
       onSuccess({
         id: userCred.user.uid,
-        name: userCred.user.displayName || "User",
-        email: userCred.user.email || "",
-        role: "user", // Let App.tsx fetch role
+        name: userCred.user.displayName || "Admin",
+        email: userCred.user.email || cleanEmail,
+        role,
       });
     } catch (err: any) {
       setError(err.message || "Invalid credentials.");
@@ -117,18 +134,21 @@ export default function Login({ onBack, onSuccess, onNavigateToSignup }: LoginPr
           {/* Email input field */}
           <div>
             <label className="block text-[11px] font-bold text-amber-400/90 uppercase tracking-widest mb-2 font-display">
-              Email Address
+              Email or Username
             </label>
             <div className="relative">
               <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-zinc-500">
                 <Mail className="w-4 h-4" />
               </span>
               <input
-                type="email"
+                type="text"
+                autoCapitalize="none"
+                autoCorrect="off"
+                spellCheck="false"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="e.g. raastatrips.in@gmail.com"
+                placeholder="e.g. raastatrips@admin or your email"
                 className="w-full bg-white/5 border border-white/10 focus:border-amber-400/50 rounded-2xl py-3.5 pl-11 pr-4 text-sm text-white placeholder-zinc-500 outline-none transition duration-200"
               />
             </div>
