@@ -3,6 +3,12 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+export interface FAQItem {
+  id: string;
+  question: string;
+  answer: string;
+}
+
 export interface Destination {
   id: string;
   name: string;
@@ -18,7 +24,8 @@ export interface Destination {
   rating: number;
   longDesc: string;
   highlights: string[];
-  itinerary?: { day: string; title: string; description: string; icons: string[] }[];
+  collectionDefault?: "explore" | "select";
+  itinerary?: { day: string; title: string; description: string; icons?: string[] }[];
   inclusions?: string[];
   exclusions?: string[];
   faqs?: FAQItem[];
@@ -31,15 +38,30 @@ export interface Trip {
   id: string;
   destinationId: string;
   destinationName: string;
+  collection: "explore" | "select";
   dates: string;
   price: number;
   originalPrice?: number;
+  duration: string;
   seatsTotal: number;
   seatsAvailable: number;
   description: string;
+  overview?: string;
+  heroImage?: string;
   status: "Selling Fast" | "Filling Fast" | "Almost Full" | "Seats Open" | "Monsoon Special" | string;
   captainName?: string;
   isFlexibleDates?: boolean;
+  itinerary?: { day: string; title: string; description: string; icons?: string[] }[];
+  transportDetails?: string;
+  accommodationDetails?: string;
+  mealsDetails?: string;
+  inclusions?: string[];
+  exclusions?: string[];
+  galleryImages?: string[];
+  cancellationPolicy?: string;
+  faqs?: FAQItem[];
+  category: "Mountain" | "Adventure" | "Beach" | "Cultural" | "Weekend";
+  published?: boolean;
 }
 
 export interface PackageTier {
@@ -51,8 +73,30 @@ export interface PackageTier {
   isMostLoved?: boolean;
 }
 
+export type EnquiryStatus = "New" | "Contacted" | "Quotation Sent" | "Confirmed" | "Cancelled" | "Closed";
+
+export interface Enquiry {
+  id: string;
+  fullName: string;
+  phone: string;
+  email: string;
+  destination: string;
+  tripId?: string;
+  departureDate: string;
+  numTravelers: number;
+  collectionPreference: "explore" | "select" | "flexible";
+  additionalRequirements?: string;
+  status: EnquiryStatus;
+  createdAt: string | number;
+  assignedTo?: string;
+  internalNotes?: string;
+  followUpDate?: string;
+  communicationHistory?: { date: string; note: string; author: string }[];
+}
+
 export interface Booking {
   id: string;
+  enquiryId?: string;
   tripId: string;
   tripName: string;
   travelerName: string;
@@ -60,14 +104,16 @@ export interface Booking {
   phone: string;
   numTravelers: number;
   tierSelected: string;
-  addOns: {
-    photographer: boolean;
-    premiumStay: boolean;
-    localGuide: boolean;
+  addOns?: {
+    photographer?: boolean;
+    premiumStay?: boolean;
+    localGuide?: boolean;
   };
   totalCost: number;
   bookingDate: string;
-  status: "Confirmed" | "Pending Payment";
+  status: "Confirmed" | "Pending Verification" | "Cancelled";
+  confirmedAt?: string | number;
+  confirmedBy?: string;
 }
 
 export interface Review {
@@ -78,6 +124,8 @@ export interface Review {
   destination: string;
   content: string;
   date: string;
+  tripCollection?: "explore" | "select";
+  verifiedTraveler?: boolean;
   createdAt?: any;
 }
 
@@ -92,8 +140,12 @@ export interface GalleryItem {
   photographer: string;
 }
 
-export interface FAQItem {
+export interface TeamMember {
   id: string;
-  question: string;
-  answer: string;
+  name: string;
+  role: string;
+  bio: string;
+  image: string;
+  experience: string;
+  specialtyRoutes: string[];
 }
