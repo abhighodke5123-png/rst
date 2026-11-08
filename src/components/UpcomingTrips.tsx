@@ -1,106 +1,85 @@
-/**
- * @license
- * SPDX-License-Identifier: Apache-2.0
- */
-
 import React, { useState, useRef, useEffect } from "react";
-import { Trip, Booking } from "../types";
-import { TRIPS } from "../data";
-import { Calendar, Users, SlidersHorizontal, MapPin, Tag, Search, ArrowRight, Sparkles, Compass, ArrowUpDown, ChevronDown, Check, ArrowDownWideNarrow, ArrowUpNarrowWide, RotateCcw } from "lucide-react";
+import { Trip } from "../types";
+import {
+  Calendar,
+  Users,
+  Search,
+  ArrowRight,
+  Sparkles,
+  Tag,
+  ArrowUpDown,
+  ChevronDown,
+  Check,
+  RotateCcw,
+  Clock,
+  Send,
+  Eye,
+  SlidersHorizontal
+} from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
-import BookingForm from "./BookingForm";
 import TopographicOverlay from "./TopographicOverlay";
 
 interface UpcomingTripsProps {
   tripsList: Trip[];
-  onBookTrip: (trip: Trip) => void;
-  selectedTripForBooking: Trip | null;
-  onCloseBookingForm: () => void;
-  onBookingSuccess: (newBooking: Booking) => void;
+  onViewTripDetails: (trip: Trip) => void;
+  onEnquireTrip: (trip: Trip) => void;
   initialFilterDestinationId?: string;
   onClearInitialFilter?: () => void;
+  selectedCollectionFilter?: "all" | "explore" | "select";
+  onSetCollectionFilter?: (col: "all" | "explore" | "select") => void;
 }
 
 export type TripSortOption = "default" | "price-asc" | "price-desc" | "date-asc" | "date-desc";
 
-// Helper to robustly parse various trip date formats for chronological sorting
 function parseTripDate(dateStr: string): number {
   if (!dateStr) return 0;
-
-  // Direct parse attempt
   const direct = Date.parse(dateStr);
   if (!isNaN(direct)) return direct;
 
-  // Standardize dashes (replace en-dash, em-dash with standard hyphen)
   const normalized = dateStr.replace(/[–—]/g, "-").trim();
-
-  // Pattern 1: "12 - 15 July 2025" or "12 - 15 Jul 2025"
-  const rangeWithMonthYear = normalized.match(/(\d{1,2})\s*-\s*\d{1,2}\s+([A-Za-z]+)\s+(\d{4})/);
-  if (rangeWithMonthYear) {
-    const [, startDay, month, year] = rangeWithMonthYear;
+  const rangeMatch = normalized.match(/(\d{1,2})\s*-\s*\d{1,2}\s+([A-Za-z]+)\s+(\d{4})/);
+  if (rangeMatch) {
+    const [, startDay, month, year] = rangeMatch;
     const parsed = Date.parse(`${month} ${startDay}, ${year}`);
     if (!isNaN(parsed)) return parsed;
   }
-
-  // Pattern 2: "28 Oct - 2 Nov 2025"
-  const multiMonthRange = normalized.match(/(\d{1,2})\s+([A-Za-z]+)\s*-\s*\d{1,2}\s+[A-Za-z]+\s+(\d{4})/);
-  if (multiMonthRange) {
-    const [, startDay, month, year] = multiMonthRange;
-    const parsed = Date.parse(`${month} ${startDay}, ${year}`);
-    if (!isNaN(parsed)) return parsed;
-  }
-
-  // Pattern 3: "12 July 2025" or "July 12 2025"
-  const dayMonthYear = normalized.match(/(\d{1,2})\s+([A-Za-z]+)\s+(\d{4})/);
-  if (dayMonthYear) {
-    const [, day, month, year] = dayMonthYear;
-    const parsed = Date.parse(`${month} ${day}, ${year}`);
-    if (!isNaN(parsed)) return parsed;
-  }
-
-  // Pattern 4: "July 2025"
-  const monthYear = normalized.match(/([A-Za-z]+)\s+(\d{4})/);
-  if (monthYear) {
-    const [, month, year] = monthYear;
-    const parsed = Date.parse(`${month} 1, ${year}`);
-    if (!isNaN(parsed)) return parsed;
-  }
-
-  // Pattern 5: Any 4-digit year e.g. "2025"
-  const yearOnly = normalized.match(/(\d{4})/);
-  if (yearOnly) {
-    return new Date(parseInt(yearOnly[1], 10), 0, 1).getTime();
-  }
-
   return 0;
 }
 
 export default function UpcomingTrips({
   tripsList,
-  onBookTrip,
-  selectedTripForBooking,
-  onCloseBookingForm,
-  onBookingSuccess,
+  onViewTripDetails,
+  onEnquireTrip,
   initialFilterDestinationId,
-  onClearInitialFilter
+  onClearInitialFilter,
+  selectedCollectionFilter = "all",
+  onSetCollectionFilter
 }: UpcomingTripsProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("All");
+  const [collectionFilter, setCollectionFilter] = useState<"all" | "explore" | "select">(selectedCollectionFilter);
   const [sortBy, setSortBy] = useState<TripSortOption>("default");
   const [isSortOpen, setIsSortOpen] = useState(false);
+  const [maxBudget, setMaxBudget] = useState<number>(30000);
   const sortDropdownRef = useRef<HTMLDivElement>(null);
 
-  const statuses = ["All", "Seats Open", "Selling Fast", "Almost Full", "Monsoon Special"];
+  useEffect(() => {
+    if (selectedCollectionFilter) {
+      setCollectionFilter(selectedCollectionFilter);
+    }
+  }, [selectedCollectionFilter]);
 
-  const sortOptions: { id: TripSortOption; label: string; shortLabel: string; hint: string }[] = [
-    { id: "default", label: "Featured Order", shortLabel: "Featured", hint: "Curated expedition sequence" },
-    { id: "price-asc", label: "Price: Low to High", shortLabel: "Price (Low → High)", hint: "Budget friendly first" },
-    { id: "price-desc", label: "Price: High to Low", shortLabel: "Price (High → Low)", hint: "Premium caravans first" },
-    { id: "date-asc", label: "Date: Earliest First", shortLabel: "Date (Soonest)", hint: "Upcoming departures first" },
-    { id: "date-desc", label: "Date: Latest First", shortLabel: "Date (Later)", hint: "Future departures" },
+  const statuses = ["All", "Seats Open", "Selling Fast", "Almost Full"];
+
+  const sortOptions = [
+    { id: "default", label: "Curated Sequence", shortLabel: "Curated" },
+    { id: "price-asc", label: "Price: Low to High", shortLabel: "Price (Low → High)" },
+    { id: "price-desc", label: "Price: High to Low", shortLabel: "Price (High → Low)" },
+    { id: "date-asc", label: "Departure Date: Soonest", shortLabel: "Soonest" },
+    { id: "date-desc", label: "Departure Date: Later", shortLabel: "Later" }
   ];
 
-  // Close dropdown on click outside
+  // Close dropdown on outside click
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
       if (sortDropdownRef.current && !sortDropdownRef.current.contains(event.target as Node)) {
@@ -110,86 +89,70 @@ export default function UpcomingTrips({
     if (isSortOpen) {
       document.addEventListener("mousedown", handleClickOutside);
     }
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isSortOpen]);
 
-  // 1. Filter our scheduled departures
+  // Filtering
   const filteredTrips = tripsList.filter((trip) => {
-    // Destination filter (passed down from Deep Dive triggers)
     if (initialFilterDestinationId && trip.destinationId !== initialFilterDestinationId) {
       return false;
     }
+    if (collectionFilter !== "all" && trip.collection !== collectionFilter) {
+      return false;
+    }
+    if (statusFilter !== "All" && trip.status !== statusFilter) {
+      return false;
+    }
+    if (trip.price > maxBudget) {
+      return false;
+    }
 
-    // Search matches
     const matchesSearch =
       trip.destinationName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       trip.dates.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      trip.description.toLowerCase().includes(searchTerm.toLowerCase());
+      trip.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      trip.category?.toLowerCase().includes(searchTerm.toLowerCase());
 
-    // Status matches
-    const matchesStatus = statusFilter === "All" || trip.status === statusFilter;
-
-    return matchesSearch && matchesStatus;
+    return matchesSearch;
   });
 
-  // 2. Sort filtered scheduled departures
+  // Sorting
   const sortedTrips = [...filteredTrips].sort((a, b) => {
-    if (sortBy === "price-asc") {
-      return a.price - b.price;
-    }
-    if (sortBy === "price-desc") {
-      return b.price - a.price;
-    }
-    if (sortBy === "date-asc") {
-      const dateA = parseTripDate(a.dates);
-      const dateB = parseTripDate(b.dates);
-      return dateA - dateB;
-    }
-    if (sortBy === "date-desc") {
-      const dateA = parseTripDate(a.dates);
-      const dateB = parseTripDate(b.dates);
-      return dateB - dateA;
-    }
+    if (sortBy === "price-asc") return a.price - b.price;
+    if (sortBy === "price-desc") return b.price - a.price;
+    if (sortBy === "date-asc") return parseTripDate(a.dates) - parseTripDate(b.dates);
+    if (sortBy === "date-desc") return parseTripDate(b.dates) - parseTripDate(a.dates);
     return 0;
   });
 
-  const activeSort = sortOptions.find(o => o.id === sortBy) || sortOptions[0];
+  const activeSort = sortOptions.find((o) => o.id === sortBy) || sortOptions[0];
 
   return (
-    <section id="trips" className="py-32 px-6 bg-[#07080a] relative overflow-hidden">
-      <div className="absolute left-1/2 top-1/4 -translate-x-1/2 w-[700px] h-[500px] bg-amber-500/5 blur-[160px] rounded-full pointer-events-none"></div>
+    <section id="trips" className="py-24 sm:py-32 px-6 bg-[#182622] relative overflow-hidden">
+      <TopographicOverlay opacity={0.03} />
 
-      <motion.div
-        initial={{ opacity: 0, y: 40 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true, amount: 0.08 }}
-        transition={{ duration: 0.8, ease: "easeOut" }}
-        className="max-w-7xl mx-auto relative z-10"
-      >
-        {/* Header Block */}
-        <div className="max-w-3xl mb-16">
-          <span className="text-xs tracking-widest text-amber-400 uppercase font-bold mb-3 block font-display">
-            Curated Expeditions
-          </span>
-          <h2 className="text-4xl sm:text-5xl md:text-6xl font-black tracking-tight text-white mb-6 font-display">
-            Upcoming <br/>
-            <span className="font-editorial text-amber-300 font-normal italic text-5xl sm:text-6xl md:text-7xl">Departures & Caravans</span>
+      <div className="max-w-7xl mx-auto relative z-10">
+        
+        {/* Section Header */}
+        <div className="max-w-3xl mb-14">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#202522] border border-[#8C9A82]/30 text-[#D4A96C] text-xs font-semibold uppercase tracking-widest mb-4">
+            <Calendar className="w-3.5 h-3.5" />
+            <span>2026–2027 Calendar</span>
+          </div>
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-serif text-[#EDE9DF] tracking-tight mb-5">
+            Upcoming <span className="italic text-[#D4A96C]">Departures</span>
           </h2>
-          <p className="text-zinc-400 text-base sm:text-lg leading-relaxed font-light">
-            Reserve your seat on our next handcrafted expeditions. To protect local ecosystems, we strictly cap group size to 14 travelers per caravan.
+          <p className="text-[#EDE9DF]/80 text-base sm:text-lg font-light leading-relaxed">
+            Reserve your seat on our next road caravans. To preserve trail intimacy and local ecosystems, groups are strictly capped at 14 travelers.
           </p>
 
-          {/* Active Deep Dive Destination Filter Alert */}
+          {/* Destination filter tag if active */}
           {initialFilterDestinationId && (
-            <div className="mt-6 inline-flex items-center gap-3.5 px-5 py-2.5 rounded-full border border-amber-400/30 bg-amber-400/10 text-amber-300 text-xs font-semibold">
-              <span>
-                Filtered by: {tripsList.find(t => t.destinationId === initialFilterDestinationId)?.destinationName.split(" ")[0]} Route
-              </span>
+            <div className="mt-4 inline-flex items-center gap-3 px-4 py-2 rounded-full bg-[#202522] border border-[#D4A96C]/40 text-[#D4A96C] text-xs font-semibold">
+              <span>Filtered by destination</span>
               <button
                 onClick={onClearInitialFilter}
-                className="font-bold underline hover:text-white transition uppercase text-[10px] tracking-wider cursor-pointer ml-2"
+                className="underline hover:text-white transition font-mono uppercase text-[10px] cursor-pointer ml-1"
               >
                 Clear Filter
               </button>
@@ -197,290 +160,245 @@ export default function UpcomingTrips({
           )}
         </div>
 
-        {/* Filters & Sorting Controls Bar */}
-        <div className="glass border border-white/10 p-4 sm:p-5 rounded-3xl mb-12 flex flex-col xl:flex-row gap-4 items-stretch xl:items-center justify-between shadow-xl">
-          {/* Search bar */}
-          <div className="relative w-full xl:w-80">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
-            <input
-              type="text"
-              placeholder="Search dates, passes, mountains..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full bg-white/5 border border-white/10 rounded-2xl pl-11 pr-4 py-3 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-amber-400/50 transition-colors"
-            />
-          </div>
+        {/* Filter & Search Bar */}
+        <div className="bg-[#202522] border border-[#8C9A82]/25 p-5 rounded-[28px] mb-10 space-y-4 shadow-xl">
+          
+          <div className="flex flex-col lg:flex-row gap-4 items-stretch lg:items-center justify-between">
+            {/* Search Input */}
+            <div className="relative flex-1">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8C9A82]" />
+              <input
+                type="text"
+                placeholder="Search departures by destination, date, or terrain..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full bg-[#182622] border border-[#8C9A82]/30 rounded-2xl pl-11 pr-4 py-3 text-xs sm:text-sm text-[#EDE9DF] placeholder-[#EDE9DF]/40 focus:outline-none focus:border-[#D4A96C]"
+              />
+            </div>
 
-          {/* Availability Status list filters */}
-          <div className="flex flex-wrap gap-2 items-center flex-1 justify-start xl:justify-center">
-            {statuses.map((st) => (
-              <button
-                key={st}
-                onClick={() => setStatusFilter(st)}
-                className={`px-3.5 py-2.5 rounded-xl text-xs font-bold tracking-wider font-display uppercase transition-all duration-300 cursor-pointer ${
-                  statusFilter === st
-                    ? "bg-amber-400 text-black shadow-md shadow-amber-500/20"
-                    : "text-zinc-400 hover:text-white hover:bg-white/10"
-                }`}
-              >
-                {st}
-              </button>
-            ))}
-          </div>
-
-          {/* Sorting Dropdown Menu */}
-          <div className="relative" ref={sortDropdownRef}>
-            <button
-              type="button"
-              onClick={() => setIsSortOpen(!isSortOpen)}
-              className={`w-full xl:w-auto min-w-[210px] px-4 py-3 rounded-2xl border text-xs font-medium flex items-center justify-between gap-3 transition-all duration-200 cursor-pointer ${
-                sortBy !== "default"
-                  ? "bg-amber-400/10 border-amber-400/40 text-amber-300 shadow-sm shadow-amber-500/10"
-                  : "bg-white/5 border-white/10 hover:border-white/20 text-zinc-200 hover:text-white"
-              }`}
-              aria-haspopup="listbox"
-              aria-expanded={isSortOpen}
-            >
-              <div className="flex items-center gap-2">
-                <ArrowUpDown className={`w-3.5 h-3.5 ${sortBy !== "default" ? "text-amber-400" : "text-zinc-400"}`} />
-                <span className="text-[11px] uppercase tracking-wider text-zinc-400 font-mono">Sort:</span>
-                <span className="font-semibold text-white truncate max-w-[120px]">{activeSort.shortLabel}</span>
-              </div>
-              <ChevronDown className={`w-3.5 h-3.5 text-zinc-400 transition-transform duration-200 ${isSortOpen ? "rotate-180" : ""}`} />
-            </button>
-
-            {/* Dropdown Options Popover */}
-            <AnimatePresence>
-              {isSortOpen && (
-                <motion.div
-                  initial={{ opacity: 0, y: -8, scale: 0.98 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: -8, scale: 0.98 }}
-                  transition={{ duration: 0.15, ease: "easeOut" }}
-                  className="absolute right-0 top-full mt-2 w-72 bg-[#0c0d12] border border-white/15 rounded-2xl p-2 shadow-2xl backdrop-blur-2xl z-30 space-y-1"
-                  role="listbox"
+            {/* Collection Filter (All / Explore / Select) */}
+            <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-[#182622] border border-[#8C9A82]/25 shrink-0">
+              {(["all", "explore", "select"] as const).map((col) => (
+                <button
+                  key={col}
+                  onClick={() => {
+                    setCollectionFilter(col);
+                    if (onSetCollectionFilter) onSetCollectionFilter(col);
+                  }}
+                  className={`px-3.5 py-2 rounded-xl text-xs font-semibold uppercase tracking-wider transition-colors cursor-pointer ${
+                    collectionFilter === col
+                      ? "bg-[#D4A96C] text-[#182622] font-bold shadow-sm"
+                      : "text-[#EDE9DF]/70 hover:text-white"
+                  }`}
                 >
-                  <div className="px-3 py-2 flex items-center justify-between border-b border-white/10 mb-1">
-                    <span className="text-[10px] uppercase font-bold tracking-widest text-zinc-400 font-mono">
-                      Sort Departures
-                    </span>
-                    {sortBy !== "default" && (
-                      <button
-                        onClick={() => {
-                          setSortBy("default");
-                          setIsSortOpen(false);
-                        }}
-                        className="text-[10px] text-amber-400 hover:text-amber-300 flex items-center gap-1 font-mono uppercase tracking-wider cursor-pointer"
-                      >
-                        <RotateCcw className="w-2.5 h-2.5" />
-                        Reset
-                      </button>
-                    )}
-                  </div>
+                  {col === "all" ? "All Streams" : col === "explore" ? "Explore" : "Select"}
+                </button>
+              ))}
+            </div>
 
-                  {sortOptions.map((opt) => {
-                    const isSelected = sortBy === opt.id;
-                    return (
+            {/* Sorting Dropdown */}
+            <div className="relative" ref={sortDropdownRef}>
+              <button
+                type="button"
+                onClick={() => setIsSortOpen(!isSortOpen)}
+                className="w-full lg:w-auto px-4 py-3 rounded-2xl bg-[#182622] border border-[#8C9A82]/30 text-xs font-semibold text-[#EDE9DF] flex items-center justify-between gap-3 cursor-pointer hover:border-[#D4A96C]/50 transition-colors"
+              >
+                <div className="flex items-center gap-2">
+                  <ArrowUpDown className="w-3.5 h-3.5 text-[#D4A96C]" />
+                  <span className="text-[11px] uppercase tracking-wider text-[#EDE9DF]/60 font-mono">Sort:</span>
+                  <span className="font-semibold text-[#EDE9DF]">{activeSort.shortLabel}</span>
+                </div>
+                <ChevronDown className={`w-3.5 h-3.5 text-[#D4A96C] transition-transform ${isSortOpen ? "rotate-180" : ""}`} />
+              </button>
+
+              <AnimatePresence>
+                {isSortOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -6 }}
+                    className="absolute right-0 top-full mt-2 w-60 bg-[#202522] border border-[#8C9A82]/30 rounded-2xl p-2 shadow-2xl z-30 space-y-1"
+                  >
+                    {sortOptions.map((opt) => (
                       <button
                         key={opt.id}
-                        type="button"
                         onClick={() => {
-                          setSortBy(opt.id);
+                          setSortBy(opt.id as TripSortOption);
                           setIsSortOpen(false);
                         }}
-                        className={`w-full text-left px-3 py-2.5 rounded-xl text-xs transition-colors flex items-center justify-between cursor-pointer group ${
-                          isSelected
-                            ? "bg-amber-400/15 border border-amber-400/30 text-amber-300"
-                            : "hover:bg-white/5 text-zinc-300 hover:text-white border border-transparent"
+                        className={`w-full text-left px-3 py-2 rounded-xl text-xs flex items-center justify-between cursor-pointer ${
+                          sortBy === opt.id
+                            ? "bg-[#D4A96C]/20 text-[#D4A96C] font-semibold"
+                            : "text-[#EDE9DF]/75 hover:bg-[#182622] hover:text-[#EDE9DF]"
                         }`}
-                        role="option"
-                        aria-selected={isSelected}
                       >
-                        <div>
-                          <div className="font-semibold flex items-center gap-2">
-                            {opt.id.startsWith("price") ? (
-                              <Tag className={`w-3.5 h-3.5 ${isSelected ? "text-amber-400" : "text-zinc-500 group-hover:text-amber-400"}`} />
-                            ) : opt.id.startsWith("date") ? (
-                              <Calendar className={`w-3.5 h-3.5 ${isSelected ? "text-amber-400" : "text-zinc-500 group-hover:text-amber-400"}`} />
-                            ) : (
-                              <Sparkles className={`w-3.5 h-3.5 ${isSelected ? "text-amber-400" : "text-zinc-500 group-hover:text-amber-400"}`} />
-                            )}
-                            <span>{opt.label}</span>
-                          </div>
-                          <p className="text-[10px] text-zinc-500 mt-0.5 pl-5.5 font-light">
-                            {opt.hint}
-                          </p>
-                        </div>
-                        {isSelected && (
-                          <Check className="w-4 h-4 text-amber-400 shrink-0 ml-2" />
-                        )}
+                        <span>{opt.label}</span>
+                        {sortBy === opt.id && <Check className="w-3.5 h-3.5 text-[#D4A96C]" />}
                       </button>
-                    );
-                  })}
-                </motion.div>
-              )}
-            </AnimatePresence>
+                    ))}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
           </div>
+
+          {/* Quick status pills and budget filter slider */}
+          <div className="pt-3 border-t border-[#8C9A82]/15 flex flex-wrap items-center justify-between gap-4 text-xs">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-[11px] font-mono uppercase text-[#EDE9DF]/60">Status:</span>
+              {statuses.map((st) => (
+                <button
+                  key={st}
+                  onClick={() => setStatusFilter(st)}
+                  className={`px-3 py-1 rounded-full text-[11px] font-semibold uppercase tracking-wider transition-colors cursor-pointer ${
+                    statusFilter === st
+                      ? "bg-[#EDE9DF] text-[#182622]"
+                      : "bg-[#182622] text-[#EDE9DF]/60 hover:text-white border border-[#8C9A82]/20"
+                  }`}
+                >
+                  {st}
+                </button>
+              ))}
+            </div>
+
+            {/* Budget filter indicator */}
+            <div className="flex items-center gap-3">
+              <span className="text-[11px] font-mono text-[#EDE9DF]/60">Max Budget:</span>
+              <span className="font-mono text-[#D4A96C] font-semibold">₹{maxBudget.toLocaleString()}</span>
+              <input
+                type="range"
+                min={7000}
+                max={30000}
+                step={1000}
+                value={maxBudget}
+                onChange={(e) => setMaxBudget(Number(e.target.value))}
+                className="w-28 accent-[#D4A96C] cursor-pointer"
+              />
+            </div>
+          </div>
+
         </div>
 
-        {/* Quick status bar showing results count and active sort/filters */}
-        <div className="flex flex-wrap items-center justify-between gap-3 mb-8 px-2 text-xs text-zinc-400">
-          <div className="flex items-center gap-2">
-            <span className="font-mono text-white font-semibold">{sortedTrips.length}</span>
-            <span>{sortedTrips.length === 1 ? "caravan available" : "caravans available"}</span>
-            {searchTerm && (
-              <span className="text-zinc-500">
-                • matching "<span className="text-zinc-300">{searchTerm}</span>"
-              </span>
-            )}
-            {statusFilter !== "All" && (
-              <span className="text-zinc-500">
-                • status: <span className="text-amber-400 font-medium">{statusFilter}</span>
-              </span>
-            )}
-          </div>
+        {/* Departures Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {sortedTrips.length > 0 ? (
+            sortedTrips.map((trip) => {
+              const isSelect = trip.collection === "select";
+              return (
+                <motion.div
+                  key={trip.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  className={`group bg-[#202522] border rounded-[32px] p-7 flex flex-col justify-between shadow-2xl transition-all duration-300 hover:-translate-y-1.5 ${
+                    isSelect
+                      ? "border-[#D4A96C]/40 hover:border-[#D4A96C]"
+                      : "border-[#8C9A82]/25 hover:border-[#8C9A82]/60"
+                  }`}
+                >
+                  <div>
+                    {/* Top status bar & collection badge */}
+                    <div className="flex justify-between items-center mb-5">
+                      <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                        isSelect
+                          ? "bg-[#D4A96C]/15 border border-[#D4A96C]/40 text-[#D4A96C]"
+                          : "bg-[#8C9A82]/20 border border-[#8C9A82]/40 text-[#EDE9DF]"
+                      }`}>
+                        {isSelect ? "RAASTA SELECT" : "RAASTA EXPLORE"}
+                      </span>
 
-          {sortBy !== "default" && (
-            <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-amber-400/10 border border-amber-400/20 text-amber-300 text-[11px] font-mono">
-              <span>Sorted by: {activeSort.shortLabel}</span>
+                      <span className="px-2.5 py-0.5 rounded-full bg-[#182622] text-emerald-400 border border-emerald-500/30 text-[10px] font-mono font-semibold">
+                        {trip.status}
+                      </span>
+                    </div>
+
+                    {/* Trip title */}
+                    <h3 className="text-2xl sm:text-3xl font-serif text-[#EDE9DF] font-bold tracking-tight mb-2">
+                      {trip.destinationName}
+                    </h3>
+
+                    {/* Duration & Dates */}
+                    <div className="space-y-2 mb-4 text-xs">
+                      <div className="flex items-center gap-2.5 text-[#EDE9DF]/80">
+                        <Calendar className="w-3.5 h-3.5 text-[#D4A96C]" />
+                        <span>{trip.dates}</span>
+                      </div>
+                      <div className="flex items-center gap-2.5 text-[#EDE9DF]/60">
+                        <Clock className="w-3.5 h-3.5 text-[#8C9A82]" />
+                        <span>{trip.duration}</span>
+                      </div>
+                    </div>
+
+                    <p className="text-xs sm:text-sm text-[#EDE9DF]/75 font-light leading-relaxed mb-6 line-clamp-3">
+                      {trip.description}
+                    </p>
+                  </div>
+
+                  {/* Pricing & Seat Capacity */}
+                  <div className="pt-5 border-t border-[#8C9A82]/20 space-y-4">
+                    <div className="flex items-baseline justify-between">
+                      <div>
+                        <span className="text-[10px] text-[#EDE9DF]/50 font-mono block">Starting from</span>
+                        <div className="flex items-baseline gap-1.5">
+                          <span className="text-2xl font-serif font-bold text-[#D4A96C]">
+                            ₹{trip.price.toLocaleString()}
+                          </span>
+                          <span className="text-[11px] text-[#EDE9DF]/60">/ person</span>
+                        </div>
+                      </div>
+
+                      <div className="text-right">
+                        <span className="text-[10px] text-[#EDE9DF]/50 font-mono block">Availability</span>
+                        <span className="text-xs font-mono font-semibold text-emerald-400">
+                          {trip.seatsAvailable} seats open
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Action Buttons: "View Details" and "Enquire" */}
+                    <div className="grid grid-cols-2 gap-2.5 pt-1">
+                      <button
+                        onClick={() => onViewTripDetails(trip)}
+                        className="py-3 px-3 rounded-xl bg-[#182622] hover:bg-[#182622]/80 text-[#EDE9DF] border border-[#8C9A82]/30 text-xs font-semibold uppercase tracking-wider transition-colors flex items-center justify-center gap-1.5 cursor-pointer"
+                      >
+                        <Eye className="w-3.5 h-3.5 text-[#D4A96C]" />
+                        <span>Details</span>
+                      </button>
+
+                      <button
+                        onClick={() => onEnquireTrip(trip)}
+                        className="py-3 px-3 rounded-xl bg-[#D4A96C] hover:bg-[#d8b37c] text-[#182622] font-bold text-xs uppercase tracking-wider transition-colors flex items-center justify-center gap-1.5 cursor-pointer shadow-md"
+                      >
+                        <Send className="w-3.5 h-3.5" />
+                        <span>Enquire</span>
+                      </button>
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })
+          ) : (
+            <div className="col-span-full py-16 text-center bg-[#202522] rounded-[32px] border border-[#8C9A82]/20 p-8">
+              <Search className="w-8 h-8 text-[#8C9A82] mx-auto mb-3" />
+              <h4 className="text-lg font-serif text-[#EDE9DF] font-bold mb-1">No departures match your filter</h4>
+              <p className="text-xs text-[#EDE9DF]/60 mb-4">Try clearing the status filter or raising the max budget slider.</p>
               <button
-                onClick={() => setSortBy("default")}
-                className="hover:text-white transition cursor-pointer"
-                title="Reset to default sorting"
+                onClick={() => {
+                  setSearchTerm("");
+                  setStatusFilter("All");
+                  setCollectionFilter("all");
+                  setMaxBudget(30000);
+                  if (onClearInitialFilter) onClearInitialFilter();
+                }}
+                className="px-4 py-2 rounded-xl bg-[#D4A96C] text-[#182622] font-semibold text-xs uppercase tracking-wider"
               >
-                ✕
+                Reset All Filters
               </button>
             </div>
           )}
         </div>
 
-        {/* Departures Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <AnimatePresence mode="popLayout">
-            {sortedTrips.length > 0 ? (
-              sortedTrips.map((trip) => {
-                // Color style mapping for status badges
-                const getStatusStyle = (status: string) => {
-                  switch (status) {
-                    case "Selling Fast":
-                    case "Almost Full":
-                      return "bg-rose-500/10 text-rose-300 border-rose-500/30";
-                    case "Monsoon Special":
-                      return "bg-sky-500/10 text-sky-300 border-sky-500/30";
-                    default:
-                      return "bg-emerald-500/10 text-emerald-300 border-emerald-500/30";
-                  }
-                };
-
-                return (
-                  <motion.div
-                    layout
-                    key={trip.id}
-                    initial={{ opacity: 0, y: 15 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
-                    transition={{ type: "spring", stiffness: 100, damping: 15 }}
-                    className="group relative bg-[#0b0c10] border border-white/10 rounded-[32px] p-8 transition-all duration-500 hover:-translate-y-2 hover:border-amber-400/40 flex flex-col justify-between shadow-2xl hover:shadow-[0_20px_40px_-15px_rgba(245,158,11,0.15)] overflow-hidden"
-                  >
-                    {/* Subtle Topographic Cartography Lines */}
-                    <TopographicOverlay opacity={0.03} />
-
-                    <div className="relative z-10">
-                      {/* Top status bar */}
-                      <div className="flex justify-between items-center mb-6">
-                        <span className={`px-3 py-1 rounded-full border text-[10px] font-black uppercase tracking-widest font-display ${getStatusStyle(trip.status)}`}>
-                          {trip.status}
-                        </span>
-                        
-                        <div className="flex flex-col items-end">
-                          {trip.originalPrice && (
-                            <span className="text-[11px] text-zinc-500 line-through font-normal">
-                              ₹{trip.originalPrice.toLocaleString()}
-                            </span>
-                          )}
-                          <div className="flex items-center gap-1.5 text-amber-300 text-base font-black font-display">
-                            <Tag className="w-3.5 h-3.5 text-amber-400" />
-                            <span>₹{trip.price.toLocaleString()}</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Title information */}
-                      <h3 className="text-2xl sm:text-3xl font-black text-white mb-4 tracking-tight font-display">
-                        {trip.destinationName}
-                      </h3>
-
-                      {/* Dates and location */}
-                      <div className="space-y-2.5 mb-6">
-                        <div className="flex items-center gap-3 text-zinc-200 text-xs font-medium">
-                          <Calendar className="w-4 h-4 text-amber-400" />
-                          <span>{trip.dates}</span>
-                        </div>
-                        <div className="flex items-center gap-3 text-zinc-400 text-xs font-light">
-                          <MapPin className="w-4 h-4 text-zinc-500" />
-                          <span>Expedition Loop & 4x4 Trail</span>
-                        </div>
-                      </div>
-
-                      <p className="text-zinc-400 text-xs sm:text-sm leading-relaxed mb-8 font-light">
-                        {trip.description}
-                      </p>
-                    </div>
-
-                    {/* Inventory control meters */}
-                    <div className="pt-6 border-t border-white/10 space-y-4">
-                      <div className="flex justify-between items-center text-xs">
-                        <span className="text-zinc-400 text-[11px]">Seats Capacity:</span>
-                        <span className="font-mono text-white text-xs font-bold">{trip.seatsAvailable} of {trip.seatsTotal} Available</span>
-                      </div>
-                      <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-gradient-to-r from-amber-400 to-amber-500 transition-all duration-500"
-                          style={{ width: `${Math.min(100, Math.max(0, (trip.seatsAvailable / (trip.seatsTotal || 15)) * 100))}%` }}
-                        />
-                      </div>
-
-                      {trip.seatsAvailable > 0 ? (
-                        <button
-                          onClick={() => onBookTrip(trip)}
-                          className="w-full flex items-center justify-center gap-2.5 py-3.5 rounded-2xl bg-white hover:bg-amber-300 text-black font-black text-xs uppercase tracking-widest transition-all duration-300 shadow-md cursor-pointer font-display"
-                        >
-                          <Users className="w-4 h-4" />
-                          <span>Reserve Seat</span>
-                        </button>
-                      ) : (
-                        <button
-                          disabled
-                          className="w-full py-3.5 rounded-2xl bg-white/5 text-zinc-600 font-black text-xs uppercase tracking-widest cursor-not-allowed font-display"
-                        >
-                          Waitlist Full
-                        </button>
-                      )}
-                    </div>
-                  </motion.div>
-                );
-              })
-            ) : (
-              <div className="col-span-full py-20 text-center text-zinc-500 glass rounded-[32px] border border-white/10">
-                <Search className="w-10 h-10 stroke-[1] mx-auto mb-4 text-zinc-600" />
-                <p className="text-base font-semibold text-white font-display">No scheduled caravans found</p>
-                <p className="text-xs text-zinc-400 mt-1 font-light">Try searching a different month or clearing the status filter.</p>
-              </div>
-            )}
-          </AnimatePresence>
-        </div>
-      </motion.div>
-
-      {/* RENDER RESERVATION SHEET IN PORTAL / OVERLAY FLOW */}
-      <AnimatePresence>
-        {selectedTripForBooking && (
-          <BookingForm
-            trip={selectedTripForBooking}
-            onClose={onCloseBookingForm}
-            onBookingSuccess={onBookingSuccess}
-          />
-        )}
-      </AnimatePresence>
+      </div>
     </section>
   );
 }
