@@ -18,7 +18,7 @@ export default function Destinations({ onSelectDestinationForDepartures }: Desti
   const [filter, setFilter] = useState<string>("All");
   const [selectedDest, setSelectedDest] = useState<Destination | null>(null);
 
-  const categories = ["All", "Beach", "Mountain", "Adventure"];
+  const categories = ["All", "Mountain", "Adventure", "Beach"];
 
   const filteredDestinations = filter === "All"
     ? DESTINATIONS
@@ -26,9 +26,6 @@ export default function Destinations({ onSelectDestinationForDepartures }: Desti
 
   return (
     <section id="destinations" className="py-32 px-6 relative bg-[#07080a] overflow-hidden">
-      {/* Visual Accent */}
-      <div className="absolute right-0 top-1/4 w-[50vw] h-[50vw] bg-sky-500/5 rounded-full blur-[140px] pointer-events-none mix-blend-screen"></div>
-
       <motion.div
         initial={{ opacity: 0, y: 60 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -54,9 +51,9 @@ export default function Destinations({ onSelectDestinationForDepartures }: Desti
               <button
                 key={cat}
                 onClick={() => setFilter(cat)}
-                className={`px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer ${
+                className={`px-5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider transition-all duration-300 cursor-pointer min-h-[44px] ${
                   filter === cat
-                    ? "bg-white text-black shadow-lg"
+                    ? "bg-amber-400 text-black shadow-lg shadow-amber-500/20 font-black"
                     : "text-zinc-400 hover:text-white hover:bg-white/5"
                 }`}
               >
@@ -92,10 +89,10 @@ export default function Destinations({ onSelectDestinationForDepartures }: Desti
                   />
                   
                   {/* Glass Tags */}
-                  <div className="absolute top-5 left-5 bg-black/60 backdrop-blur-md px-3.5 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider text-white border border-white/15 font-display">
+                  <div className="absolute top-5 left-5 bg-black/75 backdrop-blur-md px-3.5 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider text-white border border-white/20 font-display">
                     {dest.category} Route
                   </div>
-                  <div className="absolute top-5 right-5 bg-amber-400/20 backdrop-blur-md px-3.5 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider text-amber-300 border border-amber-400/30 font-display">
+                  <div className="absolute top-5 right-5 bg-amber-400/20 backdrop-blur-md px-3.5 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-wider text-amber-300 border border-amber-400/40 font-display">
                     {dest.season}
                   </div>
 
@@ -118,7 +115,7 @@ export default function Destinations({ onSelectDestinationForDepartures }: Desti
                     <p className="text-amber-400 text-xs font-semibold uppercase tracking-wider mb-3">
                       {dest.subTitle}
                     </p>
-                    <p className="text-zinc-400 text-sm leading-relaxed mb-8 font-light line-clamp-2">
+                    <p className="text-zinc-300 text-sm leading-relaxed mb-8 font-light line-clamp-2">
                       {dest.desc}
                     </p>
                   </div>
@@ -143,8 +140,9 @@ export default function Destinations({ onSelectDestinationForDepartures }: Desti
 
                       <button
                         onClick={() => setSelectedDest(dest)}
-                        className="w-12 h-12 flex items-center justify-center rounded-full bg-white text-black hover:bg-amber-300 transition-all duration-300 group-hover:scale-105 shadow-lg cursor-pointer"
+                        className="w-12 h-12 flex items-center justify-center rounded-full bg-white text-black hover:bg-amber-300 transition-all duration-300 group-hover:scale-105 shadow-lg cursor-pointer min-h-[44px] min-w-[44px]"
                         title="View Route Details"
+                        aria-label={`View details for ${dest.name}`}
                       >
                         <ArrowRight className="w-5 h-5 -rotate-45 group-hover:rotate-0 transition-transform duration-300" />
                       </button>
@@ -181,7 +179,8 @@ export default function Destinations({ onSelectDestinationForDepartures }: Desti
               {/* Close Button */}
               <button
                 onClick={() => setSelectedDest(null)}
-                className="absolute top-6 right-6 glass p-3 rounded-full hover:bg-white/20 transition text-white z-20 cursor-pointer"
+                aria-label="Close dialog"
+                className="absolute top-6 right-6 glass p-3 rounded-full hover:bg-white/20 transition text-white z-20 cursor-pointer min-h-[44px] min-w-[44px] flex items-center justify-center"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -214,7 +213,7 @@ export default function Destinations({ onSelectDestinationForDepartures }: Desti
               <div className="p-8 sm:p-10 space-y-10">
                 <div>
                   <h4 className="text-xs uppercase font-bold text-amber-400 tracking-widest mb-3 font-display">Overview</h4>
-                  <p className="text-zinc-300 text-base sm:text-lg leading-relaxed font-light">
+                  <p className="text-zinc-200 text-base sm:text-lg leading-relaxed font-light">
                     {selectedDest.longDesc}
                   </p>
                 </div>
@@ -243,14 +242,14 @@ export default function Destinations({ onSelectDestinationForDepartures }: Desti
                       <div className="text-[10px] uppercase tracking-wider font-bold text-zinc-400 mb-1">Standard All-Inclusive</div>
                       <div className="flex items-baseline gap-2">
                         {selectedDest.originalPrice && (
-                          <span className="text-zinc-500 line-through text-base font-normal mr-1">
+                          <span className="text-zinc-400 line-through text-base font-normal mr-1">
                             ₹{selectedDest.originalPrice.toLocaleString()}
                           </span>
                         )}
                         <span className="text-3xl font-black text-white font-display">
                           ₹{selectedDest.price.toLocaleString()}
                         </span>
-                        <span className="text-zinc-400 text-xs">/ person</span>
+                        <span className="text-zinc-300 text-xs">/ person</span>
                       </div>
                     </div>
                   </div>
@@ -260,7 +259,7 @@ export default function Destinations({ onSelectDestinationForDepartures }: Desti
                     <h4 className="text-xs uppercase font-bold text-amber-400 tracking-widest mb-4 font-display">Expedition Highlights</h4>
                     <ul className="space-y-3.5">
                       {selectedDest.highlights.map((highlight) => (
-                        <li key={highlight} className="flex items-start gap-3 text-xs sm:text-sm text-zinc-300 font-light">
+                        <li key={highlight} className="flex items-start gap-3 text-xs sm:text-sm text-zinc-200 font-light">
                           <CheckCircle className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
                           <span>{highlight}</span>
                         </li>
@@ -271,7 +270,7 @@ export default function Destinations({ onSelectDestinationForDepartures }: Desti
 
                 {/* Confirm Route departures action */}
                 <div className="pt-10 border-t border-white/10 flex flex-col sm:flex-row gap-6 items-center justify-between">
-                  <div className="text-zinc-400 text-xs font-light text-center sm:text-left max-w-md">
+                  <div className="text-zinc-300 text-xs font-light text-center sm:text-left max-w-md">
                     Includes permits, stays, transfers, and seasoned expedition captains. Microgroup capped at 14 travelers.
                   </div>
                   <button
@@ -279,7 +278,7 @@ export default function Destinations({ onSelectDestinationForDepartures }: Desti
                       onSelectDestinationForDepartures(selectedDest.id);
                       setSelectedDest(null);
                     }}
-                    className="w-full sm:w-auto px-8 py-4 bg-white text-black font-black text-xs uppercase tracking-widest rounded-full hover:bg-amber-300 transition-all duration-300 flex items-center justify-center gap-3 shadow-xl cursor-pointer"
+                    className="w-full sm:w-auto px-8 py-4 bg-amber-400 text-black font-black text-xs uppercase tracking-widest rounded-full hover:bg-amber-300 transition-all duration-300 flex items-center justify-center gap-3 shadow-xl cursor-pointer min-h-[44px]"
                   >
                     <span>View Scheduled Batches</span>
                     <ArrowRight className="w-4 h-4" />

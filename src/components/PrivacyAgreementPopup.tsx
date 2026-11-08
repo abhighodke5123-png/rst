@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
-import { ShieldCheck, Lock, CheckCircle2, FileText, ArrowRight, Eye, AlertCircle } from "lucide-react";
+import { ShieldCheck, Lock, CheckCircle2, ArrowRight, AlertCircle, X } from "lucide-react";
 
 interface PrivacyAgreementPopupProps {
   isOpen: boolean;
@@ -27,7 +27,8 @@ export default function PrivacyAgreementPopup({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black/90 backdrop-blur-xl"
+          onClick={onAccept}
+          className="fixed inset-0 bg-black/85 backdrop-blur-xl"
         />
 
         {/* Modal Card */}
@@ -38,26 +39,35 @@ export default function PrivacyAgreementPopup({
           transition={{ duration: 0.35, ease: "easeOut" }}
           className="relative w-full max-w-2xl bg-[#0b0c10] border border-amber-400/30 rounded-[32px] overflow-hidden shadow-[0_25px_70px_rgba(0,0,0,0.85)] z-10 text-zinc-200 my-auto"
         >
+          {/* Close button for accessible dismissal */}
+          <button
+            onClick={onAccept}
+            aria-label="Close dialog"
+            className="absolute top-5 right-5 p-2 rounded-xl text-zinc-400 hover:text-white hover:bg-white/10 transition-colors z-20 cursor-pointer min-h-[44px] min-w-[44px] flex items-center justify-center"
+          >
+            <X className="w-5 h-5" />
+          </button>
+
           {/* Accent glow bar */}
           <div className="h-1.5 w-full bg-gradient-to-r from-amber-500 via-amber-300 to-amber-500" />
 
           {/* Header */}
-          <div className="p-6 sm:p-8 pb-4">
+          <div className="p-6 sm:p-8 pb-4 pr-14">
             <div className="flex items-center gap-3.5 mb-3">
               <div className="p-3 rounded-2xl bg-amber-400/10 border border-amber-400/25 text-amber-400 shrink-0">
                 <ShieldCheck className="w-6 h-6" />
               </div>
               <div>
                 <span className="text-[10px] font-mono uppercase tracking-widest text-amber-400 font-bold block">
-                  DPDP Act (2023) Compliant • RAASTA Trips
+                  DPDP Act (2023) Compliant • RAASTA Expeditions
                 </span>
                 <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight font-display">
                   Privacy Policy & Traveler Agreement
                 </h2>
               </div>
             </div>
-            <p className="text-xs sm:text-sm text-zinc-400 font-light leading-relaxed">
-              Welcome to RAASTA. Before exploring our curated overland expeditions and booking departure seats, please review and accept our traveler data privacy notice and expedition code of conduct.
+            <p className="text-xs sm:text-sm text-zinc-300 font-light leading-relaxed">
+              Welcome to RAASTA. Before exploring our overland expeditions and reserving departure seats, please review our traveler data privacy notice and expedition code of conduct.
             </p>
           </div>
 
@@ -133,7 +143,7 @@ export default function PrivacyAgreementPopup({
               type="button"
               disabled={!agreed}
               onClick={onAccept}
-              className={`w-full sm:w-auto px-7 py-3.5 rounded-2xl font-black text-xs uppercase tracking-widest transition-all cursor-pointer font-display flex items-center justify-center gap-2 ${
+              className={`w-full sm:w-auto px-7 py-3.5 rounded-2xl font-black text-xs uppercase tracking-widest transition-all cursor-pointer font-display flex items-center justify-center gap-2 min-h-[44px] ${
                 agreed
                   ? "bg-gradient-to-r from-amber-400 to-amber-300 text-black hover:scale-[1.02] shadow-lg shadow-amber-500/25"
                   : "bg-white/10 text-zinc-500 cursor-not-allowed opacity-50"
