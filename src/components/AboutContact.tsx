@@ -1,18 +1,18 @@
 import React, { useState } from "react";
 import { FAQS } from "../data";
-import { ChevronDown, Mail, Phone, MapPin, Send, CheckCircle2, MessageSquare, Search, Sparkles, Clock, ShieldCheck } from "lucide-react";
+import { ChevronDown, Mail, Phone, MapPin, Send, CheckCircle2, MessageSquare, Search, Sparkles, Clock, ShieldCheck, HelpCircle } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 
 export default function AboutContact() {
   const [activeFaq, setActiveFaq] = useState<string | null>(FAQS[0]?.id || null);
   const [faqSearch, setFaqSearch] = useState("");
 
-  // Inquiry form states
+  // Enquiry form states
   const [inqName, setInqName] = useState("");
   const [inqEmail, setInqEmail] = useState("");
   const [inqPhone, setInqPhone] = useState("");
   const [inqMsg, setInqMsg] = useState("");
-  const [inqDest, setInqDest] = useState("Goa Beach & Party Escape");
+  const [inqDest, setInqDest] = useState("Spiti Valley Expeditions");
   const [success, setSuccess] = useState(false);
 
   const toggleFaq = (id: string) => {
@@ -23,8 +23,14 @@ export default function AboutContact() {
     e.preventDefault();
     if (!inqName || !inqEmail || !inqPhone) return;
 
-    // Direct WhatsApp dispatch
-    const message = `*Raasta Road Trip Inquiry*%0A*Name:* ${encodeURIComponent(inqName)}%0A*Email:* ${encodeURIComponent(inqEmail)}%0A*Phone:* ${encodeURIComponent(inqPhone)}%0A*Destination:* ${encodeURIComponent(inqDest)}%0A*Message:* ${encodeURIComponent(inqMsg || "Looking for trip details")}`;
+    // Direct WhatsApp dispatch with proper formatting
+    const message = `*Raasta Trips - Website Message*%0A` +
+      `*Name:* ${encodeURIComponent(inqName)}%0A` +
+      `*Email:* ${encodeURIComponent(inqEmail)}%0A` +
+      `*Phone:* ${encodeURIComponent(inqPhone)}%0A` +
+      `*Destination:* ${encodeURIComponent(inqDest)}%0A` +
+      `*Message:* ${encodeURIComponent(inqMsg || "Looking for trip information")}`;
+
     window.open(`https://wa.me/919226638440?text=${message}`, "_blank");
 
     setSuccess(true);
@@ -45,80 +51,67 @@ export default function AboutContact() {
   );
 
   return (
-    <section id="contact" className="py-32 px-6 bg-[#07080a] relative border-t border-white/5 overflow-hidden">
-      {/* Visual lighting */}
-      <div className="absolute left-1/3 top-1/4 w-[600px] h-[600px] bg-amber-500/5 rounded-full blur-[160px] pointer-events-none" />
-
+    <section id="contact" className="py-24 sm:py-32 px-6 bg-[#182622] relative border-t border-[#8C9A82]/20 overflow-hidden">
       <div className="max-w-7xl mx-auto relative z-10">
         
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-20">
-          <span className="text-xs font-bold uppercase tracking-widest text-amber-400 mb-3 block font-display">
-            Direct Operations & FAQs
-          </span>
-          <h2 className="text-4xl sm:text-5xl md:text-6xl font-black text-white tracking-tight font-display leading-tight">
-            Frequently Asked <span className="font-editorial text-amber-300 font-normal italic text-5xl sm:text-6xl md:text-7xl">Questions</span>
+        <div className="text-center max-w-3xl mx-auto mb-16 sm:mb-20">
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#202522] border border-[#8C9A82]/30 text-[#D4A96C] text-xs font-semibold uppercase tracking-widest mb-4">
+            <HelpCircle className="w-3.5 h-3.5" />
+            <span>Assistance & FAQs</span>
+          </div>
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-serif text-[#EDE9DF] tracking-tight">
+            Frequently Asked <span className="italic text-[#D4A96C]">Questions</span>
           </h2>
-          <p className="text-zinc-400 text-base sm:text-lg leading-relaxed mt-4 font-light">
-            Everything you need to know about safety protocols, 4x4 captain standards, gear recommendations, and joining the Raasta family.
+          <p className="text-[#EDE9DF]/80 text-base sm:text-lg font-light leading-relaxed mt-4">
+            Everything you need to know about safety protocols, micro-group caps, bookings, and life on the road with Raasta.
           </p>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
           
-          {/* Column 1: Interactive FAQ Accordion with Live Search */}
+          {/* Column 1: FAQ Accordion with Live Search */}
           <div className="lg:col-span-7 space-y-6">
-            {/* Search FAQ Input */}
             <div className="relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#8C9A82]" />
               <input
                 type="text"
-                placeholder="Search FAQs (e.g., solo traveler, refund policy, high altitude permits)..."
+                placeholder="Search FAQs (e.g. solo traveler, refunds, high altitude)..."
                 value={faqSearch}
                 onChange={(e) => setFaqSearch(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 rounded-2xl pl-11 pr-4 py-3.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-amber-400/50 transition-colors"
+                className="w-full bg-[#202522] border border-[#8C9A82]/30 rounded-2xl pl-11 pr-4 py-3.5 text-xs sm:text-sm text-[#EDE9DF] placeholder-[#EDE9DF]/40 focus:outline-none focus:border-[#D4A96C]"
               />
             </div>
 
-            {/* FAQs List */}
-            <div className="space-y-4">
+            <div className="space-y-3.5">
               {filteredFaqs.length > 0 ? (
                 filteredFaqs.map((faq) => {
                   const isOpen = activeFaq === faq.id;
                   return (
                     <div
                       key={faq.id}
-                      className="glass border border-white/10 rounded-[28px] overflow-hidden transition-all duration-300 hover:border-white/20"
+                      className="bg-[#202522] border border-[#8C9A82]/25 rounded-2xl overflow-hidden transition-all duration-200"
                     >
                       <button
                         onClick={() => toggleFaq(faq.id)}
-                        className="w-full text-left p-6 flex justify-between items-center gap-6 hover:bg-white/5 transition-colors cursor-pointer"
+                        className="w-full text-left p-5 sm:p-6 flex justify-between items-center gap-4 hover:bg-[#182622]/40 transition-colors cursor-pointer"
                       >
-                        <span className="text-base sm:text-lg font-bold text-white tracking-tight font-display">
+                        <span className="text-sm sm:text-base font-serif font-bold text-[#EDE9DF]">
                           {faq.question}
                         </span>
-                        <div
-                          className={`p-2 rounded-full border shrink-0 transition-colors ${
-                            isOpen ? "bg-amber-400 text-black border-amber-400" : "bg-white/5 text-zinc-400 border-white/10"
-                          }`}
-                        >
-                          <ChevronDown
-                            className={`w-4 h-4 transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`}
-                          />
-                        </div>
+                        <ChevronDown className={`w-4 h-4 text-[#D4A96C] transition-transform shrink-0 ${isOpen ? "rotate-180" : ""}`} />
                       </button>
 
-                      <AnimatePresence initial={false}>
+                      <AnimatePresence>
                         {isOpen && (
                           <motion.div
                             initial={{ height: 0, opacity: 0 }}
                             animate={{ height: "auto", opacity: 1 }}
                             exit={{ height: 0, opacity: 0 }}
-                            transition={{ duration: 0.3, ease: "easeInOut" }}
+                            transition={{ duration: 0.2 }}
+                            className="px-5 sm:px-6 pb-6 text-xs sm:text-sm text-[#EDE9DF]/80 font-light leading-relaxed border-t border-[#8C9A82]/15 pt-3"
                           >
-                            <div className="px-6 pb-6 text-sm text-zinc-300 leading-relaxed font-light border-t border-white/5 pt-4">
-                              {faq.answer}
-                            </div>
+                            {faq.answer}
                           </motion.div>
                         )}
                       </AnimatePresence>
@@ -126,164 +119,124 @@ export default function AboutContact() {
                   );
                 })
               ) : (
-                <div className="p-8 glass border border-white/10 rounded-[28px] text-center text-zinc-500">
-                  <p className="text-sm font-display text-white">No matching questions found.</p>
-                  <button
-                    onClick={() => setFaqSearch("")}
-                    className="text-xs text-amber-400 underline font-bold mt-2 cursor-pointer uppercase tracking-wider"
-                  >
-                    Clear Search
-                  </button>
+                <div className="p-8 text-center bg-[#202522] rounded-2xl text-xs text-[#EDE9DF]/60">
+                  No matching question found. Feel free to contact our team directly below.
                 </div>
               )}
             </div>
           </div>
 
-          {/* Column 2: Direct Contact Form & Helpline Cards */}
+          {/* Column 2: Direct Contact Form & Operations Card */}
           <div className="lg:col-span-5 space-y-6">
             
-            {/* Fast WhatsApp & Call Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <a
-                href="https://wa.me/919226638440?text=Hi%20RAASTA,%20I'd%20like%20to%20inquire%20about%20upcoming%20trips!"
-                target="_blank"
-                rel="noreferrer"
-                className="glass border border-white/10 rounded-[24px] p-5 hover:border-[#25D366]/40 transition group flex flex-col justify-between"
-              >
-                <div className="flex items-center justify-between mb-3">
-                  <span className="p-2.5 bg-[#25D366]/10 text-[#25D366] rounded-xl">
-                    <MessageSquare className="w-5 h-5" />
-                  </span>
-                  <span className="text-[9px] font-black text-emerald-400 uppercase tracking-widest font-display">Instant</span>
-                </div>
-                <div>
-                  <h4 className="text-xs font-bold text-white mb-0.5 font-display">WhatsApp Ops</h4>
-                  <p className="text-xs text-zinc-400 font-mono">+91 9226638440</p>
-                </div>
-              </a>
-
-              <a
-                href="tel:+919226638440"
-                className="glass border border-white/10 rounded-[24px] p-5 hover:border-amber-400/40 transition group flex flex-col justify-between"
-              >
-                <div className="flex items-center justify-between mb-3">
-                  <span className="p-2.5 bg-amber-400/10 text-amber-400 rounded-xl">
-                    <Phone className="w-5 h-5" />
-                  </span>
-                  <span className="text-[9px] font-black text-amber-400 uppercase tracking-widest font-display">Direct</span>
-                </div>
-                <div>
-                  <h4 className="text-xs font-bold text-white mb-0.5 font-display">Helpline</h4>
-                  <p className="text-xs text-zinc-400 font-mono">+91 9226638440</p>
-                </div>
-              </a>
-            </div>
-
-            {/* Custom Trip Inquiry Box */}
-            <div className="glass border border-white/10 rounded-[32px] p-6 sm:p-8 shadow-2xl">
-              <div className="flex items-center gap-3 mb-3">
-                <span className="p-2 bg-amber-400/10 text-amber-400 rounded-xl">
-                  <Send className="w-4 h-4" />
-                </span>
-                <h3 className="text-xl font-black text-white font-display">Custom Trip Inquiry</h3>
-              </div>
-
-              <p className="text-xs text-zinc-400 mb-6 font-light">
-                Planning a bespoke private charter, corporate offsite, or college expedition? Reach our route planners directly.
+            {/* Contact Form */}
+            <div className="bg-[#202522] border border-[#8C9A82]/25 rounded-[32px] p-7 sm:p-8 shadow-xl">
+              <h3 className="text-2xl font-serif font-bold text-[#EDE9DF] mb-2">
+                Talk to a <span className="italic text-[#D4A96C]">Trip Specialist</span>
+              </h3>
+              <p className="text-xs text-[#EDE9DF]/70 font-light leading-relaxed mb-6">
+                Have specific dates or want a private group itinerary? Send a note and our founding leads will get back to you.
               </p>
 
               {success && (
-                <div className="mb-6 p-4 glass border-emerald-400/40 text-emerald-400 text-xs font-semibold rounded-2xl flex items-center gap-3 animate-fade-in">
+                <div className="mb-4 p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 shrink-0" />
-                  <span>Inquiry dispatched to WhatsApp! Our road captain will reach out shortly.</span>
+                  <span>Redirecting to WhatsApp with your details...</span>
                 </div>
               )}
 
-              <form onSubmit={handleInquirySubmit} className="space-y-4">
+              <form onSubmit={handleInquirySubmit} className="space-y-3.5">
                 <div>
-                  <label className="block text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 font-display">
-                    Your Name *
-                  </label>
                   <input
                     type="text"
                     required
+                    placeholder="Your Full Name *"
                     value={inqName}
                     onChange={(e) => setInqName(e.target.value)}
-                    placeholder="e.g. Rohith Verma"
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-amber-400/60"
+                    className="w-full bg-[#182622] border border-[#8C9A82]/30 rounded-xl px-4 py-3 text-xs text-[#EDE9DF] placeholder-[#EDE9DF]/30 focus:outline-none focus:border-[#D4A96C]"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 font-display">
-                      Email Address *
-                    </label>
-                    <input
-                      type="email"
-                      required
-                      value={inqEmail}
-                      onChange={(e) => setInqEmail(e.target.value)}
-                      placeholder="rohith@example.com"
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-amber-400/60"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 font-display">
-                      Phone Number *
-                    </label>
-                    <input
-                      type="tel"
-                      required
-                      value={inqPhone}
-                      onChange={(e) => setInqPhone(e.target.value)}
-                      placeholder="9226638440"
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-amber-400/60 font-mono"
-                    />
-                  </div>
+                  <input
+                    type="tel"
+                    required
+                    placeholder="WhatsApp Phone *"
+                    value={inqPhone}
+                    onChange={(e) => setInqPhone(e.target.value)}
+                    className="w-full bg-[#182622] border border-[#8C9A82]/30 rounded-xl px-4 py-3 text-xs text-[#EDE9DF] placeholder-[#EDE9DF]/30 focus:outline-none focus:border-[#D4A96C]"
+                  />
+                  <input
+                    type="email"
+                    required
+                    placeholder="Email Address *"
+                    value={inqEmail}
+                    onChange={(e) => setInqEmail(e.target.value)}
+                    className="w-full bg-[#182622] border border-[#8C9A82]/30 rounded-xl px-4 py-3 text-xs text-[#EDE9DF] placeholder-[#EDE9DF]/30 focus:outline-none focus:border-[#D4A96C]"
+                  />
                 </div>
 
                 <div>
-                  <label className="block text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 font-display">
-                    Preferred Route or Destination
-                  </label>
                   <select
                     value={inqDest}
                     onChange={(e) => setInqDest(e.target.value)}
-                    className="w-full bg-[#12141c] border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-amber-400/60"
+                    className="w-full bg-[#182622] border border-[#8C9A82]/30 rounded-xl px-3 py-3 text-xs text-[#EDE9DF] focus:outline-none focus:border-[#D4A96C] cursor-pointer"
                   >
-                    <option value="Goa Beach & Party Escape">Goa Beach & Party Escape</option>
-                    <option value="Gokarna Beach Trek Combo">Gokarna Beach Trek Combo</option>
-                    <option value="Spiti Valley High Altitude Expedition">Spiti Valley High Altitude Expedition</option>
-                    <option value="Custom Private Route">Custom Private Route (Group / Corporate)</option>
+                    <option value="Spiti Valley Expeditions">Spiti Valley High Desert (Himachal)</option>
+                    <option value="Ladakh & Nubra Valley">Ladakh & Nubra Valley (Himalayas)</option>
+                    <option value="Meghalaya Highlands">Meghalaya Rainforest & Living Bridges</option>
+                    <option value="Gokarna & Karwar">Gokarna & Karwar Coastal Trail</option>
+                    <option value="Jaisalmer Desert Caravans">Jaisalmer & Thar Desert Caravan</option>
+                    <option value="Goa Coastal Heritage">Goa Offbeat Coastal & Heritage</option>
+                    <option value="Custom Group Itinerary">Custom Corporate or Private Group</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="block text-[10px] font-bold uppercase tracking-widest text-zinc-400 mb-1.5 font-display">
-                    Message / Special Requests
-                  </label>
                   <textarea
                     rows={3}
+                    placeholder="Tell us about your group size, tentative month, or preferences..."
                     value={inqMsg}
                     onChange={(e) => setInqMsg(e.target.value)}
-                    placeholder="Number of travelers, tentative dates, or custom route requests..."
-                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2.5 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-amber-400/60 resize-none font-light"
+                    className="w-full bg-[#182622] border border-[#8C9A82]/30 rounded-xl px-4 py-3 text-xs text-[#EDE9DF] placeholder-[#EDE9DF]/30 focus:outline-none focus:border-[#D4A96C] resize-none"
                   />
                 </div>
 
                 <button
                   type="submit"
-                  className="w-full flex items-center justify-center gap-2 py-3.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-black font-black text-xs uppercase tracking-widest transition shadow-lg shadow-amber-500/20 cursor-pointer font-display"
+                  className="w-full py-3.5 rounded-xl bg-[#D4A96C] hover:bg-[#d8b37c] text-[#182622] font-bold text-xs uppercase tracking-wider transition-colors flex items-center justify-center gap-2 cursor-pointer shadow-md"
                 >
-                  <Send className="w-3.5 h-3.5 stroke-[2.5]" />
-                  <span>Send Instant Inquiry via WhatsApp</span>
+                  <Send className="w-4 h-4" />
+                  <span>Send Message & Connect</span>
                 </button>
               </form>
             </div>
+
+            {/* Direct Contact Credentials Card */}
+            <div className="bg-[#202522] border border-[#8C9A82]/25 rounded-[28px] p-6 space-y-4">
+              <span className="text-[10px] font-mono uppercase tracking-widest text-[#D4A96C] block">
+                Direct Operations Desk
+              </span>
+              <div className="space-y-3 text-xs text-[#EDE9DF]/80">
+                <div className="flex items-center gap-3">
+                  <Phone className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <span>+91 9226638440 (Phone & WhatsApp)</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Mail className="w-4 h-4 text-[#D4A96C] shrink-0" />
+                  <span>raastatrips.in@gmail.com</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Clock className="w-4 h-4 text-[#8C9A82] shrink-0" />
+                  <span>Operations: 9:00 AM – 8:30 PM IST (Mon – Sat)</span>
+                </div>
+              </div>
+            </div>
+
           </div>
+
         </div>
+
       </div>
     </section>
   );

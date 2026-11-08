@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Review } from "../types";
 import { REVIEWS } from "../data";
-import { Star, MessageSquare, Quote, CheckCircle2 } from "lucide-react";
-import { motion, AnimatePresence } from "motion/react";
+import { Star, Quote, CheckCircle2, HeartHandshake } from "lucide-react";
+import { motion } from "motion/react";
 import { db } from "../firebase";
 import { collection, onSnapshot, query, orderBy } from "firebase/firestore";
 
@@ -27,6 +27,8 @@ export default function Reviews() {
                 destination: data.destination || "Overland Route",
                 content: data.content || "",
                 date: data.date || "2026",
+                tripCollection: data.tripCollection || "explore",
+                verifiedTraveler: true
               });
             });
             if (loadedReviews.length > 0) {
@@ -35,7 +37,6 @@ export default function Reviews() {
           }
         },
         (error) => {
-          // Gracefully retain curated REVIEWS on error
           console.warn("Firestore reviews sync fallback to static curated:", error);
           setReviewsList(REVIEWS);
         }
@@ -48,25 +49,28 @@ export default function Reviews() {
   }, []);
 
   return (
-    <section id="reviews" className="py-32 px-6 bg-[#07080a] relative border-t border-white/5 overflow-hidden">
+    <section id="reviews" className="py-24 sm:py-32 px-6 bg-[#182622] relative border-t border-[#8C9A82]/20 overflow-hidden">
       <div className="max-w-7xl mx-auto relative z-10">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-20 gap-8">
-          <div>
-            <span className="text-xs tracking-widest text-amber-400 uppercase font-bold mb-3 block font-mono">
-              [ 04 // DISPATCHES FROM THE ROAD ]
-            </span>
-            <h2 className="text-4xl sm:text-5xl md:text-6xl font-black text-white tracking-tight font-display uppercase leading-[1.08]">
-              Traveler Stories & <br />
-              <span className="font-editorial text-amber-300 font-normal italic lowercase text-5xl sm:text-6xl md:text-7xl">
-                raw field notes.
-              </span>
+        
+        {/* Header */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-8">
+          <div className="max-w-2xl">
+            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#202522] border border-[#8C9A82]/30 text-[#D4A96C] text-xs font-semibold uppercase tracking-widest mb-4">
+              <Quote className="w-3.5 h-3.5" />
+              <span>Verified Dispatches</span>
+            </div>
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-serif text-[#EDE9DF] tracking-tight">
+              Traveller <span className="italic text-[#D4A96C]">Stories</span>
             </h2>
+            <p className="text-[#EDE9DF]/80 text-base sm:text-lg font-light leading-relaxed mt-4">
+              Real memories from adventurers who took the road with us. No artificial hype, no staged reviews.
+            </p>
           </div>
 
-          <div className="flex items-center gap-2 glass px-5 py-3 rounded-2xl border border-white/10 text-xs font-mono">
-            <span className="text-amber-400 font-bold">4.9 / 5.0</span>
-            <span className="text-zinc-500">•</span>
-            <span className="text-zinc-300">500+ Verified Journeys</span>
+          <div className="flex items-center gap-3 bg-[#202522] px-5 py-3 rounded-2xl border border-[#8C9A82]/30 text-xs font-mono">
+            <span className="text-[#D4A96C] font-bold text-sm">4.9 / 5.0</span>
+            <span className="text-[#EDE9DF]/40">•</span>
+            <span className="text-[#EDE9DF]/80">500+ Explorers Guided</span>
           </div>
         </div>
 
@@ -78,39 +82,38 @@ export default function Reviews() {
               initial={{ opacity: 0, y: 25 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              whileHover={{ y: -6, transition: { type: "spring", stiffness: 300, damping: 20 } }}
               transition={{ duration: 0.5, delay: idx * 0.08 }}
-              className="bg-[#0b0c10] border border-white/10 p-8 rounded-[32px] flex flex-col justify-between hover:border-amber-400/30 transition-colors"
+              className="bg-[#202522] border border-[#8C9A82]/25 p-8 rounded-[32px] flex flex-col justify-between hover:border-[#D4A96C]/40 transition-colors shadow-xl"
             >
               <div>
-                <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center justify-between mb-5">
                   <div className="flex items-center gap-1">
                     {[...Array(rev.rating || 5)].map((_, i) => (
-                      <Star key={i} className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                      <Star key={i} className="w-3.5 h-3.5 fill-[#D4A96C] text-[#D4A96C]" />
                     ))}
                   </div>
-                  <span className="text-[10px] font-mono text-zinc-400 uppercase">
+                  <span className="text-[10px] font-mono text-[#EDE9DF]/50 uppercase">
                     {rev.date}
                   </span>
                 </div>
 
-                <Quote className="w-6 h-6 text-amber-400/30 mb-4" />
-                <p className="text-zinc-200 text-sm sm:text-base leading-relaxed font-light mb-8">
+                <Quote className="w-7 h-7 text-[#D4A96C]/30 mb-3" />
+                <p className="text-[#EDE9DF]/85 text-xs sm:text-sm leading-relaxed font-light mb-6">
                   "{rev.content}"
                 </p>
               </div>
 
-              <div className="pt-6 border-t border-white/5 flex items-center justify-between">
+              <div className="pt-5 border-t border-[#8C9A82]/20 flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <img
                     src={rev.avatar}
                     alt={rev.author}
-                    className="w-10 h-10 rounded-full object-cover border border-white/20"
+                    className="w-10 h-10 rounded-full object-cover border border-[#8C9A82]/30"
                     referrerPolicy="no-referrer"
                   />
                   <div>
-                    <h4 className="text-sm font-bold text-white font-display">{rev.author}</h4>
-                    <span className="text-[11px] text-amber-400 font-mono block">{rev.destination}</span>
+                    <h4 className="text-xs sm:text-sm font-serif font-bold text-[#EDE9DF]">{rev.author}</h4>
+                    <span className="text-[10px] text-[#D4A96C] font-mono block">{rev.destination}</span>
                   </div>
                 </div>
 
@@ -122,6 +125,7 @@ export default function Reviews() {
             </motion.div>
           ))}
         </div>
+
       </div>
     </section>
   );
