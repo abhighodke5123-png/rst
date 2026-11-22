@@ -121,7 +121,24 @@ export default function App() {
   const syncServerData = async () => {
     try {
       const tripsSnap = await getDocs(collection(db, "trips"));
-      const firestoreTrips = tripsSnap.docs.map((doc) => doc.data() as Trip);
+      const firestoreTrips = tripsSnap.docs.map((doc) => {
+        const data = doc.data() as Partial<Trip>;
+        return {
+          id: doc.id,
+          destinationId: data.destinationId || "custom",
+          destinationName: data.destinationName || "Expedition Route",
+          collection: data.collection || "explore",
+          dates: data.dates || "Dates Flexible",
+          price: Number(data.price) || 9999,
+          originalPrice: data.originalPrice ? Number(data.originalPrice) : undefined,
+          duration: data.duration || "5 Days / 4 Nights",
+          seatsTotal: Number(data.seatsTotal) || 14,
+          seatsAvailable: Number(data.seatsAvailable ?? data.seatsTotal ?? 14),
+          description: data.description || "Handcrafted RAASTA Expedition.",
+          status: data.status || "Seats Open",
+          ...data
+        } as Trip;
+      });
 
       if (firestoreTrips.length > 0) {
         const mergedMap = new Map<string, Trip>();

@@ -92,8 +92,9 @@ export default function UpcomingTrips({
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isSortOpen]);
 
-  // Filtering
-  const filteredTrips = tripsList.filter((trip) => {
+  // Filtering with strict null-safety
+  const filteredTrips = (tripsList || []).filter((trip) => {
+    if (!trip) return false;
     if (initialFilterDestinationId && trip.destinationId !== initialFilterDestinationId) {
       return false;
     }
@@ -103,25 +104,29 @@ export default function UpcomingTrips({
     if (statusFilter !== "All" && trip.status !== statusFilter) {
       return false;
     }
-    if (trip.price > maxBudget) {
+    const tripPrice = Number(trip.price) || 0;
+    if (tripPrice > maxBudget) {
       return false;
     }
 
+    const term = (searchTerm || "").toLowerCase();
     const matchesSearch =
-      trip.destinationName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      trip.dates.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      trip.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      trip.category?.toLowerCase().includes(searchTerm.toLowerCase());
+      (trip.destinationName || "").toLowerCase().includes(term) ||
+      (trip.dates || "").toLowerCase().includes(term) ||
+      (trip.description || "").toLowerCase().includes(term) ||
+      (trip.category || "").toLowerCase().includes(term);
 
     return matchesSearch;
   });
 
   // Sorting
   const sortedTrips = [...filteredTrips].sort((a, b) => {
-    if (sortBy === "price-asc") return a.price - b.price;
-    if (sortBy === "price-desc") return b.price - a.price;
-    if (sortBy === "date-asc") return parseTripDate(a.dates) - parseTripDate(b.dates);
-    if (sortBy === "date-desc") return parseTripDate(b.dates) - parseTripDate(a.dates);
+    const priceA = Number(a?.price) || 0;
+    const priceB = Number(b?.price) || 0;
+    if (sortBy === "price-asc") return priceA - priceB;
+    if (sortBy === "price-desc") return priceB - priceA;
+    if (sortBy === "date-asc") return parseTripDate(a?.dates || "") - parseTripDate(b?.dates || "");
+    if (sortBy === "date-desc") return parseTripDate(b?.dates || "") - parseTripDate(a?.dates || "");
     return 0;
   });
 
@@ -341,7 +346,7 @@ export default function UpcomingTrips({
                         <span className="text-[10px] text-[#EDE9DF]/50 font-mono block">Starting from</span>
                         <div className="flex items-baseline gap-1.5">
                           <span className="text-2xl font-serif font-bold text-[#D4A96C]">
-                            ₹{trip.price.toLocaleString()}
+                            ₹{(Number(trip.price) || 0).toLocaleString()}
                           </span>
                           <span className="text-[11px] text-[#EDE9DF]/60">/ person</span>
                         </div>
@@ -350,7 +355,7 @@ export default function UpcomingTrips({
                       <div className="text-right">
                         <span className="text-[10px] text-[#EDE9DF]/50 font-mono block">Availability</span>
                         <span className="text-xs font-mono font-semibold text-emerald-400">
-                          {trip.seatsAvailable} seats open
+                          {trip.seatsAvailable ?? trip.seatsTotal ?? 0} seats open
                         </span>
                       </div>
                     </div>

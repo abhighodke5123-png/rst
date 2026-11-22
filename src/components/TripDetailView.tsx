@@ -377,7 +377,7 @@ export default function TripDetailView({
                 <span className="text-xs text-[#EDE9DF]/60 font-mono block">All-inclusive package</span>
                 <div className="flex items-baseline gap-2">
                   <span className="text-3xl sm:text-4xl font-serif text-[#D4A96C] font-bold">
-                    ₹{trip.price.toLocaleString()}
+                    ₹{(Number(trip.price) || 0).toLocaleString()}
                   </span>
                   <span className="text-xs text-[#EDE9DF]/60">/ person</span>
                 </div>
@@ -385,7 +385,7 @@ export default function TripDetailView({
 
               {trip.originalPrice && (
                 <span className="text-xs text-[#EDE9DF]/50 line-through font-mono">
-                  ₹{trip.originalPrice.toLocaleString()}
+                  ₹{(Number(trip.originalPrice) || 0).toLocaleString()}
                 </span>
               )}
             </div>
@@ -464,7 +464,7 @@ export default function TripDetailView({
                         </div>
                       </div>
                       <span className="text-xs font-mono text-[#D4A96C] font-semibold">
-                        ₹{otherTrip.price.toLocaleString()}
+                        ₹{(Number(otherTrip.price) || 0).toLocaleString()}
                       </span>
                     </button>
                   ))}

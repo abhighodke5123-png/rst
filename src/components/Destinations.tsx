@@ -153,7 +153,7 @@ export default function Destinations({
                           <span className="text-[10px] text-[#EDE9DF]/50 font-mono block">{dest.duration}</span>
                           <div className="flex items-baseline gap-1.5">
                             <span className="text-2xl font-serif font-bold text-[#D4A96C]">
-                              ₹{dest.price.toLocaleString()}
+                              ₹{(Number(dest.price) || 0).toLocaleString()}
                             </span>
                             <span className="text-[11px] text-[#EDE9DF]/60">/ person</span>
                           </div>
@@ -161,7 +161,7 @@ export default function Destinations({
 
                         {dest.originalPrice && (
                           <span className="text-xs text-[#EDE9DF]/40 line-through font-mono">
-                            ₹{dest.originalPrice.toLocaleString()}
+                            ₹{(Number(dest.originalPrice) || 0).toLocaleString()}
                           </span>
                         )}
                       </div>

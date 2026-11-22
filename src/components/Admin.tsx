@@ -119,7 +119,25 @@ export default function Admin({
       try {
         const tripsSnap = await getDocs(collection(db, "trips"));
         if (!tripsSnap.empty) {
-          tripsData = tripsSnap.docs.map((doc) => ({ id: doc.id, ...doc.data() } as Trip));
+          tripsData = tripsSnap.docs.map((doc) => {
+            const data = doc.data() as Partial<Trip>;
+            return {
+              id: doc.id,
+              destinationId: data.destinationId || "custom",
+              destinationName: data.destinationName || "Expedition Route",
+              collection: data.collection || "explore",
+              dates: data.dates || "Dates Flexible",
+              price: Number(data.price) || 9999,
+              originalPrice: data.originalPrice ? Number(data.originalPrice) : undefined,
+              duration: data.duration || "5 Days / 4 Nights",
+              seatsTotal: Number(data.seatsTotal) || 14,
+              seatsAvailable: Number(data.seatsAvailable ?? data.seatsTotal ?? 14),
+              description: data.description || "Handcrafted RAASTA Expedition.",
+              status: data.status || "Seats Open",
+              overview: data.overview || "",
+              ...data
+            } as Trip;
+          });
         } else {
           tripsData = TRIPS;
         }
@@ -196,15 +214,28 @@ export default function Admin({
   // Start editing a trip
   const handleStartEditingTrip = (t: Trip) => {
     setEditingTripId(t.id);
-    setEditPrice(t.price.toString());
-    setEditDates(t.dates);
+    setEditPrice(t.price != null ? String(t.price) : "");
+    setEditDates(t.dates || "");
     setEditDuration(t.duration || "5 Days / 4 Nights");
-    setEditSeatsTotal(t.seatsTotal.toString());
-    setEditSeatsAvail(t.seatsAvailable.toString());
-    setEditStatus(t.status);
+    setEditSeatsTotal(t.seatsTotal != null ? String(t.seatsTotal) : "14");
+    setEditSeatsAvail(t.seatsAvailable != null ? String(t.seatsAvailable) : "14");
+    setEditStatus(t.status || "Seats Open");
     setEditCollection(t.collection || "explore");
-    setEditDesc(t.description);
+    setEditDesc(t.description || "");
     setEditOverview(t.overview || "");
+  };
+
+  // Delete trip from catalog
+  const handleDeleteTrip = async (tripId: string) => {
+    if (!window.confirm("Are you sure you want to delete this trip from the catalog?")) return;
+    try {
+      await deleteDoc(doc(db, "trips", tripId));
+    } catch (err) {
+      console.warn("Firestore trip delete error:", err);
+    }
+    const updatedList = trips.filter((t) => t.id !== tripId);
+    setTrips(updatedList);
+    onUpdateTripsList(updatedList);
   };
 
   // Save trip edits
@@ -967,15 +998,23 @@ export default function Admin({
                         <div className="flex items-center justify-between text-xs py-3 border-t border-[#8C9A82]/20">
                           <div>
                             <span className="text-[10px] text-[#EDE9DF]/50 block">Price</span>
-                            <span className="font-serif font-bold text-lg text-[#D4A96C]">₹{t.price.toLocaleString()}</span>
+                            <span className="font-serif font-bold text-lg text-[#D4A96C]">₹{(Number(t.price) || 0).toLocaleString()}</span>
                           </div>
                           <div>
                             <span className="text-[10px] text-[#EDE9DF]/50 block">Capacity</span>
-                            <span className="font-mono text-[#EDE9DF]">{t.seatsAvailable} / {t.seatsTotal} Open</span>
+                            <span className="font-mono text-[#EDE9DF]">{t.seatsAvailable ?? t.seatsTotal ?? 0} / {t.seatsTotal ?? 14} Open</span>
                           </div>
                         </div>
 
                         <div className="pt-4 flex items-center justify-end gap-2">
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteTrip(t.id)}
+                            className="p-1.5 rounded-lg bg-red-950/30 hover:bg-red-900/50 text-red-400 border border-red-500/30 text-xs flex items-center gap-1 cursor-pointer"
+                            title="Delete Trip"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
                           <button
                             onClick={() => handleStartEditingTrip(t)}
                             className="px-3.5 py-1.5 rounded-lg bg-[#182622] hover:bg-[#182622]/80 text-[#D4A96C] border border-[#8C9A82]/30 text-xs font-semibold uppercase tracking-wider flex items-center gap-1.5 cursor-pointer"
