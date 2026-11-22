@@ -37,7 +37,46 @@ import { collection, getDocs, query, where, doc, getDoc, setDoc, deleteDoc } fro
 import { syncUserProfile, isUserAdmin } from "./lib/authUtils";
 
 export default function App() {
-  const [view, setView] = useState<"home" | "trip-detail" | "login" | "signup" | "dashboard" | "admin">("home");
+  // Read initial view from URL path or hash
+  const getInitialView = (): "home" | "trip-detail" | "login" | "signup" | "dashboard" | "admin" => {
+    if (typeof window !== "undefined") {
+      const path = window.location.pathname.toLowerCase().replace(/^\/+/, "");
+      const hash = window.location.hash.toLowerCase().replace(/^#\/?/, "");
+      if (path === "admin" || hash === "admin") return "admin";
+      if (path === "login" || hash === "login") return "login";
+      if (path === "signup" || hash === "signup") return "signup";
+      if (path === "dashboard" || hash === "dashboard") return "dashboard";
+    }
+    return "home";
+  };
+
+  const [view, setView] = useState<"home" | "trip-detail" | "login" | "signup" | "dashboard" | "admin">(getInitialView);
+
+  const navigateToView = (nextView: "home" | "trip-detail" | "login" | "signup" | "dashboard" | "admin") => {
+    setView(nextView);
+    if (typeof window !== "undefined") {
+      const targetPath = nextView === "home" ? "/" : `/${nextView}`;
+      if (window.location.pathname !== targetPath) {
+        window.history.pushState({ view: nextView }, "", targetPath);
+      }
+    }
+  };
+
+  // Sync view when user clicks browser Back / Forward buttons
+  useEffect(() => {
+    const handlePopState = () => {
+      const path = window.location.pathname.toLowerCase().replace(/^\/+/, "");
+      const hash = window.location.hash.toLowerCase().replace(/^#\/?/, "");
+      if (path === "admin" || hash === "admin") setView("admin");
+      else if (path === "login" || hash === "login") setView("login");
+      else if (path === "signup" || hash === "signup") setView("signup");
+      else if (path === "dashboard" || hash === "dashboard") setView("dashboard");
+      else setView("home");
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
   const [currentUser, setCurrentUser] = useState<{ id: string; name: string; email: string; role: string } | null>(null);
   const [tripsList, setTripsList] = useState<Trip[]>(TRIPS);
   const [bookings, setBookings] = useState<Booking[]>([]);
@@ -201,14 +240,14 @@ export default function App() {
   // Open dedicated Trip Detail view
   const handleOpenTripDetail = (trip: Trip) => {
     setSelectedTripForDetail(trip);
-    setView("trip-detail");
+    navigateToView("trip-detail");
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   // Handle destination select to filter upcoming departures
   const handleSelectDestinationForDepartures = (destId: string) => {
     setInitialFilterDestinationId(destId);
-    if (view !== "home") setView("home");
+    if (view !== "home") navigateToView("home");
     setTimeout(() => {
       const tripsSection = document.getElementById("trips");
       if (tripsSection) {
@@ -226,32 +265,37 @@ export default function App() {
   return (
     <div className="min-h-screen bg-[#182622] text-[#EDE9DF] selection:bg-[#D4A96C] selection:text-[#182622] font-sans">
       
-      {/* Universal Navigation */}
-      <Navbar
-        onQuizClick={() => setQuizOpen(true)}
-        onBookingsClick={() => setBookingsOpen(true)}
-        bookingCount={bookings.length}
-        currentUser={currentUser}
-        onAuthClick={() => setView("login")}
-        onDashboardClick={() => setView((currentUser?.role === "admin" || isUserAdmin(currentUser?.email, currentUser?.role)) ? "admin" : "dashboard")}
-        onLogout={async () => {
-          await auth.signOut();
-          setCurrentUser(null);
-          setView("home");
-        }}
-        onLogoClick={() => {
-          setView("home");
-          window.scrollTo({ top: 0, behavior: "smooth" });
-        }}
-        onEnquireClick={() => {
-          setEnquiryPresetTrip(null);
-          setEnquiryPresetCollection("flexible");
-          setIsEnquiryModalOpen(true);
-        }}
-        hideNavAnchors={view !== "home"}
-        onNotificationsClick={() => setIsNotificationsOpen(true)}
-        notificationCount={notificationCount}
-      />
+      {/* Universal Navigation (hidden on Admin & dedicated portals to prevent header overlap) */}
+      {(view === "home" || view === "trip-detail") && (
+        <Navbar
+          onQuizClick={() => setQuizOpen(true)}
+          onBookingsClick={() => setBookingsOpen(true)}
+          bookingCount={bookings.length}
+          currentUser={currentUser}
+          onAuthClick={() => navigateToView("login")}
+          onDashboardClick={() => {
+            const isAdmin = currentUser?.role === "admin" || isUserAdmin(currentUser?.email, currentUser?.role);
+            navigateToView(isAdmin ? "admin" : "dashboard");
+          }}
+          onLogout={async () => {
+            await auth.signOut();
+            setCurrentUser(null);
+            navigateToView("home");
+          }}
+          onLogoClick={() => {
+            navigateToView("home");
+            window.scrollTo({ top: 0, behavior: "smooth" });
+          }}
+          onEnquireClick={() => {
+            setEnquiryPresetTrip(null);
+            setEnquiryPresetCollection("flexible");
+            setIsEnquiryModalOpen(true);
+          }}
+          hideNavAnchors={view !== "home"}
+          onNotificationsClick={() => setIsNotificationsOpen(true)}
+          notificationCount={notificationCount}
+        />
+      )}
 
       {/* VIEW 1: HOME PAGE */}
       {view === "home" && (
@@ -328,7 +372,7 @@ export default function App() {
           destination={DESTINATIONS.find((d) => d.id === selectedTripForDetail.destinationId)}
           allTripsForDestination={tripsList.filter((t) => t.destinationId === selectedTripForDetail.destinationId)}
           onBack={() => {
-            setView("home");
+            navigateToView("home");
             window.scrollTo({ top: 0, behavior: "smooth" });
           }}
           onEnquireNow={handleOpenEnquiryForTrip}
@@ -344,13 +388,13 @@ export default function App() {
         <Login
           onSuccess={(loggedUser) => {
             if (loggedUser.role === "admin" || isUserAdmin(loggedUser.email, loggedUser.role)) {
-              setView("admin");
+              navigateToView("admin");
             } else {
-              setView("home");
+              navigateToView("home");
             }
           }}
-          onNavigateToSignup={() => setView("signup")}
-          onBack={() => setView("home")}
+          onNavigateToSignup={() => navigateToView("signup")}
+          onBack={() => navigateToView("home")}
         />
       )}
 
@@ -358,13 +402,13 @@ export default function App() {
         <Signup
           onSuccess={(signedUpUser) => {
             if (signedUpUser.role === "admin" || isUserAdmin(signedUpUser.email, signedUpUser.role)) {
-              setView("admin");
+              navigateToView("admin");
             } else {
-              setView("home");
+              navigateToView("home");
             }
           }}
-          onNavigateToLogin={() => setView("login")}
-          onBack={() => setView("home")}
+          onNavigateToLogin={() => navigateToView("login")}
+          onBack={() => navigateToView("home")}
         />
       )}
 
@@ -375,11 +419,11 @@ export default function App() {
           onLogout={async () => {
             await auth.signOut();
             setCurrentUser(null);
-            setView("home");
+            navigateToView("home");
           }}
-          onNavigateToHome={() => setView("home")}
+          onNavigateToHome={() => navigateToView("home")}
           onReserveMore={() => {
-            setView("home");
+            navigateToView("home");
             setTimeout(() => {
               const el = document.getElementById("trips");
               if (el) el.scrollIntoView({ behavior: "smooth" });
@@ -387,7 +431,7 @@ export default function App() {
           }}
           onOpenNotifications={() => setIsNotificationsOpen(true)}
           notificationCount={notificationCount}
-          onNavigateToAdmin={() => setView("admin")}
+          onNavigateToAdmin={() => navigateToView("admin")}
         />
       )}
 
@@ -397,7 +441,14 @@ export default function App() {
           currentUser={currentUser}
           tripsList={tripsList}
           onUpdateTripsList={(updated) => setTripsList(updated)}
-          onBackToHome={() => setView("home")}
+          onBackToHome={() => navigateToView("home")}
+          onLogout={async () => {
+            await auth.signOut();
+            setCurrentUser(null);
+            navigateToView("home");
+          }}
+          onOpenNotifications={() => setIsNotificationsOpen(true)}
+          notificationCount={notificationCount}
         />
       )}
 

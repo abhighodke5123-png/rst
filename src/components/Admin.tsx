@@ -28,7 +28,8 @@ import {
   Eye,
   Send,
   Layers,
-  ArrowRight
+  ArrowRight,
+  Bell
 } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { collection, query, where, getDocs, deleteDoc, doc, setDoc, updateDoc, writeBatch, getDoc } from "firebase/firestore";
@@ -41,6 +42,9 @@ interface AdminProps {
   tripsList: Trip[];
   onUpdateTripsList: (updated: Trip[]) => void;
   onBackToHome: () => void;
+  onLogout?: () => void;
+  onOpenNotifications?: () => void;
+  notificationCount?: number;
 }
 
 type AdminTab = "analytics" | "enquiries" | "trips" | "departures" | "bookings" | "reports";
@@ -49,7 +53,10 @@ export default function Admin({
   currentUser,
   tripsList,
   onUpdateTripsList,
-  onBackToHome
+  onBackToHome,
+  onLogout,
+  onOpenNotifications,
+  notificationCount = 0
 }: AdminProps) {
   // Gate check: only admins allowed
   const isAdmin = currentUser?.role === "admin" || isUserAdmin(currentUser?.email, currentUser?.role);
@@ -414,43 +421,87 @@ export default function Admin({
   return (
     <div className="min-h-screen bg-[#182622] text-[#EDE9DF] flex flex-col font-sans">
       
-      {/* Top Admin Bar */}
-      <header className="border-b border-[#8C9A82]/20 bg-[#202522]/95 backdrop-blur-xl py-4 px-6 fixed top-0 w-full z-40">
-        <div className="max-w-7xl mx-auto flex justify-between items-center">
+      {/* Top Admin Header */}
+      <header className="sticky top-0 w-full z-40 border-b border-[#8C9A82]/20 bg-[#182622]/95 backdrop-blur-xl shadow-md py-3.5 px-4 sm:px-6">
+        <div className="max-w-7xl mx-auto flex justify-between items-center gap-4">
+          {/* Brand & Title */}
           <div className="flex items-center gap-3">
-            <button onClick={onBackToHome} className="flex items-center gap-3 cursor-pointer text-left">
-              <div className="w-9 h-9 rounded-xl bg-[#D4A96C] text-[#182622] flex items-center justify-center font-bold text-base shadow-md font-serif">
+            <button
+              onClick={onBackToHome}
+              className="flex items-center gap-3 cursor-pointer text-left group"
+              title="Return to Public Site"
+            >
+              <div className="w-9 h-9 rounded-xl bg-[#D4A96C] text-[#182622] flex items-center justify-center font-bold text-base shadow-md font-serif group-hover:scale-105 transition-transform">
                 R
               </div>
-              <div>
-                <span className="text-lg font-serif font-bold text-[#EDE9DF]">RAASTA TRIPS</span>
-                <span className="text-[10px] text-[#D4A96C] font-mono block uppercase">Admin Command Center</span>
+              <div className="flex flex-col">
+                <span className="text-base sm:text-lg font-serif font-bold text-[#EDE9DF] leading-tight tracking-wide">
+                  RAASTA TRIPS
+                </span>
+                <span className="text-[10px] text-[#D4A96C] font-mono uppercase tracking-widest font-semibold">
+                  Admin Command Center
+                </span>
               </div>
             </button>
           </div>
 
-          <div className="flex items-center gap-3">
+          {/* Controls: Refresh DB, Notifications, View Site, Logout */}
+          <div className="flex items-center gap-2 sm:gap-3">
+            {/* Refresh DB Button */}
             <button
               onClick={loadAdminData}
               disabled={syncing}
-              className="p-2.5 rounded-xl bg-[#182622] text-[#EDE9DF]/70 hover:text-[#D4A96C] border border-[#8C9A82]/30 transition cursor-pointer"
+              className="p-2 sm:px-3 sm:py-2 rounded-xl bg-[#202522] text-[#EDE9DF]/80 hover:text-[#D4A96C] hover:border-[#D4A96C]/40 border border-[#8C9A82]/30 transition cursor-pointer flex items-center gap-1.5 text-xs font-mono"
               title="Refresh database records"
             >
               <RefreshCw className={`w-4 h-4 ${syncing ? "animate-spin text-[#D4A96C]" : ""}`} />
+              <span className="hidden md:inline">{syncing ? "Syncing..." : "Sync DB"}</span>
             </button>
 
+            {/* Notification Inbox Button */}
+            {onOpenNotifications && (
+              <button
+                onClick={onOpenNotifications}
+                className="relative p-2 sm:px-3 sm:py-2 rounded-xl bg-[#202522] text-[#EDE9DF]/80 hover:text-[#D4A96C] hover:border-[#D4A96C]/40 border border-[#8C9A82]/30 transition cursor-pointer flex items-center gap-1.5 text-xs font-medium"
+                title="Open notifications"
+              >
+                <Bell className="w-4 h-4 text-[#EDE9DF]/80" />
+                <span className="hidden md:inline">Alerts</span>
+                {notificationCount > 0 && (
+                  <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-[#E07A5F] text-white text-[10px] font-bold flex items-center justify-center shadow-md animate-pulse">
+                    {notificationCount > 9 ? "9+" : notificationCount}
+                  </span>
+                )}
+              </button>
+            )}
+
+            {/* View Site Button */}
             <button
               onClick={onBackToHome}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#182622] hover:bg-[#182622]/80 text-[#EDE9DF] border border-[#8C9A82]/30 text-xs font-semibold uppercase tracking-wider cursor-pointer transition-colors"
+              className="flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl bg-[#202522] hover:bg-[#202522]/80 hover:border-[#D4A96C]/50 text-[#EDE9DF] border border-[#8C9A82]/30 text-xs font-semibold uppercase tracking-wider cursor-pointer transition"
+              title="View public website"
             >
-              <span>View Site</span>
+              <Eye className="w-3.5 h-3.5 text-[#D4A96C]" />
+              <span className="hidden sm:inline">View Site</span>
             </button>
+
+            {/* Logout Button */}
+            {onLogout && (
+              <button
+                onClick={onLogout}
+                className="flex items-center gap-1.5 p-2 sm:px-3 sm:py-2 rounded-xl bg-[#202522] hover:bg-[#E07A5F]/20 hover:border-[#E07A5F]/50 text-[#EDE9DF]/70 hover:text-[#E07A5F] border border-[#8C9A82]/30 text-xs font-medium cursor-pointer transition"
+                title="Sign out of Admin session"
+              >
+                <LogOut className="w-4 h-4" />
+                <span className="hidden md:inline">Logout</span>
+              </button>
+            )}
           </div>
         </div>
       </header>
 
       {/* Main Container */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-6 pt-28 pb-20">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8">
         
         {/* Navigation Tabs */}
         <div className="flex flex-wrap items-center gap-2 p-1.5 rounded-2xl bg-[#202522] border border-[#8C9A82]/25 mb-8">
