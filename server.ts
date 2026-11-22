@@ -111,9 +111,10 @@ app.post("/api/ai/plan", async (req, res) => {
     const jsonText = response.text ? response.text.trim() : "{}";
     const planResult = JSON.parse(jsonText);
     res.json(planResult);
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const errMsg = error instanceof Error ? error.message : "Failed to generate AI plan.";
     console.error("Gemini AI planning error:", error);
-    res.status(500).json({ error: error.message || "Failed to generate AI plan." });
+    res.status(500).json({ error: errMsg });
   }
 });
 

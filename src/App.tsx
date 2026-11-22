@@ -145,7 +145,7 @@ export default function App() {
       });
 
       if (firestoreTrips.length > 0) {
-        firestoreTrips.sort((a, b) => ((a as any).sortOrder || 99) - ((b as any).sortOrder || 99));
+        firestoreTrips.sort((a, b) => (a.sortOrder || 99) - (b.sortOrder || 99));
         setTripsList(firestoreTrips);
       } else {
         // Automatically seed canonical catalog into database if empty
@@ -159,13 +159,18 @@ export default function App() {
         setTripsList(TRIPS);
       }
 
-      if (currentUser) {
-        const q = query(collection(db, "bookings"), where("email", "==", currentUser.email));
+      if (currentUser && currentUser.email) {
+        const normalizedEmail = currentUser.email.toLowerCase().trim();
+        const q = query(collection(db, "bookings"), where("email", "==", normalizedEmail));
         const bookingsSnap = await getDocs(q);
         const userBookings = bookingsSnap.docs.map((doc) => ({ id: doc.id, ...doc.data() } as Booking));
         setBookings(userBookings);
 
-        const notifQuery = query(collection(db, "notifications"), where("userId", "==", currentUser.id), where("isRead", "==", false));
+        const notifQuery = query(
+          collection(db, "notifications"),
+          where("recipientEmail", "==", normalizedEmail),
+          where("read", "==", false)
+        );
         const notifSnap = await getDocs(notifQuery);
         setNotificationCount(notifSnap.size);
       }
@@ -228,7 +233,7 @@ export default function App() {
         bookingCount={bookings.length}
         currentUser={currentUser}
         onAuthClick={() => setView("login")}
-        onDashboardClick={() => setView(currentUser?.role === "admin" ? "admin" : "dashboard")}
+        onDashboardClick={() => setView((currentUser?.role === "admin" || isUserAdmin(currentUser?.email, currentUser?.role)) ? "admin" : "dashboard")}
         onLogout={async () => {
           await auth.signOut();
           setCurrentUser(null);
@@ -338,7 +343,7 @@ export default function App() {
       {view === "login" && (
         <Login
           onSuccess={(loggedUser) => {
-            if (loggedUser.role === "admin") {
+            if (loggedUser.role === "admin" || isUserAdmin(loggedUser.email, loggedUser.role)) {
               setView("admin");
             } else {
               setView("home");
@@ -352,7 +357,7 @@ export default function App() {
       {view === "signup" && (
         <Signup
           onSuccess={(signedUpUser) => {
-            if (signedUpUser.role === "admin") {
+            if (signedUpUser.role === "admin" || isUserAdmin(signedUpUser.email, signedUpUser.role)) {
               setView("admin");
             } else {
               setView("home");
@@ -459,6 +464,7 @@ export default function App() {
         isOpen={isNotificationsOpen}
         onClose={() => setIsNotificationsOpen(false)}
         currentUser={currentUser}
+        onClearCount={() => setNotificationCount(0)}
       />
 
       {/* Cookie banner */}

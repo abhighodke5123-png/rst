@@ -23,28 +23,34 @@ interface NotificationInboxProps {
   isOpen: boolean;
   onClose: () => void;
   currentUser: { id: string; name: string; email: string; role: string } | null;
+  onClearCount?: () => void;
 }
 
 import { collection, query, where, getDocs, writeBatch, doc } from "firebase/firestore";
 import { db } from "../firebase";
 
-export default function NotificationInbox({ isOpen, onClose, currentUser }: NotificationInboxProps) {
+export default function NotificationInbox({ isOpen, onClose, currentUser, onClearCount }: NotificationInboxProps) {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [selectedNotif, setSelectedNotif] = useState<Notification | null>(null);
   const [loading, setLoading] = useState(false);
 
   const fetchLogs = async () => {
-    if (!currentUser) return;
+    if (!currentUser || !currentUser.email) return;
     setLoading(true);
     try {
-      const q = query(collection(db, "notifications"), where("recipientEmail", "==", currentUser.email));
+      const cleanEmail = currentUser.email.toLowerCase().trim();
+      const q = query(collection(db, "notifications"), where("recipientEmail", "==", cleanEmail));
       const snap = await getDocs(q);
       const data = snap.docs.map(doc => doc.data() as Notification);
-      // Sort by timestamp desc
-      data.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+      // Safe timestamp sort
+      data.sort((a, b) => {
+        const timeA = Date.parse(a.timestamp) || 0;
+        const timeB = Date.parse(b.timestamp) || 0;
+        return timeB - timeA;
+      });
       setNotifications(data);
     } catch (err) {
-      console.error("Failed to load simulated outbox:", err);
+      console.error("Failed to load notifications:", err);
     } finally {
       setLoading(false);
     }
@@ -68,6 +74,9 @@ export default function NotificationInbox({ isOpen, onClose, currentUser }: Noti
       });
       await batch.commit();
       setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+      if (onClearCount) {
+        onClearCount();
+      }
     } catch (err) {
       console.error(err);
     }

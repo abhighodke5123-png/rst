@@ -16,7 +16,6 @@ service cloud.firestore {
     function isAdmin() {
       return isSignedIn() && (
         (request.auth.token.email != null && (
-          request.auth.token.email.matches('.*admin.*') ||
           request.auth.token.email == 'abhighodke5123@gmail.com' ||
           request.auth.token.email == 'raastatrips.in@gmail.com' ||
           request.auth.token.email == 'raastatrips@admin.com'
@@ -30,24 +29,44 @@ service cloud.firestore {
       allow get: if isSignedIn() && (request.auth.uid == userId || isAdmin());
       allow list: if isAdmin();
       allow create: if isSignedIn() && request.auth.uid == userId;
-      allow update: if isSignedIn() && (request.auth.uid == userId || isAdmin());
+      // Normal users cannot update their own role field; only admins can promote/change roles
+      allow update: if isSignedIn() && (
+        (request.auth.uid == userId && (!('role' in request.resource.data) || request.resource.data.role == resource.data.role)) ||
+        isAdmin()
+      );
       allow delete: if isAdmin();
     }
 
     match /trips/{tripId} {
       allow get, list: if true;
-      allow create, update, delete: if true;
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /enquiries/{enquiryId} {
+      allow create: if true;
+      allow get, list, update, delete: if isAdmin();
     }
 
     match /bookings/{bookingId} {
-      allow get, list, create, update, delete: if true;
+      allow create: if true;
+      allow get: if isSignedIn() && (
+        (resource.data.email != null && request.auth.token.email == resource.data.email) ||
+        isAdmin()
+      );
+      allow list: if isSignedIn();
+      allow update, delete: if isAdmin();
     }
 
     match /notifications/{notificationId} {
-      allow get, list, create, update, delete: if true;
+      allow create: if true;
+      allow get, list, update: if isSignedIn();
+      allow delete: if isAdmin();
     }
+
     match /reviews/{reviewId} {
-      allow get, list, create, update, delete: if true;
+      allow get, list: if true;
+      allow create: if isSignedIn();
+      allow update, delete: if isAdmin();
     }
   }
 }

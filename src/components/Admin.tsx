@@ -99,6 +99,11 @@ export default function Admin({
 
   // Load all operational data from Firestore
   const loadAdminData = async () => {
+    if (!isAdmin) {
+      setLoading(false);
+      setSyncing(false);
+      return;
+    }
     setSyncing(true);
     try {
       // 1. Fetch Enquiries
@@ -142,7 +147,7 @@ export default function Admin({
               ...data
             } as Trip;
           });
-          tripsData.sort((a, b) => ((a as any).sortOrder || 99) - ((b as any).sortOrder || 99));
+          tripsData.sort((a, b) => (a.sortOrder || 99) - (b.sortOrder || 99));
         } else {
           for (const t of TRIPS) {
             try {
@@ -907,7 +912,7 @@ export default function Admin({
                     <label className="block text-[11px] font-mono uppercase text-[#EDE9DF]/60 mb-1">Collection Style</label>
                     <select
                       value={newTripCollection}
-                      onChange={(e) => setNewTripCollection(e.target.value as any)}
+                      onChange={(e) => setNewTripCollection(e.target.value as "explore" | "select")}
                       className="w-full bg-[#182622] border border-[#8C9A82]/30 rounded-xl px-3 py-2 text-xs text-[#EDE9DF]"
                     >
                       <option value="explore">RAASTA Explore (Accessible / Student)</option>
@@ -1068,7 +1073,7 @@ export default function Admin({
                             <label className="block text-[10px] text-[#EDE9DF]/60 font-mono mb-1">Stream / Category</label>
                             <select
                               value={editCollection}
-                              onChange={(e) => setEditCollection(e.target.value as any)}
+                              onChange={(e) => setEditCollection(e.target.value as "explore" | "select")}
                               className="w-full bg-[#182622] border border-[#8C9A82]/30 rounded-lg p-2 text-xs text-[#EDE9DF] focus:outline-none focus:border-[#D4A96C]"
                             >
                               <option value="explore">RAASTA EXPLORE</option>

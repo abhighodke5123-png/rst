@@ -52,11 +52,12 @@ export default function Signup({ onBack, onSuccess, onNavigateToLogin }: SignupP
       });
 
       onSuccess(syncedUser);
-    } catch (err: any) {
-      if (err.code === "auth/email-already-in-use") {
+    } catch (err: unknown) {
+      const authErr = err as { code?: string; message?: string };
+      if (authErr.code === "auth/email-already-in-use") {
         setError("This email address is already registered. Please sign in instead.");
       } else {
-        setError(err.message || "An error occurred during account creation.");
+        setError(authErr.message || "An error occurred during account creation.");
       }
     } finally {
       setLoading(false);
@@ -76,13 +77,14 @@ export default function Signup({ onBack, onSuccess, onNavigateToLogin }: SignupP
       });
 
       onSuccess(syncedUser);
-    } catch (err: any) {
-      if (err.code === "auth/popup-closed-by-user") {
+    } catch (err: unknown) {
+      const authErr = err as { code?: string; message?: string };
+      if (authErr.code === "auth/popup-closed-by-user") {
         setError("Google sign-in popup was closed before completion. Please try again.");
-      } else if (err.code === "auth/popup-blocked") {
+      } else if (authErr.code === "auth/popup-blocked") {
         setError("Your browser blocked the sign-in popup. Please allow popups for raastatrips.in.");
       } else {
-        setError(err.message || "Google sign in failed.");
+        setError(authErr.message || "Google sign in failed.");
       }
     } finally {
       setGoogleLoading(false);

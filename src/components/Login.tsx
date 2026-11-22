@@ -49,11 +49,12 @@ export default function Login({ onBack, onSuccess, onNavigateToSignup }: LoginPr
       });
 
       onSuccess(syncedUser);
-    } catch (err: any) {
-      if (err.code === "auth/invalid-credential" || err.code === "auth/wrong-password" || err.code === "auth/user-not-found") {
+    } catch (err: unknown) {
+      const authErr = err as { code?: string; message?: string };
+      if (authErr.code === "auth/invalid-credential" || authErr.code === "auth/wrong-password" || authErr.code === "auth/user-not-found") {
         setError("Invalid email, username, or password.");
       } else {
-        setError(err.message || "Invalid credentials.");
+        setError(authErr.message || "Invalid credentials.");
       }
     } finally {
       setLoading(false);
@@ -73,15 +74,16 @@ export default function Login({ onBack, onSuccess, onNavigateToSignup }: LoginPr
       });
 
       onSuccess(syncedUser);
-    } catch (err: any) {
-      if (err.code === "auth/popup-closed-by-user") {
+    } catch (err: unknown) {
+      const authErr = err as { code?: string; message?: string };
+      if (authErr.code === "auth/popup-closed-by-user") {
         setError("Google sign-in popup was closed before completion. Please try again.");
-      } else if (err.code === "auth/popup-blocked") {
+      } else if (authErr.code === "auth/popup-blocked") {
         setError("Your browser blocked the sign-in popup. Please allow popups for raastatrips.in.");
-      } else if (err.code === "auth/unauthorized-domain") {
+      } else if (authErr.code === "auth/unauthorized-domain") {
         setError("This domain is not authorized in Firebase Auth. Please verify auth domain settings.");
       } else {
-        setError(err.message || "Google sign in failed.");
+        setError(authErr.message || "Google sign in failed.");
       }
     } finally {
       setGoogleLoading(false);

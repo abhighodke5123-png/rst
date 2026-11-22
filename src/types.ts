@@ -62,6 +62,7 @@ export interface Trip {
   faqs?: FAQItem[];
   category: "Mountain" | "Adventure" | "Beach" | "Cultural" | "Weekend";
   published?: boolean;
+  sortOrder?: number;
 }
 
 export interface PackageTier {
@@ -94,6 +95,14 @@ export interface Enquiry {
   communicationHistory?: { date: string; note: string; author: string }[];
 }
 
+export interface UserProfile {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  photoURL?: string | null;
+}
+
 export interface Booking {
   id: string;
   enquiryId?: string;
@@ -114,6 +123,9 @@ export interface Booking {
   status: "Confirmed" | "Pending Verification" | "Cancelled";
   confirmedAt?: string | number;
   confirmedBy?: string;
+  paymentId?: string;
+  paymentMethod?: string;
+  paymentStatus?: string;
 }
 
 export interface Review {
@@ -126,7 +138,7 @@ export interface Review {
   date: string;
   tripCollection?: "explore" | "select";
   verifiedTraveler?: boolean;
-  createdAt?: any;
+  createdAt?: string | number | { seconds: number; nanoseconds: number } | Date;
 }
 
 export interface GalleryItem {

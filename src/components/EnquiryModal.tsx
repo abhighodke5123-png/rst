@@ -326,7 +326,7 @@ export default function EnquiryModal({
                   </label>
                   <select
                     value={collectionPref}
-                    onChange={(e) => setCollectionPref(e.target.value as any)}
+                    onChange={(e) => setCollectionPref(e.target.value as "explore" | "select" | "flexible")}
                     className="w-full bg-[#182622] border border-[#8C9A82]/30 rounded-xl px-3 py-3 text-xs sm:text-sm text-[#EDE9DF] focus:outline-none focus:border-[#D4A96C] cursor-pointer"
                   >
                     <option value="explore">RAASTA Explore (Accessible / Student / Group)</option>

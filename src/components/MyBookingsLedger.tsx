@@ -176,7 +176,7 @@ export default function MyBookingsLedger({
                           Amount Settled
                         </span>
                         <span className="text-base sm:text-lg font-black text-amber-400 font-display">
-                          ₹{b.totalCost.toLocaleString()}
+                          ₹{(Number(b.totalCost) || 0).toLocaleString()}
                         </span>
                       </div>
 

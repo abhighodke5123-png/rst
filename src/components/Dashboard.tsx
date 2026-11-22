@@ -53,7 +53,8 @@ export default function Dashboard({ user, onLogout, onNavigateToHome, onReserveM
   const fetchUserBookings = async () => {
     setLoading(true);
     try {
-      const q = query(collection(db, "bookings"), where("email", "==", user.email));
+      const userEmailClean = (user.email || "").toLowerCase().trim();
+      const q = query(collection(db, "bookings"), where("email", "==", userEmailClean));
       const snap = await getDocs(q);
       const data = snap.docs.map(doc => doc.data() as Booking);
 
@@ -374,7 +375,7 @@ export default function Dashboard({ user, onLogout, onNavigateToHome, onReserveM
                               Amount Settled
                             </span>
                             <span className="text-lg sm:text-xl font-black text-amber-400 block font-display">
-                              ₹{b.totalCost.toLocaleString()}
+                              ₹{(Number(b.totalCost) || 0).toLocaleString()}
                             </span>
                             <span className="text-[9px] text-zinc-500 block mt-0.5 font-medium">Synced via local cash API</span>
                           </div>

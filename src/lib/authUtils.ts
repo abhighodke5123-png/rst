@@ -30,8 +30,8 @@ export function isUserAdmin(email?: string | null, currentRole?: string | null):
     return true;
   }
 
-  // Shorthand or domain admin pattern
-  if (clean === "admin" || clean.endsWith("@admin") || clean.includes("admin")) {
+  // Exact shorthand admin login normalization
+  if (clean === "raastatrips@admin" || clean === "raastatrips@admin.com") {
     return true;
   }
 
