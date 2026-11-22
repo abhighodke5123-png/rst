@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Menu, X, Sparkles, Compass, User, LogOut, ShieldAlert, PhoneCall, MessageCircle, Ticket, Bell, Send } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
+import { isUserAdmin } from "../lib/authUtils";
 
 interface NavbarProps {
   onQuizClick: () => void;
@@ -179,12 +180,12 @@ export default function Navbar({
                 onClick={onDashboardClick}
                 className="flex items-center gap-2 px-3.5 py-2 text-xs font-semibold rounded-full bg-[#202522] text-[#EDE9DF] hover:bg-[#202522]/80 transition-colors cursor-pointer border border-[#8C9A82]/30"
               >
-                {currentUser.role === "admin" ? (
+                {(currentUser.role === "admin" || isUserAdmin(currentUser.email, currentUser.role)) ? (
                   <ShieldAlert className="w-3.5 h-3.5 text-[#D4A96C]" />
                 ) : (
                   <User className="w-3.5 h-3.5 text-current" />
                 )}
-                <span>{currentUser.role === "admin" ? "Admin Portal" : "My Dashboard"}</span>
+                <span>{(currentUser.role === "admin" || isUserAdmin(currentUser.email, currentUser.role)) ? "Admin Portal" : "My Dashboard"}</span>
               </button>
 
               <button
@@ -279,7 +280,7 @@ export default function Navbar({
                       }}
                       className="w-full py-3 rounded-xl bg-[#202522] text-[#EDE9DF] font-semibold text-xs uppercase tracking-wider"
                     >
-                      {currentUser.role === "admin" ? "Admin Panel" : "My Dashboard"}
+                      {(currentUser.role === "admin" || isUserAdmin(currentUser.email, currentUser.role)) ? "Admin Panel" : "My Dashboard"}
                     </button>
                     <button
                       onClick={() => {

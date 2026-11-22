@@ -34,6 +34,7 @@ import { TRIPS, DESTINATIONS } from "./data";
 import { auth, db } from "./firebase";
 import { onAuthStateChanged } from "firebase/auth";
 import { collection, getDocs, query, where, doc, getDoc, setDoc, deleteDoc } from "firebase/firestore";
+import { syncUserProfile, isUserAdmin } from "./lib/authUtils";
 
 export default function App() {
   const [view, setView] = useState<"home" | "trip-detail" | "login" | "signup" | "dashboard" | "admin">("home");
@@ -91,33 +92,22 @@ export default function App() {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (user) {
         try {
-          const userDoc = await getDoc(doc(db, "users", user.uid));
-          let role = "user";
-          if (userDoc.exists()) {
-            role = userDoc.data().role;
-          } else {
-            role =
-              user.email?.includes("admin") ||
-              user.email?.includes("abhighodke5123@gmail.com") ||
-              user.email?.includes("raastatrips.in@gmail.com")
-                ? "admin"
-                : "user";
-
-            await setDoc(doc(db, "users", user.uid), {
-              id: user.uid,
-              name: user.displayName || "User",
-              email: user.email,
-              role
-            });
-          }
+          const syncedUser = await syncUserProfile({
+            uid: user.uid,
+            email: user.email,
+            displayName: user.displayName,
+            photoURL: user.photoURL
+          });
+          setCurrentUser(syncedUser);
+        } catch (error) {
+          console.error("Error syncing user role", error);
+          const isAdmin = isUserAdmin(user.email);
           setCurrentUser({
             id: user.uid,
-            name: user.displayName || "User",
+            name: user.displayName || (user.email ? user.email.split("@")[0] : "Traveler"),
             email: user.email || "",
-            role
+            role: isAdmin ? "admin" : "user"
           });
-        } catch (error) {
-          console.error("Error fetching user role", error);
         }
       } else {
         setCurrentUser(null);
@@ -334,7 +324,13 @@ export default function App() {
 
       {view === "signup" && (
         <Signup
-          onSuccess={() => setView("home")}
+          onSuccess={(signedUpUser) => {
+            if (signedUpUser.role === "admin") {
+              setView("admin");
+            } else {
+              setView("home");
+            }
+          }}
           onNavigateToLogin={() => setView("login")}
           onBack={() => setView("home")}
         />
@@ -359,6 +355,7 @@ export default function App() {
           }}
           onOpenNotifications={() => setIsNotificationsOpen(true)}
           notificationCount={notificationCount}
+          onNavigateToAdmin={() => setView("admin")}
         />
       )}
 

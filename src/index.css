@@ -41,7 +41,8 @@
 
 /* Editorial Typography Styles */
 .font-editorial {
-  font-family: var(--font-serif);\n  font-style: italic;
+  font-family: var(--font-serif);
+  font-style: italic;
   font-weight: 400;
   letter-spacing: normal;
 }

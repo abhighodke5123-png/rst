@@ -32,14 +32,17 @@ interface DashboardProps {
   onReserveMore: () => void;
   onOpenNotifications: () => void;
   notificationCount: number;
+  onNavigateToAdmin?: () => void;
 }
 
 import { collection, query, where, getDocs, deleteDoc, doc, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "../firebase";
+import { isUserAdmin } from "../lib/authUtils";
 import TermsRegulationsModal from "./TermsRegulationsModal";
 import NomadLoyaltyTiers from "./NomadLoyaltyTiers";
 
-export default function Dashboard({ user, onLogout, onNavigateToHome, onReserveMore, onOpenNotifications, notificationCount }: DashboardProps) {
+export default function Dashboard({ user, onLogout, onNavigateToHome, onReserveMore, onOpenNotifications, notificationCount, onNavigateToAdmin }: DashboardProps) {
+  const isAdmin = user.role === "admin" || isUserAdmin(user.email, user.role);
   const [termsOpen, setTermsOpen] = useState(false);
   const [termsTab, setTermsTab] = useState<"terms" | "refunds" | "agreement">("terms");
   const [bookings, setBookings] = useState<Booking[]>([]);
@@ -196,9 +199,20 @@ export default function Dashboard({ user, onLogout, onNavigateToHome, onReserveM
             </button>
 
             <div className="hidden sm:flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-white/10 bg-white/5 font-display text-[11px]">
-              <span className="w-2 h-2 rounded-full bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.8)]"></span>
-              <span className="text-zinc-300 capitalize">{user.role} Space</span>
+              <span className={`w-2 h-2 rounded-full ${isAdmin ? "bg-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.8)]" : "bg-emerald-400"}`}></span>
+              <span className="text-zinc-300 capitalize">{isAdmin ? "Admin" : user.role} Space</span>
             </div>
+
+            {isAdmin && onNavigateToAdmin && (
+              <button
+                onClick={onNavigateToAdmin}
+                className="flex items-center gap-1.5 px-3.5 py-2 border border-amber-400/30 bg-amber-400/10 hover:bg-amber-400 hover:text-black transition rounded-xl text-amber-400 text-xs font-bold uppercase tracking-wider cursor-pointer font-display"
+                title="Go to Admin Operations Portal"
+              >
+                <ShieldCheck className="w-3.5 h-3.5" />
+                Admin Portal
+              </button>
+            )}
 
             <button
               onClick={onLogout}

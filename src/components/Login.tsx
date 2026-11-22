@@ -6,9 +6,10 @@
 import React, { useState } from "react";
 import { LogIn, Mail, Lock, ShieldAlert, ArrowLeft, Loader2 } from "lucide-react";
 import { motion } from "motion/react";
-import { auth, googleProvider, db } from "../firebase";
+import { auth, googleProvider } from "../firebase";
 import { signInWithPopup, signInWithEmailAndPassword } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
+import { syncUserProfile, isUserAdmin } from "../lib/authUtils";
+import GoogleIcon from "./GoogleIcon";
 
 interface LoginProps {
   onBack: () => void;
@@ -20,6 +21,7 @@ export default function Login({ onBack, onSuccess, onNavigateToSignup }: LoginPr
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -40,26 +42,19 @@ export default function Login({ onBack, onSuccess, onNavigateToSignup }: LoginPr
       }
 
       const userCred = await signInWithEmailAndPassword(auth, cleanEmail, password);
-      let role = "user";
-      try {
-        const userDoc = await getDoc(doc(db, "users", userCred.user.uid));
-        if (userDoc.exists() && userDoc.data().role) {
-          role = userDoc.data().role;
-        } else if (cleanEmail.includes("admin")) {
-          role = "admin";
-        }
-      } catch {
-        if (cleanEmail.includes("admin")) role = "admin";
-      }
-
-      onSuccess({
-        id: userCred.user.uid,
-        name: userCred.user.displayName || "Admin",
+      const syncedUser = await syncUserProfile({
+        uid: userCred.user.uid,
         email: userCred.user.email || cleanEmail,
-        role,
+        displayName: userCred.user.displayName || "Admin"
       });
+
+      onSuccess(syncedUser);
     } catch (err: any) {
-      setError(err.message || "Invalid credentials.");
+      if (err.code === "auth/invalid-credential" || err.code === "auth/wrong-password" || err.code === "auth/user-not-found") {
+        setError("Invalid email, username, or password.");
+      } else {
+        setError(err.message || "Invalid credentials.");
+      }
     } finally {
       setLoading(false);
     }
@@ -67,19 +62,29 @@ export default function Login({ onBack, onSuccess, onNavigateToSignup }: LoginPr
 
   const handleGoogleSignIn = async () => {
     setError(null);
-    setLoading(true);
+    setGoogleLoading(true);
     try {
       const userCred = await signInWithPopup(auth, googleProvider);
-      onSuccess({
-        id: userCred.user.uid,
-        name: userCred.user.displayName || "User",
-        email: userCred.user.email || "",
-        role: "user", // Let App.tsx fetch role
+      const syncedUser = await syncUserProfile({
+        uid: userCred.user.uid,
+        email: userCred.user.email,
+        displayName: userCred.user.displayName,
+        photoURL: userCred.user.photoURL
       });
+
+      onSuccess(syncedUser);
     } catch (err: any) {
-      setError(err.message || "Google sign in failed.");
+      if (err.code === "auth/popup-closed-by-user") {
+        setError("Google sign-in popup was closed before completion. Please try again.");
+      } else if (err.code === "auth/popup-blocked") {
+        setError("Your browser blocked the sign-in popup. Please allow popups for raastatrips.in.");
+      } else if (err.code === "auth/unauthorized-domain") {
+        setError("This domain is not authorized in Firebase Auth. Please verify auth domain settings.");
+      } else {
+        setError(err.message || "Google sign in failed.");
+      }
     } finally {
-      setLoading(false);
+      setGoogleLoading(false);
     }
   };
 
@@ -106,13 +111,13 @@ export default function Login({ onBack, onSuccess, onNavigateToSignup }: LoginPr
         transition={{ duration: 0.5 }}
         className="w-full max-w-md bg-[#0b0c10] border border-white/10 rounded-[32px] p-8 sm:p-10 shadow-2xl relative z-10"
       >
-        <div className="text-center mb-8">
+        <div className="text-center mb-6">
           <div className="mx-auto w-12 h-12 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center mb-4 text-amber-400 shadow-lg">
             <LogIn className="w-5 h-5" />
           </div>
           <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight font-display">Welcome Back</h2>
           <p className="text-xs text-amber-400/80 font-bold uppercase tracking-wider mt-1.5 select-none font-display">
-            Secure Member Authentication
+            Secure Member & Admin Access
           </p>
         </div>
 
@@ -124,17 +129,49 @@ export default function Login({ onBack, onSuccess, onNavigateToSignup }: LoginPr
           >
             <ShieldAlert className="w-5 h-5 shrink-0 text-red-400" />
             <div>
-              <p className="font-bold">Access Denied</p>
+              <p className="font-bold">Access Alert</p>
               <p className="mt-0.5 text-zinc-400 leading-relaxed font-light">{error}</p>
             </div>
           </motion.div>
         )}
 
-        <form onSubmit={handleLogin} className="space-y-5">
+        {/* 1-Click Google Authentication */}
+        <div>
+          <button
+            type="button"
+            onClick={handleGoogleSignIn}
+            disabled={loading || googleLoading}
+            className="w-full bg-white hover:bg-zinc-100 text-zinc-900 font-bold py-3.5 px-4 rounded-2xl text-xs uppercase tracking-wider transition-all duration-200 flex items-center justify-center gap-3 shadow-lg shadow-black/40 disabled:opacity-50 cursor-pointer font-display border border-zinc-200"
+          >
+            {googleLoading ? (
+              <>
+                <Loader2 className="w-4 h-4 animate-spin text-zinc-700" />
+                <span>Connecting to Google...</span>
+              </>
+            ) : (
+              <>
+                <GoogleIcon className="w-4 h-4 shrink-0" />
+                <span>Continue with Google</span>
+              </>
+            )}
+          </button>
+        </div>
+
+        {/* Divider */}
+        <div className="relative my-6 flex items-center justify-center">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-white/10" />
+          </div>
+          <span className="relative bg-[#0b0c10] px-3 text-[10px] font-mono uppercase tracking-widest text-zinc-500">
+            or sign in with password
+          </span>
+        </div>
+
+        <form onSubmit={handleLogin} className="space-y-4">
           {/* Email input field */}
           <div>
             <label className="block text-[11px] font-bold text-amber-400/90 uppercase tracking-widest mb-2 font-display">
-              Email or Username
+              Email or Admin Identity
             </label>
             <div className="relative">
               <span className="absolute inset-y-0 left-0 flex items-center pl-3.5 text-zinc-500">
@@ -148,7 +185,7 @@ export default function Login({ onBack, onSuccess, onNavigateToSignup }: LoginPr
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="e.g. raastatrips@admin or your email"
+                placeholder="abhighodke5123@gmail.com or raastatrips@admin"
                 className="w-full bg-white/5 border border-white/10 focus:border-amber-400/50 rounded-2xl py-3.5 pl-11 pr-4 text-sm text-white placeholder-zinc-500 outline-none transition duration-200"
               />
             </div>
@@ -178,7 +215,7 @@ export default function Login({ onBack, onSuccess, onNavigateToSignup }: LoginPr
 
           <button
             type="submit"
-            disabled={loading}
+            disabled={loading || googleLoading}
             className="w-full mt-2 bg-amber-400 hover:bg-amber-300 text-black py-3.5 rounded-2xl text-xs font-black uppercase tracking-widest transition duration-300 flex items-center justify-center gap-2 shadow-lg shadow-amber-500/20 disabled:opacity-50 cursor-pointer font-display"
           >
             {loading ? (
@@ -194,17 +231,6 @@ export default function Login({ onBack, onSuccess, onNavigateToSignup }: LoginPr
             )}
           </button>
         </form>
-
-        <div className="mt-4">
-          <button
-            type="button"
-            onClick={handleGoogleSignIn}
-            disabled={loading}
-            className="w-full bg-white/5 hover:bg-white/10 border border-white/10 text-white py-3.5 rounded-2xl text-xs font-bold uppercase tracking-widest transition duration-300 flex items-center justify-center gap-2 cursor-pointer font-display"
-          >
-            Sign in with Google
-          </button>
-        </div>
 
         {/* Signup Link */}
         <p className="text-xs text-zinc-400 text-center mt-6">

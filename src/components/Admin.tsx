@@ -34,6 +34,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { collection, query, where, getDocs, deleteDoc, doc, setDoc, updateDoc, writeBatch, getDoc } from "firebase/firestore";
 import { db } from "../firebase";
 import { TRIPS } from "../data";
+import { isUserAdmin } from "../lib/authUtils";
 
 interface AdminProps {
   currentUser: { id: string; name: string; email: string; role: string } | null;
@@ -51,7 +52,7 @@ export default function Admin({
   onBackToHome
 }: AdminProps) {
   // Gate check: only admins allowed
-  const isAdmin = currentUser?.role === "admin";
+  const isAdmin = currentUser?.role === "admin" || isUserAdmin(currentUser?.email, currentUser?.role);
 
   const [activeTab, setActiveTab] = useState<AdminTab>("enquiries");
   const [loading, setLoading] = useState(true);
