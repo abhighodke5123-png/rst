@@ -73,6 +73,7 @@ export default function Admin({
 
   // Trip editing states
   const [editingTripId, setEditingTripId] = useState<string | null>(null);
+  const [editDestName, setEditDestName] = useState("");
   const [editPrice, setEditPrice] = useState("");
   const [editDates, setEditDates] = useState("");
   const [editDuration, setEditDuration] = useState("");
@@ -135,10 +136,21 @@ export default function Admin({
               description: data.description || "Handcrafted RAASTA Expedition.",
               status: data.status || "Seats Open",
               overview: data.overview || "",
+              heroImage: data.heroImage || "",
+              category: data.category || "Adventure",
+              published: data.published ?? true,
               ...data
             } as Trip;
           });
+          tripsData.sort((a, b) => ((a as any).sortOrder || 99) - ((b as any).sortOrder || 99));
         } else {
+          for (const t of TRIPS) {
+            try {
+              await setDoc(doc(db, "trips", t.id), t, { merge: true });
+            } catch (seedErr) {
+              console.warn("Seeding trip failed in admin:", seedErr);
+            }
+          }
           tripsData = TRIPS;
         }
       } catch {
@@ -214,6 +226,7 @@ export default function Admin({
   // Start editing a trip
   const handleStartEditingTrip = (t: Trip) => {
     setEditingTripId(t.id);
+    setEditDestName(t.destinationName || "");
     setEditPrice(t.price != null ? String(t.price) : "");
     setEditDates(t.dates || "");
     setEditDuration(t.duration || "5 Days / 4 Nights");
@@ -249,6 +262,7 @@ export default function Admin({
 
     const updated: Trip = {
       ...existing,
+      destinationName: editDestName.trim() || existing.destinationName,
       price: parsedPrice,
       dates: editDates.trim() || existing.dates,
       duration: editDuration.trim() || existing.duration,
@@ -1028,97 +1042,126 @@ export default function Admin({
                       /* Editing Form */
                       <div className="space-y-3">
                         <div className="flex justify-between items-center mb-1">
-                          <span className="text-xs font-mono text-[#D4A96C] uppercase font-bold">Edit Trip</span>
-                          <button onClick={() => setEditingTripId(null)} className="text-[#EDE9DF]/50 hover:text-white">
+                          <span className="text-xs font-mono text-[#D4A96C] uppercase font-bold">Edit Expedition Trip</span>
+                          <button
+                            type="button"
+                            onClick={() => setEditingTripId(null)}
+                            className="text-[#EDE9DF]/50 hover:text-white cursor-pointer"
+                          >
                             <X className="w-4 h-4" />
                           </button>
                         </div>
 
+                        <div>
+                          <label className="block text-[10px] text-[#EDE9DF]/60 font-mono mb-1">Trip Title / Destination Name *</label>
+                          <input
+                            type="text"
+                            value={editDestName}
+                            onChange={(e) => setEditDestName(e.target.value)}
+                            className="w-full bg-[#182622] border border-[#8C9A82]/30 rounded-lg p-2 text-xs text-[#EDE9DF] font-semibold focus:outline-none focus:border-[#D4A96C]"
+                            placeholder="e.g. Spiti High Desert Overland Caravan"
+                          />
+                        </div>
+
                         <div className="grid grid-cols-2 gap-2 text-xs">
                           <div>
-                            <label className="block text-[10px] text-[#EDE9DF]/60 font-mono">Price (₹)</label>
-                            <input
-                              type="number"
-                              value={editPrice}
-                              onChange={(e) => setEditPrice(e.target.value)}
-                              className="w-full bg-[#182622] border border-[#8C9A82]/30 rounded-lg p-2 text-xs"
-                            />
+                            <label className="block text-[10px] text-[#EDE9DF]/60 font-mono mb-1">Stream / Category</label>
+                            <select
+                              value={editCollection}
+                              onChange={(e) => setEditCollection(e.target.value as any)}
+                              className="w-full bg-[#182622] border border-[#8C9A82]/30 rounded-lg p-2 text-xs text-[#EDE9DF] focus:outline-none focus:border-[#D4A96C]"
+                            >
+                              <option value="explore">RAASTA EXPLORE</option>
+                              <option value="select">RAASTA SELECT</option>
+                            </select>
                           </div>
                           <div>
-                            <label className="block text-[10px] text-[#EDE9DF]/60 font-mono">Dates</label>
-                            <input
-                              type="text"
-                              value={editDates}
-                              onChange={(e) => setEditDates(e.target.value)}
-                              className="w-full bg-[#182622] border border-[#8C9A82]/30 rounded-lg p-2 text-xs"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-[10px] text-[#EDE9DF]/60 font-mono">Duration</label>
-                            <input
-                              type="text"
-                              value={editDuration}
-                              onChange={(e) => setEditDuration(e.target.value)}
-                              className="w-full bg-[#182622] border border-[#8C9A82]/30 rounded-lg p-2 text-xs"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-[10px] text-[#EDE9DF]/60 font-mono">Status</label>
+                            <label className="block text-[10px] text-[#EDE9DF]/60 font-mono mb-1">Status Badge</label>
                             <select
                               value={editStatus}
                               onChange={(e) => setEditStatus(e.target.value)}
-                              className="w-full bg-[#182622] border border-[#8C9A82]/30 rounded-lg p-2 text-xs text-[#EDE9DF]"
+                              className="w-full bg-[#182622] border border-[#8C9A82]/30 rounded-lg p-2 text-xs text-[#EDE9DF] focus:outline-none focus:border-[#D4A96C]"
                             >
                               <option value="Seats Open">Seats Open</option>
                               <option value="Selling Fast">Selling Fast</option>
                               <option value="Almost Full">Almost Full</option>
+                              <option value="Sold Out">Sold Out</option>
                               <option value="Monsoon Special">Monsoon Special</option>
                             </select>
                           </div>
                           <div>
-                            <label className="block text-[10px] text-[#EDE9DF]/60 font-mono">Seats Available</label>
+                            <label className="block text-[10px] text-[#EDE9DF]/60 font-mono mb-1">Price (₹ Starting from)</label>
+                            <input
+                              type="number"
+                              value={editPrice}
+                              onChange={(e) => setEditPrice(e.target.value)}
+                              className="w-full bg-[#182622] border border-[#8C9A82]/30 rounded-lg p-2 text-xs text-[#EDE9DF] focus:outline-none focus:border-[#D4A96C]"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[10px] text-[#EDE9DF]/60 font-mono mb-1">Departure Dates</label>
+                            <input
+                              type="text"
+                              value={editDates}
+                              onChange={(e) => setEditDates(e.target.value)}
+                              className="w-full bg-[#182622] border border-[#8C9A82]/30 rounded-lg p-2 text-xs text-[#EDE9DF] focus:outline-none focus:border-[#D4A96C]"
+                              placeholder="e.g. 14 – 21 Nov 2026"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[10px] text-[#EDE9DF]/60 font-mono mb-1">Duration</label>
+                            <input
+                              type="text"
+                              value={editDuration}
+                              onChange={(e) => setEditDuration(e.target.value)}
+                              className="w-full bg-[#182622] border border-[#8C9A82]/30 rounded-lg p-2 text-xs text-[#EDE9DF] focus:outline-none focus:border-[#D4A96C]"
+                              placeholder="e.g. 8 Days / 7 Nights"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[10px] text-[#EDE9DF]/60 font-mono mb-1">Seats Available (Open)</label>
                             <input
                               type="number"
                               value={editSeatsAvail}
                               onChange={(e) => setEditSeatsAvail(e.target.value)}
-                              className="w-full bg-[#182622] border border-[#8C9A82]/30 rounded-lg p-2 text-xs"
+                              className="w-full bg-[#182622] border border-[#8C9A82]/30 rounded-lg p-2 text-xs text-[#EDE9DF] focus:outline-none focus:border-[#D4A96C]"
                             />
                           </div>
-                          <div>
-                            <label className="block text-[10px] text-[#EDE9DF]/60 font-mono">Stream</label>
-                            <select
-                              value={editCollection}
-                              onChange={(e) => setEditCollection(e.target.value as any)}
-                              className="w-full bg-[#182622] border border-[#8C9A82]/30 rounded-lg p-2 text-xs text-[#EDE9DF]"
-                            >
-                              <option value="explore">RAASTA Explore</option>
-                              <option value="select">RAASTA Select</option>
-                            </select>
+                          <div className="col-span-2">
+                            <label className="block text-[10px] text-[#EDE9DF]/60 font-mono mb-1">Total Seats Capacity</label>
+                            <input
+                              type="number"
+                              value={editSeatsTotal}
+                              onChange={(e) => setEditSeatsTotal(e.target.value)}
+                              className="w-full bg-[#182622] border border-[#8C9A82]/30 rounded-lg p-2 text-xs text-[#EDE9DF] focus:outline-none focus:border-[#D4A96C]"
+                            />
                           </div>
                         </div>
 
                         <div>
-                          <label className="block text-[10px] text-[#EDE9DF]/60 font-mono">Description</label>
+                          <label className="block text-[10px] text-[#EDE9DF]/60 font-mono mb-1">Card Summary / Description</label>
                           <textarea
-                            rows={2}
+                            rows={3}
                             value={editDesc}
                             onChange={(e) => setEditDesc(e.target.value)}
-                            className="w-full bg-[#182622] border border-[#8C9A82]/30 rounded-lg p-2 text-xs"
+                            className="w-full bg-[#182622] border border-[#8C9A82]/30 rounded-lg p-2 text-xs text-[#EDE9DF] focus:outline-none focus:border-[#D4A96C]"
                           />
                         </div>
 
                         <div className="flex justify-end gap-2 pt-2">
                           <button
+                            type="button"
                             onClick={() => setEditingTripId(null)}
-                            className="px-3 py-1.5 rounded-lg bg-[#182622] text-xs font-semibold uppercase"
+                            className="px-3 py-1.5 rounded-lg bg-[#182622] hover:bg-white/5 text-[#EDE9DF]/80 text-xs font-semibold uppercase cursor-pointer"
                           >
                             Cancel
                           </button>
                           <button
+                            type="button"
                             onClick={() => handleSaveTripEdits(t.id)}
-                            className="px-4 py-1.5 rounded-lg bg-[#D4A96C] text-[#182622] font-bold text-xs uppercase"
+                            className="px-4 py-1.5 rounded-lg bg-[#D4A96C] hover:bg-[#D4A96C]/90 text-[#182622] font-bold text-xs uppercase cursor-pointer"
                           >
-                            Save
+                            Save Changes
                           </button>
                         </div>
                       </div>
@@ -1146,17 +1189,32 @@ export default function Admin({
                     <th className="p-4">Total Seats</th>
                     <th className="p-4">Available</th>
                     <th className="p-4">Status</th>
+                    <th className="p-4 text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#8C9A82]/15">
                   {trips.map((t) => (
-                    <tr key={t.id} className="hover:bg-[#182622]/40">
+                    <tr key={t.id} className="hover:bg-[#182622]/40 transition">
                       <td className="p-4 font-semibold text-[#EDE9DF]">{t.destinationName}</td>
                       <td className="p-4 text-[#D4A96C] font-mono">{t.dates}</td>
-                      <td className="p-4 uppercase font-mono text-[10px]">{t.collection}</td>
+                      <td className="p-4 uppercase font-mono text-[10px]">
+                        {t.collection === "select" ? "RAASTA SELECT" : "RAASTA EXPLORE"}
+                      </td>
                       <td className="p-4 font-mono">{t.seatsTotal}</td>
                       <td className="p-4 font-mono text-emerald-400 font-bold">{t.seatsAvailable}</td>
                       <td className="p-4 font-mono text-xs">{t.status}</td>
+                      <td className="p-4 text-right">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setActiveTab("trips");
+                            handleStartEditingTrip(t);
+                          }}
+                          className="px-2.5 py-1 rounded-lg bg-[#182622] hover:bg-[#D4A96C] hover:text-[#182622] text-[#D4A96C] border border-[#8C9A82]/30 text-xs font-mono font-semibold transition cursor-pointer"
+                        >
+                          Edit
+                        </button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>

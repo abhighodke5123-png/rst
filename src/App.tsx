@@ -121,7 +121,7 @@ export default function App() {
   const syncServerData = async () => {
     try {
       const tripsSnap = await getDocs(collection(db, "trips"));
-      const firestoreTrips = tripsSnap.docs.map((doc) => {
+      let firestoreTrips = tripsSnap.docs.map((doc) => {
         const data = doc.data() as Partial<Trip>;
         return {
           id: doc.id,
@@ -136,16 +136,26 @@ export default function App() {
           seatsAvailable: Number(data.seatsAvailable ?? data.seatsTotal ?? 14),
           description: data.description || "Handcrafted RAASTA Expedition.",
           status: data.status || "Seats Open",
+          overview: data.overview || "",
+          heroImage: data.heroImage || "",
+          category: data.category || "Adventure",
+          published: data.published ?? true,
           ...data
         } as Trip;
       });
 
       if (firestoreTrips.length > 0) {
-        const mergedMap = new Map<string, Trip>();
-        TRIPS.forEach((t) => mergedMap.set(t.id, t));
-        firestoreTrips.forEach((t) => mergedMap.set(t.id, t));
-        setTripsList(Array.from(mergedMap.values()));
+        firestoreTrips.sort((a, b) => ((a as any).sortOrder || 99) - ((b as any).sortOrder || 99));
+        setTripsList(firestoreTrips);
       } else {
+        // Automatically seed canonical catalog into database if empty
+        for (const t of TRIPS) {
+          try {
+            await setDoc(doc(db, "trips", t.id), t, { merge: true });
+          } catch (seedErr) {
+            console.warn("Seeding trip failed:", seedErr);
+          }
+        }
         setTripsList(TRIPS);
       }
 
