@@ -11,7 +11,6 @@ import UpcomingTrips from "./components/UpcomingTrips";
 import Destinations from "./components/Destinations";
 import WhyChooseUs from "./components/WhyChooseUs";
 import Reviews from "./components/Reviews";
-import MeetTheTeam from "./components/MeetTheTeam";
 import AboutSection from "./components/AboutSection";
 import AboutContact from "./components/AboutContact";
 import TripDetailView from "./components/TripDetailView";
@@ -348,9 +347,6 @@ export default function App() {
           {/* Section G: Traveller Stories (Verified Testimonials) */}
           <Reviews />
 
-          {/* Section H: Meet The Team */}
-          <MeetTheTeam />
-
           {/* About Section (The Story & Philosophy) */}
           <AboutSection />
 
@@ -666,7 +662,7 @@ export default function App() {
             <div className="space-y-3 font-mono text-xs text-[#EDE9DF]/80">
               <p>Helpline: +91 9226638440</p>
               <p>WhatsApp: +91 9226638440</p>
-              <p>Email: raastatrips.in@gmail.com</p>
+              <p>Email: abhi@raastatrips.in</p>
               <p className="text-[11px] text-[#8C9A82] font-sans">Desk: 9:00 AM – 8:30 PM IST</p>
             </div>
             <div className="mt-4 pt-4 border-t border-[#8C9A82]/20">

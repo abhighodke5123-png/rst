@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { Destination, Trip, PackageTier, Review, GalleryItem, FAQItem, TeamMember } from "./types";
+import { Destination, Trip, PackageTier, Review, GalleryItem, FAQItem } from "./types";
 import goaImg from "./assets/images/regenerated_image_1784640113613.jpg";
 import gokarnaImg from "./assets/images/regenerated_image_1784640115451.jpg";
 
@@ -350,45 +350,6 @@ export const TRIPS: Trip[] = [
     inclusions: ["2 Nights Boutique Haveli & 1 Night Luxury Desert Camp", "Daily Breakfasts & 2 Traditional Dinners", "AC Transfers & 4x4 Dune Drive", "Trip Captain & Local Historian Guides", "Desert Cultural Program & Bonfire"],
     exclusions: ["Transit to/from Jaisalmer", "Lunches & Personal Shopping", "Quad Biking Add-ons"],
     cancellationPolicy: "100% credit refund up to 15 days before departure. 50% between 7-14 days."
-  }
-];
-
-export const TEAM_MEMBERS: TeamMember[] = [
-  {
-    id: "team-1",
-    name: "Abhi Ghodke",
-    role: "Founder & Lead Overland Captain",
-    bio: "Passionate road-tripper with over 80,000 km across the Indian subcontinent. Founded RAASTA to make authentic road journeys accessible, safe, and deeply personal.",
-    image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=400",
-    experience: "8+ Years Overlanding",
-    specialtyRoutes: ["Spiti Valley", "Western Ghats", "Goa Heritage"]
-  },
-  {
-    id: "team-2",
-    name: "Tenzin Norbu",
-    role: "Himalayan Route Architect",
-    bio: "Born in Kinnaur, Tenzin has led high-altitude caravans across Spiti and Zanskar for over a decade. Wilderness First Aid certified with deep community roots.",
-    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=400",
-    experience: "10+ Years High Altitude",
-    specialtyRoutes: ["Spiti Circuit", "Ladakh & Nubra", "Kinnaur"]
-  },
-  {
-    id: "team-3",
-    name: "Pooja Deshmukh",
-    role: "Traveler Experience & Operations Lead",
-    bio: "Ensures every traveler's enquiry receives thoughtful attention, coordinates bespoke stays with local homestay hosts, and champions solo female traveler safety.",
-    image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=400",
-    experience: "6+ Years Hospitality",
-    specialtyRoutes: ["Gokarna Trails", "Meghalaya Highlands", "Rajasthan"]
-  },
-  {
-    id: "team-4",
-    name: "Siddharth Shinde",
-    role: "Expedition Photographer & Scout",
-    bio: "Documenting unmapped trailheads, campfire stories, and cultural heritage across India with a camera in hand and an ear for genuine travelers' stories.",
-    image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=400",
-    experience: "7+ Years Documentary",
-    specialtyRoutes: ["Western Ghats", "Desert Caravans", "Coastal Cliffs"]
   }
 ];
 

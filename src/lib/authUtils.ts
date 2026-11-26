@@ -10,6 +10,7 @@ import { db } from "../firebase";
  * Verified Administrator emails for RAASTA TRIPS
  */
 export const ADMIN_EMAILS: readonly string[] = [
+  "abhi@raastatrips.in",
   "abhighodke5123@gmail.com",
   "raastatrips.in@gmail.com",
   "raastatrips@admin.com",

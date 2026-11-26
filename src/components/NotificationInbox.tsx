@@ -238,7 +238,7 @@ export default function NotificationInbox({ isOpen, onClose, currentUser, onClea
                             <div className="bg-black/50 border border-white/10 rounded-2xl overflow-hidden shadow-inner relative max-h-[440px] overflow-y-auto p-4 flex flex-col gap-4">
                               {/* Headers layout block */}
                               <div className="text-[10px] text-zinc-400 border-b border-white/10 pb-3 space-y-1 leading-normal font-light">
-                                <div><strong className="text-amber-400 uppercase tracking-widest text-[9px] font-display">Sender:</strong> RAASTA Automatic Concierge Relaying Hub &lt;raastatrips.in@gmail.com&gt;</div>
+                                <div><strong className="text-amber-400 uppercase tracking-widest text-[9px] font-display">Sender:</strong> RAASTA Automatic Concierge Relaying Hub &lt;abhi@raastatrips.in&gt;</div>
                                 <div><strong className="text-amber-400 uppercase tracking-widest text-[9px] font-display">Recipient:</strong> {notif.recipientName} &lt;{notif.recipientEmail}&gt;</div>
                                 <div><strong className="text-amber-400 uppercase tracking-widest text-[9px] font-display">Verification:</strong> Cryptographically Verified (RAASTA SHA-256)</div>
                               </div>

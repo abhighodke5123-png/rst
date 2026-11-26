@@ -224,7 +224,7 @@ export default function AboutContact() {
                 </div>
                 <div className="flex items-center gap-3">
                   <Mail className="w-4 h-4 text-[#D4A96C] shrink-0" />
-                  <span>raastatrips.in@gmail.com</span>
+                  <span>abhi@raastatrips.in</span>
                 </div>
                 <div className="flex items-center gap-3">
                   <Clock className="w-4 h-4 text-[#8C9A82] shrink-0" />

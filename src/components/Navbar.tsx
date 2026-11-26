@@ -80,7 +80,6 @@ export default function Navbar({
     { label: "Collections", href: "#collections" },
     { label: "Destinations", href: "#destinations" },
     { label: "Stories", href: "#reviews" },
-    { label: "Meet The Team", href: "#team" },
     { label: "About Us", href: "#about" },
     { label: "Contact & FAQ", href: "#contact" }
   ];
